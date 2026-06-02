@@ -1,12 +1,12 @@
-# Launch checklist — sch00l.xyz
+# Launch checklist — sch00l.ai
 
 Use this the day you go live.
 
 ## Before deploy
 
 - [ ] Run all 3 SQL migrations in Supabase (`001`, `002`, `003`)
-- [ ] Supabase Auth: Site URL = `https://sch00l.xyz`
-- [ ] Supabase Auth: Redirect = `https://sch00l.xyz/auth/callback`
+- [ ] Supabase Auth: Site URL = `https://sch00l.ai`
+- [ ] Supabase Auth: Redirect = `https://sch00l.ai/auth/callback`
 - [ ] Vercel env vars set (see `.env.example`)
 - [ ] `TEACHER_EMAILS` = your email
 - [ ] `npm run build` passes locally
@@ -18,7 +18,7 @@ git push origin main
 # Vercel auto-deploys, or: vercel --prod
 ```
 
-## DNS (sch00l.xyz)
+## DNS (sch00l.ai)
 
 - [ ] Domain added in Vercel → Settings → Domains
 - [ ] A record `@` → `76.76.21.21` OR Vercel nameservers

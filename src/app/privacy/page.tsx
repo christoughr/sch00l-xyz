@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { PRIVACY_EMAIL, SITE_DOMAIN, SUPPORT_EMAIL } from "@/lib/site";
 
 export default function PrivacyPage() {
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 prose prose-invert prose-zinc max-w-none">
       <h1 className="text-3xl font-bold text-white">Privacy Policy</h1>
-      <p className="text-zinc-400 text-sm">Last updated: June 2026 · sch00l.xyz</p>
+      <p className="text-zinc-400 text-sm">Last updated: June 2026 · {SITE_DOMAIN}</p>
 
       <section className="mt-8 space-y-4 text-zinc-300 text-sm leading-relaxed">
         <h2 className="text-lg font-semibold text-white">What we collect</h2>
@@ -26,7 +27,7 @@ export default function PrivacyPage() {
         <p>
           Users under 13 require verifiable parental/guardian consent before using
           sch00l. We collect minimal data necessary for the educational service.
-          Parents may request deletion by contacting support@sch00l.xyz.
+          Parents may request deletion by contacting {SUPPORT_EMAIL}.
         </p>
 
         <h2 className="text-lg font-semibold text-white pt-4">Schools (FERPA-aware)</h2>
@@ -46,7 +47,7 @@ export default function PrivacyPage() {
         </p>
 
         <h2 className="text-lg font-semibold text-white pt-4">Contact</h2>
-        <p>privacy@sch00l.xyz</p>
+        <p>{PRIVACY_EMAIL}</p>
       </section>
     </article>
   );

@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { LEGAL_EMAIL, SITE_DOMAIN } from "@/lib/site";
 
 export default function TermsPage() {
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="text-3xl font-bold text-white">Terms of Service</h1>
-      <p className="text-zinc-400 text-sm mt-2">Last updated: June 2026 · sch00l.xyz</p>
+      <p className="text-zinc-400 text-sm mt-2">Last updated: June 2026 · {SITE_DOMAIN}</p>
 
       <section className="mt-8 space-y-4 text-zinc-300 text-sm leading-relaxed">
         <h2 className="text-lg font-semibold text-white">Educational use</h2>
@@ -42,7 +43,7 @@ export default function TermsPage() {
         </p>
 
         <h2 className="text-lg font-semibold text-white pt-4">Contact</h2>
-        <p>legal@sch00l.xyz</p>
+        <p>{LEGAL_EMAIL}</p>
       </section>
     </article>
   );

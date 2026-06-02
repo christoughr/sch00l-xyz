@@ -4,6 +4,7 @@ import { Nav } from "@/components/Nav";
 import { AuthProvider } from "@/components/AuthProvider";
 import { AgeGate } from "@/components/AgeGate";
 import { Footer } from "@/components/Footer";
+import { SITE_DOMAIN, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,16 +18,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "sch00l.xyz — AI that helps you actually study",
+  title: `${SITE_DOMAIN} — AI that helps you actually study`,
   description:
     "Student-first AI study partner. Socratic tutoring, streaks, and mastery tracking — built to learn, not cheat.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://sch00l.xyz"
-  ),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
-    title: "sch00l.xyz",
+    title: SITE_DOMAIN,
     description: "AI dedicated to students who study.",
-    url: "https://sch00l.xyz",
+    url: SITE_URL,
     siteName: "sch00l",
   },
 };

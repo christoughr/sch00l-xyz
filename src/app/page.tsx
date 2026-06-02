@@ -7,6 +7,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { LEGACY_DOMAIN, SITE_DOMAIN } from "@/lib/site";
 
 const features = [
   {
@@ -39,7 +40,7 @@ export default function HomePage() {
 
       <section className="relative mx-auto max-w-6xl px-4 pt-20 pb-24 sm:px-6 sm:pt-28">
         <p className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3 py-1 text-xs text-brand-300 mb-6">
-          sch00l.xyz — the domain you could afford. The product you couldn&apos;t skip.
+          {SITE_DOMAIN} — AI built for students who actually study
         </p>
 
         <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-6xl leading-[1.1]">
@@ -77,7 +78,10 @@ export default function HomePage() {
         <div className="mt-16 rounded-2xl border border-white/10 bg-white/5 p-8">
           <h2 className="text-xl font-semibold text-white">Join the waitlist</h2>
           <p className="mt-2 text-sm text-zinc-400 max-w-md">
-            Early access, classroom pilots, and launch updates for sch00l.xyz.
+            Early access, classroom pilots, and launch updates for {SITE_DOMAIN}.
+            <span className="block mt-1 text-zinc-500">
+              {LEGACY_DOMAIN} also works — redirects here automatically.
+            </span>
           </p>
           <div className="mt-6">
             <WaitlistForm />

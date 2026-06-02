@@ -12,7 +12,7 @@ const recommended = ["OPENAI_API_KEY", "TEACHER_EMAILS", "SCH00L_API_KEY"];
 
 let ok = true;
 
-console.log("\n sch00l.xyz — environment check\n");
+console.log("\n sch00l.ai — environment check\n");
 
 for (const key of required) {
   const val = process.env[key];

@@ -12,6 +12,7 @@ import {
   Mail,
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
+import { SITE_DOMAIN } from "@/lib/site";
 
 type Classroom = {
   id: string;
@@ -222,7 +223,7 @@ export function TeacherPortal() {
           Waitlist ({waitlist.length})
         </h2>
         <p className="text-sm text-zinc-500 mb-4">
-          Emails from sch00l.xyz landing — export for outreach.
+          Emails from landing ({SITE_DOMAIN}) — export for outreach.
         </p>
         {waitlist.length === 0 ? (
           <p className="text-sm text-zinc-600">No signups yet.</p>

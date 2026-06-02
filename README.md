@@ -1,6 +1,8 @@
-# sch00l.xyz
+# sch00l.ai
 
-**AI for students who study** — full stack ready for launch.
+**AI for students who study** — primary domain **sch00l.ai** (sch00l.xyz redirects).
+
+See **[DOMAINS.md](./DOMAINS.md)** for DNS on both domains.
 
 ## Quick start
 
