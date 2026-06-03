@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, LogOut } from "lucide-react";
 import { Logo } from "./Logo";
@@ -27,6 +28,7 @@ const moreLinks: NavLink[] = [
 ];
 
 export function Nav() {
+  const pathname = usePathname();
   const { user, loading, signOut, supabaseReady } = useAuth();
   const [isTeacher, setIsTeacher] = useState(false);
   const [cardsDue, setCardsDue] = useState(0);
@@ -75,6 +77,10 @@ export function Nav() {
     ...(supabaseReady ? [{ href: "/join", label: "Join" }] : []),
     ...(isTeacher ? [{ href: "/teacher", label: "Teach" }] : []),
   ];
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -143,6 +149,7 @@ export function Nav() {
               {user ? (
                 <button
                   type="button"
+                  data-testid="signout-btn"
                   onClick={handleSignOut}
                   disabled={signingOut}
                   className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:text-white disabled:opacity-50"
@@ -197,7 +204,7 @@ export function Nav() {
             className="fixed inset-0 z-40 bg-black/50 md:hidden"
             onClick={() => setMenuOpen(false)}
           />
-          <nav className="relative z-50 md:hidden border-t border-white/10 px-4 py-3 space-y-1 bg-surface-900">
+          <nav className="relative z-50 md:hidden border-t border-white/10 px-4 py-3 space-y-1 bg-surface-900 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
           {mobileLinks.map((l) => (
             <LinkItem key={l.href} l={l} onNavigate={() => setMenuOpen(false)} />
           ))}
@@ -206,6 +213,7 @@ export function Nav() {
               {user ? (
                 <button
                   type="button"
+                  data-testid="signout-btn"
                   onClick={() => {
                     setMenuOpen(false);
                     void handleSignOut();

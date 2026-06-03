@@ -11,7 +11,7 @@ export const DISCORD_COMMANDS = [
   },
   {
     name: "tutors",
-    description: "Request a human tutor ($49/hr, AI summary included)",
+    description: "Request a human tutor (market rates, AI summary included)",
   },
   {
     name: "help",

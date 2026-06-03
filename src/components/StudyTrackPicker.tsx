@@ -17,21 +17,25 @@ export function StudyTrackPicker({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
-        {TRACK_CATEGORIES.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => setCategory(c.id)}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-              category === c.id
-                ? "bg-brand-500 text-white"
-                : "border border-white/10 text-zinc-400 hover:text-white"
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
+      <div className="relative -mx-1 px-1">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+          {TRACK_CATEGORIES.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              role="button"
+              aria-pressed={category === c.id}
+              onClick={() => setCategory(c.id)}
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition ${
+                category === c.id
+                  ? "bg-brand-500 text-white"
+                  : "border border-white/10 text-zinc-400 hover:text-white"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-h-[min(50vh,420px)] overflow-y-auto pr-1">
         {tracks.map((track) => (

@@ -75,14 +75,18 @@ export function OnboardingForm() {
         />
         I agree to educational data use under school/FERPA-style privacy (required for classroom features).
       </label>
-      <button
-        type="submit"
-        disabled={loading}
+        <button
+          type="submit"
+          disabled={loading || !name.trim()}
         className="w-full rounded-xl bg-brand-500 py-3 text-white hover:bg-brand-400 disabled:opacity-50"
       >
         {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Start studying"}
       </button>
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-400" role="alert">
+          {error}
+        </p>
+      )}
     </form>
   );
 }

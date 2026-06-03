@@ -45,9 +45,17 @@ export function ClassDiscussionBanner() {
   }
 
   const hasClasses = classes.length > 0;
+  const primaryForumHref =
+    classes.length === 1
+      ? classes[0].forumUrl
+      : hasClasses
+        ? "/my-classes"
+        : user
+          ? "/join"
+          : "/login";
 
   return (
-    <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/15 to-brand-500/10 p-4 sm:p-5 relative">
+    <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/15 to-brand-500/10 p-3 sm:p-4 relative">
       <button
         type="button"
         onClick={dismiss}
@@ -86,23 +94,23 @@ export function ClassDiscussionBanner() {
               ))}
             </ul>
           )}
-          <div className="mt-4 flex flex-wrap gap-2">
-            {hasClasses ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Link
+              href={primaryForumHref}
+              className="inline-flex items-center gap-1 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500"
+            >
+              <MessageSquare className="h-4 w-4" />
+              {hasClasses ? "Join the discussion" : user ? "Join a class" : "Sign in to join"}
+            </Link>
+            {hasClasses && (
               <Link
                 href="/my-classes"
-                className="inline-flex items-center gap-1 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500"
+                className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-4 py-2 text-sm text-zinc-300 hover:bg-white/5"
               >
                 <Users className="h-4 w-4" />
                 My classes
               </Link>
-            ) : supabaseReady ? (
-              <Link
-                href={user ? "/join" : "/login"}
-                className="inline-flex items-center gap-1 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500"
-              >
-                {user ? "Join a class" : "Sign in to join"}
-              </Link>
-            ) : null}
+            )}
             <Link
               href="/community"
               className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-4 py-2 text-sm text-zinc-300 hover:bg-white/5"

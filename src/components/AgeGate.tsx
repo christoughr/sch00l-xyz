@@ -20,6 +20,7 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
   const [parental, setParental] = useState(false);
   const [terms, setTerms] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const isLegalPage = LEGAL_PATHS.includes(pathname);
   const year = parseInt(birthYear, 10);
@@ -32,18 +33,23 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     setError("");
 
     if (Number.isNaN(year) || year < 1920 || year > new Date().getFullYear()) {
       setError("Enter a valid birth year.");
+      setSubmitting(false);
       return;
     }
     if (!terms) {
       setError("Accept the Terms and Privacy Policy to continue.");
+      setSubmitting(false);
       return;
     }
     if (under13 && !parental) {
       setError("Users under 13 need a parent/guardian to confirm consent.");
+      setSubmitting(false);
       return;
     }
 
@@ -56,6 +62,7 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
     };
     saveLocalConsent(next);
     setConsent(next);
+    setSubmitting(false);
 
     fetch("/api/profile", {
       method: "PATCH",
@@ -118,6 +125,7 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
               required
               min={1920}
               max={new Date().getFullYear()}
+              aria-label="Year of birth"
               value={birthYear}
               onChange={(e) => setBirthYear(e.target.value)}
               className="mt-2 w-full rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-white focus:border-brand-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
@@ -178,9 +186,10 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
 
           <button
             type="submit"
-            className="mt-6 w-full rounded-xl bg-brand-500 py-3 font-medium text-white hover:bg-brand-400 focus-visible:ring-2 focus-visible:ring-brand-400"
+            disabled={submitting}
+            className="mt-6 w-full rounded-xl bg-brand-500 py-3 font-medium text-white hover:bg-brand-400 focus-visible:ring-2 focus-visible:ring-brand-400 disabled:opacity-50"
           >
-            Continue
+            {submitting ? "Saving…" : "Continue"}
           </button>
         </form>
       </div>

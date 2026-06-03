@@ -63,7 +63,7 @@ No further migrations required unless adding columns. See `RUN_ALL_SQL.md`.
 
 ## Recent fixes (this deploy)
 
-1. **Logout** — Client `signOut({ scope: 'global' })` + `POST /api/auth/signout` clears SSR cookies; redirect to `/`.
+1. **Logout** — `POST /api/auth/signout` + local `signOut` + 3s timeout + `window.location.replace('/')` (never bare `global` scope — it hangs).
 2. **Nav** — “Classes” in primary nav; visible “Sign out” label (desktop + mobile + Settings).
 3. **Study UX** — `ClassDiscussionBanner` + `StudyFeatureStrip` on `/study`.
 4. **Tutor UI** — Full-width subject grid; dynamic pricing (`src/lib/tutor-pricing.ts`, 18% fee).

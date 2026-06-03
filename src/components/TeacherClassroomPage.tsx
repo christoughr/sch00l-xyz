@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { ClassroomHub } from "./ClassroomHub";
 
-export function TeacherClassroomPage({ classroomId }: { classroomId: string }) {
+type HubTab = "overview" | "assign" | "battle" | "forum" | "integrations";
+
+function TeacherClassroomInner({ classroomId }: { classroomId: string }) {
   const [students, setStudents] = useState<{ id: string; email: string }[]>([]);
   const [classroomName, setClassroomName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams.get("tab") === "forum"
+    ? "forum"
+    : "overview") as HubTab;
 
   useEffect(() => {
     fetch(`/api/classrooms/${classroomId}/stats`)
@@ -53,7 +60,25 @@ export function TeacherClassroomPage({ classroomId }: { classroomId: string }) {
       {classroomName && (
         <h1 className="text-2xl font-bold text-white mb-6">{classroomName}</h1>
       )}
-      <ClassroomHub classroomId={classroomId} students={students} />
+      <ClassroomHub
+        classroomId={classroomId}
+        students={students}
+        initialTab={initialTab}
+      />
     </>
+  );
+}
+
+export function TeacherClassroomPage({ classroomId }: { classroomId: string }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-400" />
+        </div>
+      }
+    >
+      <TeacherClassroomInner classroomId={classroomId} />
+    </Suspense>
   );
 }

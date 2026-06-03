@@ -75,7 +75,7 @@ Max 120 words. Plain text.`,
   }
 
   if (client) {
-    const { error } = await client.from("tutor_requests").insert({
+    const base = {
       user_id: userId,
       student_email: studentEmail,
       subject: data.subject,
@@ -85,7 +85,19 @@ Max 120 words. Plain text.`,
       post_score: data.postScore ?? null,
       urgency: data.urgency,
       status: "open",
-    });
+    };
+    const extended = {
+      ...base,
+      budget_tier: data.budgetTier ?? null,
+      rate_min: data.rateMin ?? null,
+      rate_max: data.rateMax ?? null,
+    };
+
+    let { error } = await client.from("tutor_requests").insert(extended);
+    if (error && /budget_tier|rate_min|rate_max/i.test(error.message)) {
+      console.warn("Tutor request: run migration 012_budget_tier.sql", error.message);
+      ({ error } = await client.from("tutor_requests").insert(base));
+    }
 
     if (error) {
       console.error("Tutor request insert:", error);

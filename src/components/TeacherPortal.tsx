@@ -10,6 +10,7 @@ import {
   Clock,
   TrendingUp,
   Mail,
+  MessageSquare,
   UserRound,
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
@@ -20,6 +21,7 @@ type Classroom = {
   name: string;
   join_code: string;
   created_at: string;
+  threadCount?: number;
 };
 
 type WaitlistEntry = {
@@ -240,6 +242,18 @@ export function TeacherPortal() {
                     {copied === c.join_code ? "Copied!" : "Copy code"}
                   </button>
                   <Link
+                    href={`/teacher/${c.id}?tab=forum`}
+                    className="inline-flex items-center gap-1 rounded-lg border border-violet-500/30 px-3 py-1.5 text-xs text-violet-300 hover:bg-violet-500/10"
+                  >
+                    <MessageSquare className="h-3 w-3" />
+                    Forum
+                    {(c.threadCount ?? 0) > 0 && (
+                      <span className="rounded-full bg-violet-500/30 px-1.5 text-[10px]">
+                        {c.threadCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
                     href={`/teacher/${c.id}`}
                     className="rounded-lg bg-brand-500/20 px-3 py-1.5 text-xs text-brand-300 hover:bg-brand-500/30"
                   >
@@ -403,7 +417,15 @@ export function ClassroomStats({ classroomId }: { classroomId: string }) {
           <p className="text-2xl font-semibold text-white">
             {summary.totalMinutes} min
           </p>
-          <p className="text-sm text-zinc-400">Total study time</p>
+          <p className="text-sm text-zinc-400">
+            Total study time
+            <span
+              className="block text-[10px] text-zinc-600 mt-0.5"
+              title="Teacher accounts are excluded from student stats"
+            >
+              ⓘ Teachers excluded
+            </span>
+          </p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
           <TrendingUp className="h-5 w-5 text-brand-400 mb-2" />

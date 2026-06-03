@@ -26,10 +26,30 @@ function LoginForm() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (searchParams.get("error") === "auth") {
-      setMessage("Sign-in link expired or invalid. Request a new one.");
-      setStatus("error");
+    const err = searchParams.get("error");
+    const desc = (searchParams.get("error_description") ?? "").toLowerCase();
+    if (!err) return;
+
+    let copy =
+      "Something went wrong. Please try signing in again.";
+    if (
+      err === "otp_expired" ||
+      desc.includes("expired") ||
+      err === "auth"
+    ) {
+      copy = "Your magic link expired. Request a new one below.";
+    } else if (
+      err === "otp_disabled" ||
+      err === "too_many_requests" ||
+      desc.includes("rate")
+    ) {
+      copy = "Too many attempts — wait 60 seconds and try again.";
+    } else if (err === "access_denied") {
+      copy = "Sign-in was cancelled. Try again.";
     }
+
+    setMessage(copy);
+    setStatus("error");
   }, [searchParams]);
 
   async function sendMagicLink(e: React.FormEvent) {
@@ -123,6 +143,15 @@ function LoginForm() {
         Save progress, flashcards, and quiz results across devices.
       </p>
 
+      {status === "error" && message && (
+        <div
+          className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+          role="alert"
+        >
+          {message}
+        </div>
+      )}
+
       <form onSubmit={sendMagicLink} className="mt-8 space-y-4">
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
@@ -148,10 +177,8 @@ function LoginForm() {
         </button>
       </form>
 
-      {message && (
-        <div
-          className={`mt-4 text-sm space-y-2 ${status === "error" ? "text-red-400" : "text-brand-300"}`}
-        >
+      {message && status !== "error" && (
+        <div className="mt-4 text-sm space-y-2 text-brand-300">
           <p>{message}</p>
           {status === "sent" && (
             <p className="text-zinc-500 text-xs leading-relaxed">

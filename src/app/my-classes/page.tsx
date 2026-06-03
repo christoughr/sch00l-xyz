@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Loader2, MessageSquare, BookOpen, Zap } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { JoinClassroom } from "@/components/JoinClassroom";
+import { ClassDiscussionBanner } from "@/components/ClassDiscussionBanner";
 import { StudentAssignments } from "@/components/StudentAssignments";
 
 type ClassRow = {
@@ -47,6 +48,9 @@ export default function MyClassesPage() {
         </p>
       ) : (
         <>
+          <div className="mt-6">
+            <ClassDiscussionBanner />
+          </div>
           <section className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6">
             <h2 className="text-lg font-semibold text-white mb-4">Join a class</h2>
             <JoinClassroom />
@@ -76,7 +80,7 @@ export default function MyClassesPage() {
                   <div className="flex flex-wrap gap-2">
                     <Link
                       href={c.forumUrl}
-                      className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300 hover:bg-white/5"
+                      className="inline-flex items-center gap-1 rounded-lg bg-violet-600/80 px-3 py-1.5 text-xs font-medium text-white hover:bg-violet-500"
                     >
                       <MessageSquare className="h-3.5 w-3.5" />
                       Discussion

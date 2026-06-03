@@ -64,6 +64,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
+      if (event === "SIGNED_OUT") {
+        setUser(null);
+        return;
+      }
       if (event === "SIGNED_IN" && session?.user) {
         await mergeLocalProgressToCloud(supabase, session.user.id);
       }

@@ -49,7 +49,29 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ classrooms: data ?? [] });
+  const classrooms = data ?? [];
+  const ids = classrooms.map((c) => c.id);
+  const threadCounts = new Map<string, number>();
+
+  if (ids.length > 0) {
+    const { data: threads } = await supabase
+      .from("classroom_threads")
+      .select("classroom_id")
+      .in("classroom_id", ids);
+    for (const t of threads ?? []) {
+      threadCounts.set(
+        t.classroom_id,
+        (threadCounts.get(t.classroom_id) ?? 0) + 1
+      );
+    }
+  }
+
+  return NextResponse.json({
+    classrooms: classrooms.map((c) => ({
+      ...c,
+      threadCount: threadCounts.get(c.id) ?? 0,
+    })),
+  });
 }
 
 const createSchema = z.object({

@@ -184,14 +184,30 @@ export default function PricingPage() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-8">
-        <h2 className="text-lg font-semibold text-white">How sch00l makes money</h2>
-        <p className="mt-2 text-sm text-zinc-400 max-w-2xl">
-          Human tutoring uses competitive market ranges (not one fixed price). Typical
-          ~{formatUsd(human.studentRatePerHour)}/hr with 18% platform fee. Pro and school
-          seats are platform revenue.
-        </p>
-      </section>
+      <details className="rounded-2xl border border-white/10 bg-white/5 p-8 group">
+        <summary className="cursor-pointer text-lg font-semibold text-white list-none flex items-center justify-between">
+          How pricing works
+          <span className="text-zinc-500 text-sm group-open:rotate-180 transition">
+            ▾
+          </span>
+        </summary>
+        <ul className="mt-4 space-y-3 text-sm text-zinc-400 max-w-2xl">
+          <li>
+            <strong className="text-zinc-200">AI study:</strong> Free (3 sessions/day)
+            or Pro ({formatUsd(PRICING.pro.priceMonthly)}/mo unlimited).
+          </li>
+          <li>
+            <strong className="text-zinc-200">Human tutor:</strong> Market ranges{" "}
+            {formatUsd(human.rateFrom)}–{formatUsd(human.rateTo)}/hr by subject — you
+            pick a budget tier; tutors bid in range. {PLATFORM_FEE.humanTutorPercent}%
+            platform fee; pay only after you approve a match.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Schools:</strong> Per-seat pricing from{" "}
+            {formatUsd(PRICING.school.pricePerStudentMonth)}/student/mo.
+          </li>
+        </ul>
+      </details>
     </div>
   );
 }

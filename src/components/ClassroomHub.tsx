@@ -23,11 +23,13 @@ type Tab = (typeof TABS)[number]["id"];
 export function ClassroomHub({
   classroomId,
   students,
+  initialTab = "overview",
 }: {
   classroomId: string;
   students: { id: string; email: string }[];
+  initialTab?: Tab;
 }) {
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>(initialTab);
 
   return (
     <div className="space-y-6">

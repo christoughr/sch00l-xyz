@@ -56,6 +56,7 @@ export default function StudyPage() {
   const [sessionCounted, setSessionCounted] = useState(false);
   const [cardsLoading, setCardsLoading] = useState(false);
   const [cardsError, setCardsError] = useState<string | null>(null);
+  const [trackHint, setTrackHint] = useState<string | null>(null);
   const completedRef = useRef(false);
   const remaining = sessionsRemainingToday();
 
@@ -132,6 +133,8 @@ export default function StudyPage() {
       setTopic("");
       setGradeLevel("");
       setTrackContext("");
+      setTrackHint("Subject reset for custom track — enter your topic below.");
+      window.setTimeout(() => setTrackHint(null), 2500);
     }
   }
 
@@ -224,6 +227,11 @@ export default function StudyPage() {
         <div className="space-y-6">
           <div>
             <p className="text-sm font-medium text-zinc-300 mb-3">Study track</p>
+            {trackHint && (
+              <p className="mb-2 text-xs text-brand-300" role="status">
+                {trackHint}
+              </p>
+            )}
             <StudyTrackPicker value={trackId} onChange={(t) => applyTrack(t.id)} />
           </div>
           <div>
