@@ -3,6 +3,7 @@ import type { SubjectId } from "./subject-ids";
 export type StudyTrackCategory =
   | "ap"
   | "sat_act"
+  | "exam_prep"
   | "college"
   | "k12"
   | "languages"
@@ -28,6 +29,7 @@ export const TRACK_CATEGORIES: {
   { id: "all", label: "All" },
   { id: "ap", label: "AP" },
   { id: "sat_act", label: "SAT / ACT" },
+  { id: "exam_prep", label: "Exam prep" },
   { id: "college", label: "College" },
   { id: "k12", label: "High school" },
   { id: "languages", label: "Languages" },
@@ -263,6 +265,127 @@ export const STUDY_TRACKS: StudyTrack[] = [
     gradeLevel: "ACT",
     tutorContext:
       "ACT Science: graphs, experiments, conflicting viewpoints. Reading speed + pattern recognition.",
+  },
+  {
+    id: "mcat-bb",
+    category: "exam_prep",
+    label: "MCAT — Bio/Biochem",
+    description: "Amino acids, metabolism, systems",
+    subject: "science",
+    topic: "MCAT Bio/Biochem — metabolism and systems",
+    gradeLevel: "MCAT",
+    tutorContext:
+      "MCAT B/B: biochemistry pathways, physiology, experimental passages. Passage-first reasoning.",
+  },
+  {
+    id: "mcat-cp",
+    category: "exam_prep",
+    label: "MCAT — Chem/Phys",
+    description: "Gen chem, physics, lab reasoning",
+    subject: "science",
+    topic: "MCAT Chem/Phys — stoichiometry and forces",
+    gradeLevel: "MCAT",
+    tutorContext:
+      "MCAT C/P: gen chem, physics equations, lab design. Units and dimensional analysis.",
+  },
+  {
+    id: "mcat-ps",
+    category: "exam_prep",
+    label: "MCAT — Psych/Soc",
+    description: "Behavior, cognition, society",
+    subject: "psychology",
+    topic: "MCAT Psych/Soc — behavior and society",
+    gradeLevel: "MCAT",
+    tutorContext:
+      "MCAT P/S: theories, research design, social structures. Link terms to passage claims.",
+  },
+  {
+    id: "mcat-cars",
+    category: "exam_prep",
+    label: "MCAT — CARS",
+    description: "Critical analysis and reasoning",
+    subject: "english",
+    topic: "MCAT CARS — argument analysis",
+    gradeLevel: "MCAT",
+    tutorContext:
+      "MCAT CARS: main idea, author's tone, inference without outside knowledge. Socratic reading.",
+  },
+  {
+    id: "lsat",
+    category: "exam_prep",
+    label: "LSAT",
+    description: "Logical reasoning, arguments",
+    subject: "philosophy",
+    topic: "LSAT — logical reasoning and arguments",
+    gradeLevel: "LSAT",
+    tutorContext:
+      "LSAT LR: premises, conclusions, flaws, strengthen/weaken. Formalize arguments stepwise.",
+  },
+  {
+    id: "nclex-rn",
+    category: "exam_prep",
+    label: "NCLEX-RN",
+    description: "Clinical judgment, safety",
+    subject: "health",
+    topic: "NCLEX-RN — clinical judgment and prioritization",
+    gradeLevel: "NCLEX",
+    tutorContext:
+      "NCLEX: ABCs, prioritization, pharmacology basics, patient safety. Process of elimination with rationale.",
+  },
+  {
+    id: "gre-quant",
+    category: "exam_prep",
+    label: "GRE Quant",
+    description: "Arithmetic, algebra, data",
+    subject: "math",
+    topic: "GRE Quantitative — algebra and data analysis",
+    gradeLevel: "GRE",
+    tutorContext:
+      "GRE Quant: QC comparisons, word problems, stats. Efficient strategies; explain traps.",
+  },
+  {
+    id: "gre-verbal",
+    category: "exam_prep",
+    label: "GRE Verbal",
+    description: "Text completion, reading comp",
+    subject: "english",
+    topic: "GRE Verbal — reading and vocabulary in context",
+    gradeLevel: "GRE",
+    tutorContext:
+      "GRE Verbal: sentence equivalence, TC, RC. Context clues over memorized definitions.",
+  },
+  {
+    id: "gmat",
+    category: "exam_prep",
+    label: "GMAT Focus",
+    description: "Quant, verbal, data insights",
+    subject: "business",
+    topic: "GMAT — data insights and problem solving",
+    gradeLevel: "GMAT",
+    tutorContext:
+      "GMAT: DS, IR tables, critical reasoning for business cases. Time-aware reasoning.",
+  },
+  {
+    id: "ib-math-aa",
+    category: "exam_prep",
+    label: "IB Math AA",
+    description: "Analysis & approaches HL/SL",
+    subject: "math",
+    topic: "IB Math AA — calculus and proofs",
+    gradeLevel: "IB",
+    tutorContext:
+      "IB Math AA: proofs, calculus, vectors. IB command terms and show-work expectations.",
+  },
+  {
+    id: "ib-biology",
+    category: "exam_prep",
+    label: "IB Biology",
+    description: "Cell bio, genetics, ecology",
+    subject: "science",
+    topic: "IB Biology — molecular biology and ecology",
+    gradeLevel: "IB",
+    tutorContext:
+      "IB Bio: data-based questions, IA-style reasoning, syllabus connections across topics.",
   },
   {
     id: "college-calc-2",

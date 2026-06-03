@@ -14,3 +14,54 @@ export async function acceptAgeGate(page: Page) {
     );
   });
 }
+
+/** Seed paired pre/post quiz for learning lift on /progress */
+export async function seedQuizLift(page: Page) {
+  await page.addInitScript(() => {
+    const sid = "e2e-lift-session";
+    const now = new Date().toISOString();
+    localStorage.setItem(
+      "sch00l_quiz_results_v1",
+      JSON.stringify([
+        {
+          id: "e2e-pre",
+          subject: "math",
+          topic: "derivatives",
+          phase: "pre",
+          score: 1,
+          total: 3,
+          sessionId: sid,
+          createdAt: now,
+        },
+        {
+          id: "e2e-post",
+          subject: "math",
+          topic: "derivatives",
+          phase: "post",
+          score: 2,
+          total: 3,
+          sessionId: sid,
+          createdAt: now,
+        },
+      ])
+    );
+  });
+}
+
+export async function seedSessionMemory(page: Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "sch00l_session_memory_v1",
+      JSON.stringify([
+        {
+          id: "e2e-mem-1",
+          subject: "math",
+          topic: "AP Calculus AB",
+          summary: "Worked through chain rule with u-substitution.",
+          liftLabel: "33% → 67% (+34 lift)",
+          createdAt: new Date().toISOString(),
+        },
+      ])
+    );
+  });
+}

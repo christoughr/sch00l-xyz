@@ -33,6 +33,15 @@ test.describe("sch00l smoke", () => {
     ).toBeVisible({ timeout: 20_000 });
   });
 
+  test("study tracks: exam prep category", async ({ page }) => {
+    await acceptAgeGate(page);
+    await page.goto("/study");
+    await page.getByRole("button", { name: "Exam prep" }).click();
+    await expect(page.getByText("MCAT — Bio/Biochem")).toBeVisible();
+    await expect(page.getByText("LSAT")).toBeVisible();
+    await expect(page.getByText("NCLEX-RN")).toBeVisible();
+  });
+
   test("pricing and pro guard", async ({ page }) => {
     await acceptAgeGate(page);
     await page.goto("/pro/success");

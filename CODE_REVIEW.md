@@ -62,17 +62,20 @@ See `src/lib/pricing.ts` and `/pricing`.
 
 ---
 
-## P2 — OPEN (future)
+## P2 — status (2026-06-03)
 
-| Item | Recommendation |
-|------|----------------|
-| **Stripe keys** | Set env vars in Vercel (code shipped) |
-| **SubjectPicker a11y** | `aria-pressed` on toggles |
-| **TeacherPortal.tsx** | Split `ClassroomStats`; replace `alert()` |
-| **Outcomes API** | Rename "unique studiers" → sessions tracked |
-| **E2E tests** | Playwright: study flow + lift |
-| **Rate limiting** | API routes (tutor, quiz, analytics) |
-| **Pro unlock** | Replace `localStorage` hack with Stripe subscription check |
+| Item | Status |
+|------|--------|
+| **SubjectPicker / StudyTrackPicker a11y** | ✅ `aria-pressed` |
+| **TeacherPortal** | ✅ `ClassroomStats` split; no `alert()` |
+| **E2E tests** | ✅ Playwright: smoke + progress lift/memory + exam prep |
+| **Rate limiting** | ✅ tutor, quiz, flashcards, waitlist, session summarize |
+| **Session memory + adaptive quiz** | ✅ Phase B shipped |
+| **56 study tracks** | ✅ incl. MCAT, LSAT, NCLEX, GRE, GMAT, IB |
+| **Progress session history UI** | ✅ |
+| **Lemon Squeezy / Supabase** | ⭐ user keys — [STARRED.md](./STARRED.md) |
+| **Pro unlock (server)** | After LS webhook + Supabase |
+| **Outcomes API copy** | Minor rename optional |
 
 ---
 

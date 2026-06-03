@@ -128,7 +128,8 @@ export function TeacherPortal() {
   if (!supabaseReady) {
     return (
       <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6 text-sm text-amber-100">
-        Add Supabase env vars and run both SQL migrations to enable the teacher
+        Add Supabase env vars and run SQL migrations{" "}
+        <strong className="text-white">001 → 007</strong> to enable the teacher
         portal.
       </div>
     );

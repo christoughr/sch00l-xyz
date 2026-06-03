@@ -36,6 +36,7 @@ export function saveSessionMemory(
   const list = [item, ...loadSessionMemories()].slice(0, MAX);
   if (typeof window !== "undefined") {
     localStorage.setItem(STORAGE_KEYS.sessionMemory, JSON.stringify(list));
+    window.dispatchEvent(new CustomEvent("sch00l-session-memory-saved"));
   }
   return item;
 }

@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Flame, Clock, BookOpen, TrendingUp, BarChart2 } from "lucide-react";
+import { Flame, Clock, BookOpen, TrendingUp, BarChart2, Brain } from "lucide-react";
 import { loadProgress, saveProgress } from "@/lib/progress";
 import { latestQuizLiftLocal } from "@/lib/quiz-local";
+import { loadSessionMemories, type SessionMemory } from "@/lib/session-memory";
 import { getSubject } from "@/lib/subjects";
 import type { StudentProgress } from "@/lib/types";
 import { useAuth } from "./AuthProvider";
@@ -34,6 +35,7 @@ export function ProgressDashboard() {
   const { user } = useAuth();
   const [progress, setProgress] = useState<StudentProgress | null>(null);
   const [quizLift, setQuizLift] = useState<string | null>(null);
+  const [memories, setMemories] = useState<SessionMemory[]>([]);
   const [syncWarning, setSyncWarning] = useState<string | null>(null);
 
   const refreshLift = useCallback(() => {
@@ -60,6 +62,7 @@ export function ProgressDashboard() {
       }
     }
     setProgress(loadProgress());
+    setMemories(loadSessionMemories());
     refreshLift();
   }, [user, refreshLift]);
 
@@ -77,10 +80,16 @@ export function ProgressDashboard() {
       refreshLift();
     }
 
+    function onMemorySaved() {
+      setMemories(loadSessionMemories());
+    }
+
     window.addEventListener("sch00l-quiz-saved", onQuizSaved);
+    window.addEventListener("sch00l-session-memory-saved", onMemorySaved);
     window.addEventListener("focus", onFocus);
     return () => {
       window.removeEventListener("sch00l-quiz-saved", onQuizSaved);
+      window.removeEventListener("sch00l-session-memory-saved", onMemorySaved);
       window.removeEventListener("focus", onFocus);
     };
   }, [refreshLift]);
@@ -182,6 +191,39 @@ export function ProgressDashboard() {
           sub="Mastery data — your moat"
         />
       </div>
+
+      {memories.length > 0 && (
+        <section>
+          <h2 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+            <Brain className="h-5 w-5 text-brand-400" />
+            Session history
+          </h2>
+          <p className="text-sm text-zinc-500 mb-3">
+            What your tutor remembers from past sessions on this device.
+          </p>
+          <ul className="space-y-2">
+            {memories.slice(0, 6).map((m) => (
+              <li
+                key={m.id}
+                className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm"
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
+                  <span className="font-medium text-white">
+                    {getSubject(m.subject).emoji} {m.topic}
+                  </span>
+                  {m.liftLabel && (
+                    <span className="text-xs text-brand-300">{m.liftLabel}</span>
+                  )}
+                </div>
+                <p className="text-zinc-400 line-clamp-3">{m.summary}</p>
+                <p className="text-xs text-zinc-600 mt-2">
+                  {new Date(m.createdAt).toLocaleDateString()}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {progress.mastery.length > 0 && (
         <section>

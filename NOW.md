@@ -1,33 +1,39 @@
 # NOW — code shipped, keys when ready
 
-**⭐ Starred:** [STARRED.md](./STARRED.md)
+**⭐ Starred (you only):** [STARRED.md](./STARRED.md)
 
 ---
 
-## ✅ Just deployed
+## ✅ Latest (`main`)
 
 | # | What |
 |---|------|
-| 1 | **Lemon Squeezy** — `/api/payments/checkout`, webhook, pricing wired |
-| 2 | **UX** — waitlist dedupe, tutor apply local save, pricing cleanup, a11y |
-| 3 | **Outcomes demo** — `/outcomes` + landing teaser (+18% avg lift) |
+| 1 | **18 subjects** + **56 study tracks** (AP, SAT/ACT, exam prep, college, K–12, languages) |
+| 2 | **Session memory** — summaries after each session; tutor/quiz + Progress “Session history” |
+| 3 | **Adaptive quizzes** — foundational / standard / challenging from pre-quiz + mastery |
+| 4 | **Playwright E2E** — health, study flow, exam prep picker, progress lift + memory |
+| 5 | **Local-first** — no Supabase/LS/Discord required for beta |
 
 ---
 
-## Verify (no keys needed)
+## Verify (no keys)
 
-- https://sch00l.ai/outcomes — demo stats + example sessions
-- https://sch00l.ai — “Early beta: avg learning lift +18%” banner
-- https://sch00l.ai/pricing — waitlist mode until LS keys
+- https://sch00l.ai/study — category pills, 56 tracks
+- https://sch00l.ai/progress — lift + session history (after a full session)
+- https://sch00l.ai/api/health — `aiMode: "live"` when Groq key set
+
+```bash
+npm test
+npm run test:e2e
+```
 
 ---
 
-## When Lemon Squeezy account ready
+## When ready (any order)
 
-Paste env vars → redeploy. Details in [STARRED.md](./STARRED.md) Lemon Squeezy section.
-
----
-
-## When Discord server ready
-
-[DISCORD.md](./DISCORD.md) Part A (webhook only).
+| Service | Doc |
+|---------|-----|
+| Supabase | [STARRED.md](./STARRED.md) — SQL 001→007 |
+| Lemon Squeezy | [STARRED.md](./STARRED.md) |
+| Discord | [DISCORD.md](./DISCORD.md) |
+| Marketing | [SHARE.md](./SHARE.md) |
