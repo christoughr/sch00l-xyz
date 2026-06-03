@@ -51,6 +51,8 @@ You already have **#1, #3, #4, Progress page**. After deploy, refresh `/progress
 
 Upload: **`public/brand/twitter-avatar.png`** (400×400+; square)
 
+**Header banner:** **`public/brand/twitter-header.png`** (1500×500 recommended)
+
 - **Name:** sch00l
 - **Handle:** @sch00lai (or your pick)
 - **Bio:** Socratic AI tutor · pre/post quiz learning lift · free to start → sch00l.ai/study
@@ -68,6 +70,8 @@ See **`SHARE.md`** for HN Show HN, Product Hunt, Reddit, Korean student copy.
 ```
 public/brand/twitter-avatar.png   ← Twitter profile photo
 public/brand/twitter-avatar.svg   ← vector source
+public/brand/twitter-header.png   ← Twitter/X header banner (1500×500)
+public/brand/twitter-header.svg   ← vector source
 SHARE.md                          ← platform launch copy
 YOU-DO.md                         ← your checklist only
 ```
