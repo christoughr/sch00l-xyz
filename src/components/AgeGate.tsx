@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   canUseApp,
   isUnder13,
@@ -10,7 +10,10 @@ import {
   type AgeConsent,
 } from "@/lib/compliance";
 
+const LEGAL_PATHS = ["/privacy", "/terms"];
+
 export function AgeGate({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [consent, setConsent] = useState<AgeConsent | null>(null);
   const [ready, setReady] = useState(false);
   const [birthYear, setBirthYear] = useState("");
@@ -18,12 +21,18 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
   const [terms, setTerms] = useState(false);
   const [error, setError] = useState("");
 
+  const isLegalPage = LEGAL_PATHS.includes(pathname);
+
   useEffect(() => {
     setConsent(loadLocalConsent());
     setReady(true);
   }, []);
 
   if (!ready) return null;
+
+  // Legal pages always readable (Terms / Privacy links must work)
+  if (isLegalPage) return <>{children}</>;
+
   if (consent && canUseApp(consent)) return <>{children}</>;
 
   const year = parseInt(birthYear, 10);
@@ -69,75 +78,93 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-900/95 p-4 backdrop-blur-sm">
-      <form
-        onSubmit={submit}
-        className="w-full max-w-md rounded-2xl border border-white/10 bg-surface-800 p-8"
-      >
-        <h2 className="text-xl font-bold text-white">Welcome to sch00l</h2>
-        <p className="mt-2 text-sm text-zinc-400">
-          We comply with COPPA and FERPA-friendly practices. Confirm your age to
-          continue.
-        </p>
-
-        <label className="block mt-6 text-sm text-zinc-300">
-          Birth year
-          <input
-            type="number"
-            required
-            min={1990}
-            max={new Date().getFullYear()}
-            value={birthYear}
-            onChange={(e) => setBirthYear(e.target.value)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-white focus:border-brand-400 focus:outline-none"
-          />
-        </label>
-
-        {under13 && (
-          <label className="mt-4 flex items-start gap-3 text-sm text-zinc-300">
-            <input
-              type="checkbox"
-              checked={parental}
-              onChange={(e) => setParental(e.target.checked)}
-              className="mt-1"
-            />
-            <span>
-              I am a parent/guardian, or I have parent/guardian permission to use
-              sch00l (required for users under 13).
-            </span>
-          </label>
-        )}
-
-        <label className="mt-4 flex items-start gap-3 text-sm text-zinc-300">
-          <input
-            type="checkbox"
-            required
-            checked={terms}
-            onChange={(e) => setTerms(e.target.checked)}
-            className="mt-1"
-          />
-          <span>
-            I agree to the{" "}
-            <Link href="/terms" className="text-brand-400 hover:underline">
-              Terms
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="text-brand-400 hover:underline">
-              Privacy Policy
-            </Link>
-            .
-          </span>
-        </label>
-
-        {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
-
-        <button
-          type="submit"
-          className="mt-6 w-full rounded-xl bg-brand-500 py-3 font-medium text-white hover:bg-brand-400"
+    <>
+      {/* Page hidden until consent — legal routes bypass above */}
+      <div className="invisible h-0 overflow-hidden" aria-hidden>
+        {children}
+      </div>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-900 p-4">
+        <form
+          onSubmit={submit}
+          className="w-full max-w-md rounded-2xl border border-white/10 bg-surface-800 p-8 shadow-2xl"
         >
-          Continue
-        </button>
-      </form>
-    </div>
+          <h2 className="text-xl font-bold text-white">Welcome to sch00l</h2>
+          <p className="mt-2 text-sm text-zinc-400">
+            We comply with COPPA and FERPA-friendly practices. Confirm your age
+            to continue.
+          </p>
+
+          <label className="block mt-6 text-sm text-zinc-300">
+            Birth year
+            <input
+              type="number"
+              required
+              min={1990}
+              max={new Date().getFullYear()}
+              value={birthYear}
+              onChange={(e) => setBirthYear(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-white focus:border-brand-400 focus:outline-none"
+            />
+          </label>
+
+          {under13 && (
+            <label className="mt-4 flex items-start gap-3 text-sm text-zinc-300">
+              <input
+                type="checkbox"
+                checked={parental}
+                onChange={(e) => setParental(e.target.checked)}
+                className="mt-1 shrink-0"
+              />
+              <span>
+                I am a parent/guardian, or I have parent/guardian permission to
+                use sch00l (required for users under 13).
+              </span>
+            </label>
+          )}
+
+          <div className="mt-4 flex items-start gap-3 text-sm text-zinc-300">
+            <input
+              id="terms-check"
+              type="checkbox"
+              checked={terms}
+              onChange={(e) => setTerms(e.target.checked)}
+              className="mt-1 shrink-0"
+            />
+            <label htmlFor="terms-check">
+              I agree to the{" "}
+              <a
+                href="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-400 underline hover:text-brand-300"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Terms
+              </a>{" "}
+              and{" "}
+              <a
+                href="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-400 underline hover:text-brand-300"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Privacy Policy
+              </a>
+              .
+            </label>
+          </div>
+
+          {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+
+          <button
+            type="submit"
+            className="mt-6 w-full rounded-xl bg-brand-500 py-3 font-medium text-white hover:bg-brand-400"
+          >
+            Continue
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
