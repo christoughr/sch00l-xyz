@@ -20,19 +20,25 @@ function uid() {
   return crypto.randomUUID();
 }
 
-const WELCOME = (subject: string) =>
-  `Hey — I'm your **sch00l** tutor for ${subject}. I guide; I don't do your homework for you.
+const WELCOME = (subject: string, topic?: string) =>
+  topic?.trim()
+    ? `Hey — I'm your **sch00l** tutor for ${subject}. Today's focus: **${topic.trim()}**.
+
+Where are you stuck on this? I'll guide with hints, not full answers.`
+    : `Hey — I'm your **sch00l** tutor for ${subject}. I guide; I don't do your homework for you.
 
 What are you working on right now? Be specific (topic + where you're stuck).`;
 
 export function TutorChat({
   subject,
   gradeLevel,
+  topic,
   onTranscriptChange,
   onEndSession,
 }: {
   subject: SubjectId;
   gradeLevel?: string;
+  topic?: string;
   onTranscriptChange?: (t: string) => void;
   onEndSession?: () => void;
 }) {
@@ -53,11 +59,11 @@ export function TutorChat({
       {
         id: uid(),
         role: "assistant",
-        content: WELCOME(sub.label),
+        content: WELCOME(sub.label, topic),
         createdAt: new Date().toISOString(),
       },
     ]);
-  }, [subject, sub.label]);
+  }, [subject, sub.label, topic]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -122,6 +128,7 @@ export function TutorChat({
         body: JSON.stringify({
           subject,
           gradeLevel,
+          topic: topic?.trim() || undefined,
           messages: next.map((m) => ({ role: m.role, content: m.content })),
         }),
       });

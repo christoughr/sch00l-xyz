@@ -7,7 +7,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { LEGACY_DOMAIN, SITE_DOMAIN } from "@/lib/site";
+import { CopyShareLink } from "@/components/CopyShareLink";
+import { LEGACY_DOMAIN, SITE_DOMAIN, SITE_URL } from "@/lib/site";
 
 const features = [
   {
@@ -68,6 +69,7 @@ export default function HomePage() {
           >
             View progress
           </Link>
+          <CopyShareLink url={`${SITE_URL}/study`} />
         </div>
 
         <p className="mt-8 text-sm text-zinc-500">

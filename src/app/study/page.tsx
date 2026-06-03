@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { SubjectPicker } from "@/components/SubjectPicker";
 import { TutorChat } from "@/components/TutorChat";
 import { SessionQuiz } from "@/components/SessionQuiz";
+import { CopyShareLink } from "@/components/CopyShareLink";
+import { onSessionComplete } from "@/lib/session-complete";
+import { SITE_URL } from "@/lib/site";
 import type { SubjectId } from "@/lib/types";
+
+const SHARE_URL = `${SITE_URL}/study`;
 
 type Step = "setup" | "pre" | "study" | "post" | "done";
 
@@ -17,6 +22,16 @@ export default function StudyPage() {
   const [preScore, setPreScore] = useState<number | null>(null);
   const [postScore, setPostScore] = useState<number | null>(null);
   const [transcript, setTranscript] = useState("");
+  const [cardsCreated, setCardsCreated] = useState<number | null>(null);
+  const completedRef = useRef(false);
+
+  useEffect(() => {
+    if (step !== "done" || completedRef.current) return;
+    completedRef.current = true;
+    onSessionComplete({ subject, topic, transcript }).then(({ cardsCreated: n }) =>
+      setCardsCreated(n)
+    );
+  }, [step, subject, topic, transcript]);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
@@ -101,6 +116,7 @@ export default function StudyPage() {
           <TutorChat
             subject={subject}
             gradeLevel={gradeLevel || undefined}
+            topic={topic || undefined}
             onTranscriptChange={setTranscript}
             onEndSession={() => setStep("post")}
           />
@@ -135,16 +151,39 @@ export default function StudyPage() {
               )}
             </p>
           )}
+          {cardsCreated !== null && cardsCreated > 0 && (
+            <p className="text-sm text-brand-300">
+              Generated {cardsCreated} flashcard{cardsCreated === 1 ? "" : "s"} from your chat.
+            </p>
+          )}
+          {preScore !== null && postScore !== null && (
+            <p className="text-xs text-zinc-500">
+              Learning lift is saved on{" "}
+              <Link href="/progress" className="text-brand-400 underline">
+                Progress
+              </Link>
+              .
+            </p>
+          )}
           <div className="flex flex-wrap justify-center gap-3">
             <Link
-              href="/flashcards"
+              href="/progress"
               className="rounded-xl bg-brand-500 px-5 py-2 text-sm text-white hover:bg-brand-400"
+            >
+              View progress
+            </Link>
+            <Link
+              href="/flashcards"
+              className="rounded-xl border border-white/15 px-5 py-2 text-sm text-zinc-300 hover:bg-white/5"
             >
               Review flashcards
             </Link>
+            <CopyShareLink url={SHARE_URL} />
             <button
               type="button"
               onClick={() => {
+                completedRef.current = false;
+                setCardsCreated(null);
                 setStep("setup");
                 setPreScore(null);
                 setPostScore(null);

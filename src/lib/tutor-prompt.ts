@@ -16,8 +16,15 @@ const SUBJECT_CONTEXT: Record<SubjectId, string> = {
   other: "Adapt to whatever subject they name. Stay Socratic.",
 };
 
-export function buildSystemPrompt(subject: SubjectId, gradeLevel?: string): string {
+export function buildSystemPrompt(
+  subject: SubjectId,
+  gradeLevel?: string,
+  topic?: string
+): string {
   const level = gradeLevel?.trim() || "high school / college";
+  const topicLine = topic?.trim()
+    ? `\nSESSION TOPIC (student chose this — stay focused here): ${topic.trim()}`
+    : "";
   return `You are sch00l — an AI study partner built for students who want to actually learn, not cheat.
 
 PRODUCT RULES (non-negotiable):
@@ -28,7 +35,7 @@ PRODUCT RULES (non-negotiable):
 5. MASTERY SIGNAL: When they demonstrate understanding, briefly name the concept they mastered (e.g. "chain rule").
 
 SUBJECT FOCUS: ${subject}
-${SUBJECT_CONTEXT[subject]}
+${SUBJECT_CONTEXT[subject]}${topicLine}
 
 End responses with ONE focused question that moves their thinking forward—unless they're clearly done for now, then suggest a 5-minute review action.`;
 }

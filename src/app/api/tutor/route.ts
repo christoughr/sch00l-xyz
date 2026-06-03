@@ -21,6 +21,7 @@ const requestSchema = z.object({
     "other",
   ]),
   gradeLevel: z.string().max(80).optional(),
+  topic: z.string().max(120).optional(),
 });
 
 export async function POST(req: Request) {
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages, subject, gradeLevel } = parsed.data;
+  const { messages, subject, gradeLevel, topic } = parsed.data;
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
 
   if (!lastUser) {
@@ -73,7 +74,11 @@ export async function POST(req: Request) {
         messages: [
           {
             role: "system",
-            content: buildSystemPrompt(subject as SubjectId, gradeLevel),
+            content: buildSystemPrompt(
+              subject as SubjectId,
+              gradeLevel,
+              topic
+            ),
           },
           ...messages.map((m) => ({
             role: m.role,

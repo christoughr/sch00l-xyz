@@ -24,6 +24,16 @@ Usually DNS or a redirect loop. After our fix, hard refresh: `Ctrl+Shift+R`.
 
 Wait 5–60 min after saving.
 
+## Site works on phone but not PC (or vice versa)
+
+Old DNS cache. In **Command Prompt** (Windows):
+
+```text
+ipconfig /flushdns
+```
+
+Then hard refresh: `Ctrl+Shift+R`. Always use **https://sch00l.ai**.
+
 ## Still "Not secure"?
 
 Use **`https://`** not `http://`. Or switch nameservers to Vercel:
