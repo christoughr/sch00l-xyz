@@ -23,6 +23,34 @@ const moreLinks: NavLink[] = [
   { href: "/outcomes", label: "Outcomes" },
 ];
 
+const joinLink: NavLink = { href: "/join", label: "Join" };
+const teacherLink: NavLink = { href: "/teacher", label: "Teach" };
+
+function LinkItem({
+  l,
+  cardsDue,
+  onNavigate,
+}: {
+  l: NavLink;
+  cardsDue: number;
+  onNavigate?: () => void;
+}) {
+  return (
+    <Link
+      href={l.href}
+      onClick={onNavigate}
+      className="relative rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white"
+    >
+      {l.label}
+      {l.showDue && cardsDue > 0 && (
+        <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
+          {cardsDue > 9 ? "9+" : cardsDue}
+        </span>
+      )}
+    </Link>
+  );
+}
+
 export function Nav() {
   const { user, loading, signOut, supabaseReady } = useAuth();
   const [isTeacher, setIsTeacher] = useState(false);
@@ -62,8 +90,8 @@ export function Nav() {
     ...primaryLinks,
     ...moreLinks,
     { href: "/settings", label: "Settings" },
-    ...(supabaseReady ? [{ href: "/join", label: "Join" }] : []),
-    ...(isTeacher ? [{ href: "/teacher", label: "Teach" }] : []),
+    ...(supabaseReady ? [joinLink] : []),
+    ...(isTeacher ? [teacherLink] : []),
   ];
 
   useEffect(() => {
@@ -80,23 +108,6 @@ export function Nav() {
     };
   }, [menuOpen]);
 
-  function LinkItem({ l, onNavigate }: { l: NavLink; onNavigate?: () => void }) {
-    return (
-      <Link
-        href={l.href}
-        onClick={onNavigate}
-        className="relative rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white"
-      >
-        {l.label}
-        {l.showDue && cardsDue > 0 && (
-          <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
-            {cardsDue > 9 ? "9+" : cardsDue}
-          </span>
-        )}
-      </Link>
-    );
-  }
-
   return (
     <header className="border-b border-white/10 bg-surface-900/80 backdrop-blur-md sticky top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
@@ -105,7 +116,7 @@ export function Nav() {
         {/* Desktop */}
         <nav className="hidden md:flex items-center gap-1">
           {primaryLinks.map((l) => (
-            <LinkItem key={l.href} l={l} />
+            <LinkItem key={l.href} l={l} cardsDue={cardsDue} />
           ))}
           {pro && (
             <span className="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-300">
@@ -121,10 +132,10 @@ export function Nav() {
             </summary>
             <div className="absolute right-0 mt-1 min-w-[140px] rounded-xl border border-white/10 bg-surface-900 py-1 shadow-xl">
               {moreLinks.map((l) => (
-                <LinkItem key={l.href} l={l} />
+                <LinkItem key={l.href} l={l} cardsDue={cardsDue} />
               ))}
-              {supabaseReady && <LinkItem l={{ href: "/join", label: "Join" }} />}
-              {isTeacher && <LinkItem l={{ href: "/teacher", label: "Teach" }} />}
+              {supabaseReady && <LinkItem l={joinLink} cardsDue={cardsDue} />}
+              {isTeacher && <LinkItem l={teacherLink} cardsDue={cardsDue} />}
             </div>
           </details>
 
@@ -188,35 +199,40 @@ export function Nav() {
             onClick={() => setMenuOpen(false)}
           />
           <nav className="relative z-50 md:hidden border-t border-white/10 px-4 py-3 space-y-1 bg-surface-900">
-          {mobileLinks.map((l) => (
-            <LinkItem key={l.href} l={l} onNavigate={() => setMenuOpen(false)} />
-          ))}
-          {!loading && supabaseReady && (
-            <>
-              {user ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    signOut();
-                    setMenuOpen(false);
-                  }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign out
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="block rounded-lg px-3 py-2 text-sm text-zinc-300"
-                >
-                  Sign in
-                </Link>
-              )}
-            </>
-          )}
-        </nav>
+            {mobileLinks.map((l) => (
+              <LinkItem
+                key={l.href}
+                l={l}
+                cardsDue={cardsDue}
+                onNavigate={() => setMenuOpen(false)}
+              />
+            ))}
+            {!loading && supabaseReady && (
+              <>
+                {user ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      signOut();
+                      setMenuOpen(false);
+                    }}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign out
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="block rounded-lg px-3 py-2 text-sm text-zinc-300"
+                  >
+                    Sign in
+                  </Link>
+                )}
+              </>
+            )}
+          </nav>
         </>
       )}
     </header>
