@@ -4,7 +4,7 @@ import type { SubjectId } from "./subject-ids";
 export type TutorBudgetTier = "budget" | "standard" | "premium" | "urgent";
 
 export const TUTOR_MARKET = {
-  platformFeePercent: 18,
+  platformFeePercent: 25,
   tiers: {
     budget: { label: "Budget", multiplier: 0.75 },
     standard: { label: "Standard", multiplier: 1 },

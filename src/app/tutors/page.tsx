@@ -11,6 +11,7 @@ import {
   tutorRateRange,
   formatRateFrom,
   COMPETITIVE_NOTE,
+  TUTOR_MARKET,
   type TutorBudgetTier,
 } from "@/lib/tutor-pricing";
 import type { SubjectId } from "@/lib/types";
@@ -30,7 +31,7 @@ export default function TutorsPage() {
         </p>
         <p className="mt-3 text-sm text-brand-300">
           {formatRateFrom(range)} for {subject} · platform fee only{" "}
-          {18}% (lower than typical marketplaces)
+          {TUTOR_MARKET.platformFeePercent}% platform fee
         </p>
       </div>
 

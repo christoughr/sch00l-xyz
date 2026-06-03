@@ -137,7 +137,7 @@ export default function PricingPage() {
           period="/hr"
           features={[
             ...human.features,
-            "18% platform fee — tutors keep the rest",
+            `${PLATFORM_FEE.humanTutorPercent}% platform fee — tutors keep the rest`,
           ]}
         >
           {tutorReady ? (
