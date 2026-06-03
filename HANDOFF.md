@@ -1,5 +1,30 @@
 # sch00l.ai — Handoff for Claude / next agent
 
+## Copy-paste this to Claude
+
+```
+You are continuing work on sch00l.ai (Next.js 16 + Supabase + Vercel).
+
+1. Read HANDOFF.md in the repo root first.
+2. Repo: https://github.com/christoughr/sch00l-xyz — branch main
+3. Production: https://sch00l.ai
+
+Pilot: teacher hello@sch00l.ai, classroom code 9FW69A (AP Biology Period 2).
+SQL migrations 001–011 are already applied in Supabase — do not re-run unless adding new migrations.
+
+Priority areas the human cares about:
+- UI/UX polish (mobile nav, auth flows, subject pickers)
+- Class discussion discoverability: /my-classes, /class/{id}?tab=forum, teacher Forum tab
+- Competitive human tutor pricing (ranges in src/lib/tutor-pricing.ts, not fixed hourly)
+- Teacher pilot without requiring teacher study minutes on roster stats
+
+Before changing code: npm test && npm run build && npm run test:e2e (local port 3099).
+
+Sign-out must use POST /api/auth/signout + local supabase signOut + 3s timeout + window.location.replace — global scope signOut hangs.
+
+Key paths: src/components/AuthProvider.tsx, ClassroomHub.tsx, ClassDiscussionBanner.tsx, HANDOFF.md, supabase/migrations/, e2e/
+```
+
 **Production:** https://sch00l.ai  
 **Repo:** https://github.com/christoughr/sch00l-xyz  
 **Stack:** Next.js 16, Supabase, Vercel, Groq AI, Resend magic links

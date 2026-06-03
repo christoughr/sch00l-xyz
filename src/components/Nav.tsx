@@ -34,14 +34,10 @@ export function Nav() {
   const [pro, setPro] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
-  async function handleSignOut() {
+  function handleSignOut() {
     if (signingOut) return;
     setSigningOut(true);
-    try {
-      await signOut();
-    } finally {
-      setSigningOut(false);
-    }
+    void signOut();
   }
 
   useEffect(() => {

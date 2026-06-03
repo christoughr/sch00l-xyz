@@ -1,6 +1,7 @@
 "use client";
 
 import { SUBJECTS } from "@/lib/subjects";
+import { SubjectIcon } from "@/components/SubjectIcon";
 import type { SubjectId } from "@/lib/types";
 
 export function SubjectPicker({
@@ -24,8 +25,8 @@ export function SubjectPicker({
               : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
           }`}
         >
-          <span className="text-lg">{s.emoji}</span>
-          <p className="mt-1 font-medium text-white">{s.label}</p>
+          <SubjectIcon id={s.id} selected={value === s.id} />
+          <p className="mt-2 font-medium text-white">{s.label}</p>
           <p className="text-xs text-zinc-400">{s.description}</p>
         </button>
       ))}

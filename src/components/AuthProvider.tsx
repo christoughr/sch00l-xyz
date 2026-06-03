@@ -73,21 +73,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function signOut() {
+    setUser(null);
+
     const supabase = createClient();
-    try {
+    const cleanup = async () => {
       if (supabase) {
-        await supabase.auth.signOut({ scope: "global" });
+        await supabase.auth.signOut({ scope: "local" });
       }
       await fetch("/api/auth/signout", {
         method: "POST",
         credentials: "include",
       });
-    } catch {
-      /* still clear local state */
-    }
-    setUser(null);
+    };
+
+    const timeoutMs = 3000;
+    await Promise.race([
+      cleanup(),
+      new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
+    ]).catch(() => {});
+
     if (typeof window !== "undefined") {
-      window.location.assign("/");
+      window.location.replace("/");
     }
   }
 

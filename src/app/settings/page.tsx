@@ -22,13 +22,9 @@ export default function SettingsPage() {
   const [signingOut, setSigningOut] = useState(false);
   const showCloudActions = !!user;
 
-  async function handleSignOut() {
+  function handleSignOut() {
     setSigningOut(true);
-    try {
-      await signOut();
-    } finally {
-      setSigningOut(false);
-    }
+    void signOut();
   }
 
   async function exportData() {
