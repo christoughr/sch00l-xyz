@@ -22,6 +22,12 @@ export const metadata: Metadata = {
   description:
     "Socratic AI tutor for students. Pre-quiz → tutor → post-quiz → flashcards. See your learning lift %. Free at sch00l.ai/study",
   metadataBase: new URL(SITE_URL),
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
