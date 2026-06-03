@@ -8,6 +8,7 @@ import { DailyReviewBanner } from "@/components/DailyReviewBanner";
 import { TutorChat } from "@/components/TutorChat";
 import { SessionQuiz } from "@/components/SessionQuiz";
 import { CopyShareLink } from "@/components/CopyShareLink";
+import { TutorRequestForm } from "@/components/TutorRequestForm";
 import { onSessionComplete } from "@/lib/session-complete";
 import { trackEvent } from "@/lib/analytics";
 import { SITE_URL } from "@/lib/site";
@@ -246,6 +247,17 @@ export default function StudyPage() {
             >
               New session
             </button>
+          </div>
+          <div className="mt-6 pt-6 border-t border-white/10 text-left max-w-md mx-auto">
+            <p className="text-sm font-medium text-white mb-3">Still stuck?</p>
+            <TutorRequestForm
+              subject={subject}
+              topic={topic || undefined}
+              transcript={transcript}
+              preScore={preScore}
+              postScore={postScore}
+              compact
+            />
           </div>
         </div>
       )}

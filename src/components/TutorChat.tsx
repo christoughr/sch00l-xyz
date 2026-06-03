@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Send, Sparkles, Loader2, Layers, LogOut } from "lucide-react";
+import { Send, Sparkles, Loader2, Layers, LogOut, UserRound } from "lucide-react";
 import type { ChatMessage, SubjectId } from "@/lib/types";
 import { getSubject } from "@/lib/subjects";
 import {
@@ -15,6 +15,7 @@ import {
   defaultCardFields,
 } from "@/lib/flashcards-local";
 import { useAuth } from "./AuthProvider";
+import { TutorRequestForm } from "./TutorRequestForm";
 
 function uid() {
   return crypto.randomUUID();
@@ -52,6 +53,7 @@ export function TutorChat({
   const [generatingCards, setGeneratingCards] = useState(false);
   const [cardsMsg, setCardsMsg] = useState<string | null>(null);
   const [mode, setMode] = useState<"demo" | "live" | null>(null);
+  const [showHumanTutor, setShowHumanTutor] = useState(false);
   const [sessionStart] = useState(() => Date.now());
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -219,7 +221,11 @@ export function TutorChat({
     }
   }
 
+  const userMsgCount = messages.filter((m) => m.role === "user").length;
+  const transcript = messages.map((m) => `${m.role}: ${m.content}`).join("\n");
+
   return (
+    <div className="space-y-3">
     <div className="flex h-[min(70vh,640px)] flex-col rounded-2xl border border-white/10 bg-surface-800/50">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
         <div className="flex items-center gap-2">
@@ -246,6 +252,16 @@ export function TutorChat({
               <Layers className="h-3 w-3" />
             )}
             Cards
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowHumanTutor((v) => !v)}
+            disabled={userMsgCount < 1}
+            className="flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-40"
+            title={userMsgCount < 1 ? "Chat first to enable handoff" : "Request human tutor"}
+          >
+            <UserRound className="h-3 w-3" />
+            Human
           </button>
           {onEndSession && (
             <button
@@ -326,6 +342,18 @@ export function TutorChat({
           sch00l teaches — it doesn&apos;t cheat. Shift+Enter for new line.
         </p>
       </div>
+    </div>
+
+    {showHumanTutor && userMsgCount >= 1 && (
+      <div className="rounded-2xl border border-brand-400/30 bg-brand-500/10 p-4">
+        <TutorRequestForm
+          subject={subject}
+          topic={topic}
+          transcript={transcript}
+          compact
+        />
+      </div>
+    )}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   Clock,
   TrendingUp,
   Mail,
+  UserRound,
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { SITE_DOMAIN } from "@/lib/site";
@@ -28,10 +29,23 @@ type WaitlistEntry = {
   created_at: string;
 };
 
+type TutorRequestEntry = {
+  id: string;
+  student_email: string | null;
+  subject: string;
+  topic: string | null;
+  session_summary: string | null;
+  pre_score: number | null;
+  post_score: number | null;
+  urgency: string;
+  created_at: string;
+};
+
 export function TeacherPortal() {
   const { user, supabaseReady } = useAuth();
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([]);
+  const [tutorRequests, setTutorRequests] = useState<TutorRequestEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
@@ -52,9 +66,10 @@ export function TeacherPortal() {
 
       await fetch("/api/teacher/activate", { method: "POST" });
 
-      const [classRes, waitRes] = await Promise.all([
+      const [classRes, waitRes, tutorRes] = await Promise.all([
         fetch("/api/classrooms"),
         fetch("/api/teacher/waitlist"),
+        fetch("/api/tutors/requests"),
       ]);
 
       if (classRes.ok) {
@@ -64,6 +79,10 @@ export function TeacherPortal() {
       if (waitRes.ok) {
         const data = await waitRes.json();
         setWaitlist(data.entries ?? []);
+      }
+      if (tutorRes.ok) {
+        const data = await tutorRes.json();
+        setTutorRequests(data.requests ?? []);
       }
     } finally {
       setLoading(false);
@@ -211,6 +230,48 @@ export function TeacherPortal() {
                     Dashboard →
                   </Link>
                 </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+          <UserRound className="h-5 w-5 text-brand-400" />
+          Human tutor requests ({tutorRequests.length})
+        </h2>
+        <p className="text-sm text-zinc-500 mb-4">
+          Students who asked for a human after AI sessions — with session context.
+        </p>
+        {tutorRequests.length === 0 ? (
+          <p className="text-sm text-zinc-600">No open requests.</p>
+        ) : (
+          <ul className="space-y-3 max-h-64 overflow-y-auto">
+            {tutorRequests.map((r) => (
+              <li
+                key={r.id}
+                className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm"
+              >
+                <p className="text-zinc-300">
+                  {r.student_email ?? "Anonymous"} · {r.subject}
+                  {r.topic && ` · ${r.topic}`}
+                </p>
+                {(r.pre_score !== null || r.post_score !== null) && (
+                  <p className="text-xs text-brand-300 mt-1">
+                    Quiz: {r.pre_score ?? "?"}% → {r.post_score ?? "?"}%
+                  </p>
+                )}
+                {r.session_summary && (
+                  <p className="text-xs text-zinc-500 mt-2 line-clamp-3">
+                    {r.session_summary}
+                  </p>
+                )}
+                {r.urgency === "before_test" && (
+                  <span className="inline-block mt-2 text-xs text-amber-300">
+                    Urgent — test soon
+                  </span>
+                )}
               </li>
             ))}
           </ul>

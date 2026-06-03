@@ -117,6 +117,31 @@ export default function HomePage() {
       </section>
 
       <section className="relative mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+        <div className="rounded-2xl border border-brand-400/30 bg-brand-500/10 p-8 lg:p-10">
+          <h2 className="text-2xl font-bold text-white">AI + human tutors</h2>
+          <p className="mt-3 max-w-2xl text-zinc-400 leading-relaxed">
+            Start free with Socratic AI. Still stuck? Request a partner tutor —
+            they get your session summary, quiz scores, and topic so nobody starts
+            from zero.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-4">
+            <Link
+              href="/study"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-400"
+            >
+              Try AI tutor
+            </Link>
+            <Link
+              href="/tutors"
+              className="inline-flex items-center rounded-xl border border-white/15 px-5 py-2.5 text-sm text-zinc-300 hover:bg-white/5"
+            >
+              Human tutors →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative mx-auto max-w-6xl px-4 pb-24 sm:px-6">
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
             <h2 className="text-xl font-semibold text-white">Teachers & schools</h2>

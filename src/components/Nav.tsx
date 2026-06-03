@@ -13,6 +13,7 @@ const coreLinks: NavLink[] = [
   { href: "/study", label: "Study" },
   { href: "/flashcards", label: "Cards", showDue: true },
   { href: "/progress", label: "Progress" },
+  { href: "/tutors", label: "Tutors" },
   { href: "/outcomes", label: "Outcomes" },
 ];
 

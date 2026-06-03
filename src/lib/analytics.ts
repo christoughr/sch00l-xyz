@@ -7,7 +7,8 @@ export type AnalyticsEventName =
   | "post_quiz_complete"
   | "session_complete"
   | "share_copy"
-  | "track_selected";
+  | "track_selected"
+  | "tutor_request";
 
 export function getAnalyticsSessionId(): string {
   if (typeof window === "undefined") return "server";
