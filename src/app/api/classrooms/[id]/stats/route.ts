@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isRosterStudent } from "@/lib/classroom-roster";
 import { aggregateLift } from "@/lib/quiz-lift";
 import { isTeacherEmail } from "@/lib/teacher";
 import { NextResponse } from "next/server";
@@ -41,7 +42,25 @@ export async function GET(
     .select("user_id, joined_at")
     .eq("classroom_id", classroomId);
 
-  const userIds = (members ?? []).map((m) => m.user_id);
+  const allMemberIds = (members ?? []).map((m) => m.user_id);
+  const { data: memberProfiles } =
+    allMemberIds.length > 0
+      ? await supabase
+          .from("profiles")
+          .select("id, email, role")
+          .in("id", allMemberIds)
+      : { data: [] as { id: string; email: string | null; role: string }[] };
+
+  const userIds = allMemberIds.filter((uid) => {
+    const p = memberProfiles?.find((x) => x.id === uid);
+    return isRosterStudent({
+      userId: uid,
+      teacherId: classroom.teacher_id,
+      email: p?.email,
+      role: p?.role,
+    });
+  });
+
   if (userIds.length === 0) {
     return NextResponse.json({
       classroom,

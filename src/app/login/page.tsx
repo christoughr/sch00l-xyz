@@ -155,9 +155,7 @@ function LoginForm() {
           <p>{message}</p>
           {status === "sent" && (
             <p className="text-zinc-500 text-xs leading-relaxed">
-              Sender is usually Supabase until you add SMTP (Resend + hello@sch00l.ai).
-              Link goes to <span className="text-zinc-400">/auth/callback</span> on
-              this domain.
+              Check your inbox and spam folder. The link expires in about an hour.
             </p>
           )}
         </div>

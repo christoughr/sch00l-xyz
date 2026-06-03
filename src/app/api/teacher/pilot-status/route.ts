@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isRosterStudent } from "@/lib/classroom-roster";
 import { isTeacherEmail } from "@/lib/teacher";
 import { NextResponse } from "next/server";
 
@@ -29,7 +30,7 @@ export async function GET() {
 
   const { data: classrooms } = await supabase
     .from("classrooms")
-    .select("id")
+    .select("id, teacher_id")
     .eq("teacher_id", user.id);
 
   const classroomIds = (classrooms ?? []).map((c) => c.id);
@@ -42,12 +43,45 @@ export async function GET() {
     });
   }
 
+  const teacherByClass = new Map(
+    (classrooms ?? []).map((c) => [c.id, c.teacher_id])
+  );
+
   const { data: members } = await supabase
     .from("classroom_members")
-    .select("user_id")
+    .select("user_id, classroom_id")
     .in("classroom_id", classroomIds);
 
-  const userIds = [...new Set((members ?? []).map((m) => m.user_id))];
+  const memberRows = members ?? [];
+  const allUserIds = [...new Set(memberRows.map((m) => m.user_id))];
+
+  const { data: profiles } =
+    allUserIds.length > 0
+      ? await supabase
+          .from("profiles")
+          .select("id, email, role")
+          .in("id", allUserIds)
+      : { data: [] };
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+
+  const studentIdSet = new Set<string>();
+  for (const m of memberRows) {
+    const p = profileMap.get(m.user_id);
+    const teacherId = teacherByClass.get(m.classroom_id) ?? user.id;
+    if (
+      isRosterStudent({
+        userId: m.user_id,
+        teacherId,
+        email: p?.email,
+        role: p?.role,
+      })
+    ) {
+      studentIdSet.add(m.user_id);
+    }
+  }
+
+  const userIds = [...studentIdSet];
   const studentCount = userIds.length;
 
   let totalClassMinutes = 0;

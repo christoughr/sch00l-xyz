@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { SITE_DOMAIN } from "@/lib/site";
+import { ClassroomAssignments } from "./ClassroomAssignments";
 
 type Classroom = {
   id: string;
@@ -414,7 +415,9 @@ export function ClassroomStats({ classroomId }: { classroomId: string }) {
         <h2 className="text-lg font-semibold text-white mb-3">Roster</h2>
         {students.length === 0 ? (
           <p className="text-sm text-zinc-500">
-            No students yet. Share the join code.
+            No students yet. Share the join code. Teacher accounts are not
+            counted as students — only minutes from enrolled students appear
+            here.
           </p>
         ) : (
           <ul className="space-y-2">
@@ -438,6 +441,11 @@ export function ClassroomStats({ classroomId }: { classroomId: string }) {
           </ul>
         )}
       </section>
+
+      <ClassroomAssignments
+        classroomId={classroomId}
+        students={students.map((s) => ({ id: s.id, email: s.email }))}
+      />
     </div>
   );
 }

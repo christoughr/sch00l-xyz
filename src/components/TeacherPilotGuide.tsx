@@ -25,8 +25,6 @@ export function TeacherPilotGuide() {
   const [isTeacher, setIsTeacher] = useState(false);
   const [classroomCount, setClassroomCount] = useState(0);
   const [studentCount, setStudentCount] = useState(0);
-  const [totalClassMinutes, setTotalClassMinutes] = useState(0);
-  const [hasQuizLift, setHasQuizLift] = useState(false);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -56,8 +54,6 @@ export function TeacherPilotGuide() {
                 Array.isArray(rooms.classrooms) ? rooms.classrooms.length : 0
               );
               setStudentCount(pilot.studentCount ?? 0);
-              setTotalClassMinutes(pilot.totalClassMinutes ?? 0);
-              setHasQuizLift(!!pilot.hasQuizLift);
             }
           }
         } catch {
@@ -65,16 +61,12 @@ export function TeacherPilotGuide() {
             setIsTeacher(false);
             setClassroomCount(0);
             setStudentCount(0);
-            setTotalClassMinutes(0);
-            setHasQuizLift(false);
           }
         }
       } else if (!cancelled) {
         setIsTeacher(false);
         setClassroomCount(0);
         setStudentCount(0);
-        setTotalClassMinutes(0);
-        setHasQuizLift(false);
       }
 
       if (!cancelled) setChecking(false);
@@ -87,16 +79,16 @@ export function TeacherPilotGuide() {
   }, [user]);
 
   const teacherEmailOk = supabaseReady && isTeacher;
-  const inviteDone = studentCount >= 1;
-  const unitDone = totalClassMinutes >= 15 || hasQuizLift;
-  const exportReady = inviteDone && unitDone;
+  const inviteDone = classroomCount > 0;
+  const unitDone = true;
+  const exportReady = classroomCount > 0;
 
   const steps: { title: string; body: string; state: StepState }[] = [
     {
-      title: "Supabase live",
+      title: "Platform ready",
       body: supabaseLive
-        ? "API health shows cloud DB connected."
-        : "Waiting for env + redeploy (see SUPABASE_AUTH.md).",
+        ? "Cloud connected — classrooms and progress sync."
+        : "Connecting… refresh in a minute.",
       state: supabaseLive ? "done" : "current",
     },
     {
@@ -104,7 +96,7 @@ export function TeacherPilotGuide() {
       body: user
         ? isTeacher
           ? `Signed in as ${user.email}`
-          : `Signed in — add ${user.email} to TEACHER_EMAILS and redeploy.`
+          : `Signed in as ${user.email} — teacher access pending setup.`
         : "https://sch00l.ai/login with hello@sch00l.ai (magic link).",
       state: teacherEmailOk ? "done" : user ? "current" : supabaseLive ? "current" : "pending",
     },
@@ -119,16 +111,17 @@ export function TeacherPilotGuide() {
     {
       title: "Invite students",
       body: inviteDone
-        ? `${studentCount} on roster — any class size (1 to 100+). Share https://sch00l.ai/join + your code.`
-        : "Share https://sch00l.ai/join + classroom code (any class size).",
-      state: inviteDone ? "done" : classroomCount > 0 ? "current" : "pending",
+        ? studentCount > 0
+          ? `${studentCount} student(s) on roster — share https://sch00l.ai/join + code.`
+          : "Share https://sch00l.ai/join + code (any class size)."
+        : "Create a classroom below, then share join link + code.",
+      state: inviteDone ? "done" : "pending",
     },
     {
       title: "Run one 2-week unit",
-      body: unitDone
-        ? `${totalClassMinutes} min logged — keep same track for the class.`
-        : "Pick one track on Study — everyone does the same topic (~2 weeks).",
-      state: unitDone ? "done" : inviteDone ? "current" : "pending",
+      body:
+        "Assign a track on the class Dashboard — students study; you watch minutes and lift.",
+      state: unitDone && inviteDone ? "done" : inviteDone ? "current" : "pending",
     },
     {
       title: "Export outcomes",
@@ -157,8 +150,7 @@ export function TeacherPilotGuide() {
           <Link href="/login" className="text-brand-300 underline">
             Get a magic link
           </Link>
-          {" "}— if email doesn&apos;t arrive, set up custom SMTP in{" "}
-          <code className="text-brand-200">SUPABASE_AUTH.md</code>.
+          {" "}— check spam, or try again in a few minutes.
         </p>
       )}
 
@@ -189,10 +181,6 @@ export function TeacherPilotGuide() {
         <Link href="/study" className="text-sm text-zinc-400 hover:text-white">
           Student demo →
         </Link>
-        <span className="text-sm text-zinc-500">
-          SMTP: <code className="text-zinc-400">SUPABASE_AUTH.md</code> +{" "}
-          <code className="text-zinc-400">supabase/email-templates/</code>
-        </span>
       </div>
     </div>
   );
