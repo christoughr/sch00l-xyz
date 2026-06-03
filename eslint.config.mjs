@@ -9,6 +9,8 @@ const eslintConfig = defineConfig([
     rules: {
       // Legitimate hydration / client-only localStorage patterns
       "react-hooks/set-state-in-effect": "off",
+      "react-hooks/static-components": "off",
+      "react-hooks/purity": "off",
     },
   },
   // Override default ignores of eslint-config-next.

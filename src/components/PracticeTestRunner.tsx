@@ -47,7 +47,7 @@ export function PracticeTestRunner({
     weakTags: string[];
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const startRef = useRef<number>(Date.now());
+  const startRef = useRef<number>(0);
 
   useEffect(() => {
     setPhase("loading");

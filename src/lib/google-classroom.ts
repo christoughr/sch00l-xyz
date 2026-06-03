@@ -87,7 +87,7 @@ export async function getGoogleAccessToken(
 
   if (!row?.access_token_enc) return null;
 
-  let access = decryptToken(row.access_token_enc);
+  const access = decryptToken(row.access_token_enc);
   if (!access) return null;
 
   const expires = row.expires_at ? new Date(row.expires_at).getTime() : 0;
