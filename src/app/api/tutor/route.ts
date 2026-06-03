@@ -1,6 +1,11 @@
 import { buildSystemPrompt } from "@/lib/tutor-prompt";
 import { demoTutorReply } from "@/lib/demo-tutor";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { studentContextSchema } from "@/lib/student-context-schema";
+import {
+  formatStudentContextForPrompt,
+  type StudentLearningContext,
+} from "@/lib/student-profile";
 import type { SubjectId } from "@/lib/types";
 import { z } from "zod";
 import { NextResponse } from "next/server";
@@ -24,6 +29,7 @@ const requestSchema = z.object({
   gradeLevel: z.string().max(80).optional(),
   topic: z.string().max(120).optional(),
   trackContext: z.string().max(500).optional(),
+  studentContext: studentContextSchema,
 });
 
 export async function POST(req: Request) {
@@ -54,8 +60,21 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages, subject, gradeLevel, topic, trackContext } = parsed.data;
+  const { messages, subject, gradeLevel, topic, trackContext, studentContext } =
+    parsed.data;
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
+
+  const studentBlock = studentContext
+    ? formatStudentContextForPrompt({
+        streakDays: studentContext.streakDays,
+        totalSessions: studentContext.totalSessions,
+        latestLift: studentContext.latestLift ?? null,
+        preScoreToday: studentContext.preScoreToday ?? null,
+        weakTopics: (studentContext.weakTopics ?? []) as StudentLearningContext["weakTopics"],
+        strongTopics: (studentContext.strongTopics ?? []) as StudentLearningContext["strongTopics"],
+        recentTopics: (studentContext.recentTopics ?? []) as StudentLearningContext["recentTopics"],
+      })
+    : "";
 
   if (!lastUser) {
     return NextResponse.json({ error: "No user message" }, { status: 400 });
@@ -67,7 +86,11 @@ export async function POST(req: Request) {
   const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
 
   if (!apiKey) {
-    const content = demoTutorReply(lastUser.content, subject as SubjectId);
+    const content = demoTutorReply(
+      lastUser.content,
+      subject as SubjectId,
+      studentBlock
+    );
     return NextResponse.json({
       message: { role: "assistant" as const, content },
       mode: "demo" as const,
@@ -92,7 +115,8 @@ export async function POST(req: Request) {
               subject as SubjectId,
               gradeLevel,
               topic,
-              trackContext
+              trackContext,
+              studentBlock
             ),
           },
           ...messages.map((m) => ({

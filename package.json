@@ -9,6 +9,8 @@
     "lint": "eslint",
     "check:env": "node scripts/check-env.mjs",
     "test": "npx --yes tsx --test tests/*.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install chromium",
     "discord:register": "node scripts/register-discord-commands.mjs"
   },
   "dependencies": {
@@ -23,6 +25,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

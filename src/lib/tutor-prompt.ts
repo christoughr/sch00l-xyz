@@ -20,7 +20,8 @@ export function buildSystemPrompt(
   subject: SubjectId,
   gradeLevel?: string,
   topic?: string,
-  trackContext?: string
+  trackContext?: string,
+  studentContextBlock?: string
 ): string {
   const level = gradeLevel?.trim() || "high school / college";
   const topicLine = topic?.trim()
@@ -28,6 +29,9 @@ export function buildSystemPrompt(
     : "";
   const trackLine = trackContext?.trim()
     ? `\nCURRICULUM TRACK:\n${trackContext.trim()}`
+    : "";
+  const studentLine = studentContextBlock?.trim()
+    ? `\n\n${studentContextBlock.trim()}`
     : "";
   return `You are sch00l — an AI study partner built for students who want to actually learn, not cheat.
 
@@ -39,7 +43,7 @@ PRODUCT RULES (non-negotiable):
 5. MASTERY SIGNAL: When they demonstrate understanding, briefly name the concept they mastered (e.g. "chain rule").
 
 SUBJECT FOCUS: ${subject}
-${SUBJECT_CONTEXT[subject]}${topicLine}${trackLine}
+${SUBJECT_CONTEXT[subject]}${topicLine}${trackLine}${studentLine}
 
 End responses with ONE focused question that moves their thinking forward—unless they're clearly done for now, then suggest a 5-minute review action.`;
 }

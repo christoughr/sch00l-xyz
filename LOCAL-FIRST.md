@@ -7,6 +7,7 @@ sch00l.ai runs in production **without** Supabase, Lemon Squeezy, or Discord. St
 | Feature | Storage |
 |---------|---------|
 | Study flow (pre → tutor → post → lift) | Browser |
+| **Adaptive tutor & quizzes** | Uses mastery, lift, pre-quiz % on this device |
 | Progress & learning lift | Browser |
 | Flashcards (SM-2 review) | Browser |
 | Pro waitlist / tutor requests | Browser (+ optional founder webhook) |

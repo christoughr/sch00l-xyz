@@ -15,6 +15,10 @@ import {
   defaultCardFields,
   mergeCloudFlashcards,
 } from "@/lib/flashcards-local";
+import {
+  getLocalStudentContext,
+  hasPersonalizationData,
+} from "@/lib/student-profile";
 import { useAuth } from "./AuthProvider";
 import { TutorRequestForm } from "./TutorRequestForm";
 
@@ -36,6 +40,7 @@ export function TutorChat({
   gradeLevel,
   topic,
   trackContext,
+  preScoreToday,
   onTranscriptChange,
   onEndSession,
   allowEndWithoutChat,
@@ -44,6 +49,8 @@ export function TutorChat({
   gradeLevel?: string;
   topic?: string;
   trackContext?: string;
+  /** Pre-quiz % for this session — calibrates tutor hints */
+  preScoreToday?: number | null;
   onTranscriptChange?: (t: string) => void;
   onEndSession?: () => void;
   /** Post-quiz flow: allow ending even with no chat */
@@ -150,6 +157,13 @@ export function TutorChat({
           gradeLevel,
           topic: topic?.trim() || undefined,
           trackContext: trackContext?.trim() || undefined,
+          studentContext: (() => {
+            const ctx = getLocalStudentContext({
+              subject,
+              preScoreToday: preScoreToday ?? null,
+            });
+            return hasPersonalizationData(ctx) ? ctx : undefined;
+          })(),
           messages: next.map((m) => ({ role: m.role, content: m.content })),
         }),
       });

@@ -4,14 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Loader2, XCircle, AlertCircle } from "lucide-react";
 import type { QuizQuestion, SubjectId } from "@/lib/types";
 import { saveQuizResultLocal } from "@/lib/quiz-local";
+import {
+  getLocalStudentContext,
+  hasPersonalizationData,
+} from "@/lib/student-profile";
 import { getOrCreateStudySessionId } from "@/lib/study-session-id";
-
 export function SessionQuiz({
   subject,
   topic,
   phase,
   transcript,
   sessionId,
+  preScoreToday,
   onComplete,
 }: {
   subject: SubjectId;
@@ -19,6 +23,7 @@ export function SessionQuiz({
   phase: "pre" | "post";
   transcript?: string;
   sessionId?: string;
+  preScoreToday?: number | null;
   onComplete?: (score: number, total: number) => void;
 }) {
   const [questions, setQuestions] = useState<QuizQuestion[] | null>(null);
@@ -27,6 +32,9 @@ export function SessionQuiz({
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [done, setDone] = useState(false);
+  const [doneResult, setDoneResult] = useState<{ score: number; total: number } | null>(
+    null
+  );
   const [syncWarning, setSyncWarning] = useState<string | null>(null);
   const answersRef = useRef<Record<string, number>>({});
   const autoStarted = useRef(false);
@@ -38,10 +46,20 @@ export function SessionQuiz({
     setLoading(true);
     setLoadError(null);
     try {
+      const ctx = getLocalStudentContext({
+        subject,
+        preScoreToday: preScoreToday ?? null,
+      });
       const res = await fetch("/api/quiz/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subject, topic, phase, transcript }),
+        body: JSON.stringify({
+          subject,
+          topic,
+          phase,
+          transcript,
+          studentContext: hasPersonalizationData(ctx) ? ctx : undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not load quiz");
@@ -127,6 +145,7 @@ export function SessionQuiz({
       return;
     }
 
+    setDoneResult({ score: finalScore, total });
     setDone(true);
   }
 
@@ -170,14 +189,14 @@ export function SessionQuiz({
     );
   }
 
-  if (done && !skipDoneScreen) {
-    const finalScore = scoreFromAnswers(questions);
-    const pct = Math.round((finalScore / questions.length) * 100);
+  if (done && !skipDoneScreen && doneResult) {
+    const { score: finalScore, total } = doneResult;
+    const pct = Math.round((finalScore / total) * 100);
     return (
       <div className="rounded-2xl border border-brand-400/30 bg-brand-500/10 p-6 text-center">
         <CheckCircle2 className="h-10 w-10 text-brand-400 mx-auto" />
         <p className="mt-3 text-xl font-semibold text-white">
-          {finalScore}/{questions.length} correct ({pct}%)
+          {finalScore}/{total} correct ({pct}%)
         </p>
         {syncWarning && (
           <p className="mt-2 text-xs text-amber-300" role="status">
@@ -226,7 +245,7 @@ export function SessionQuiz({
                 type="button"
                 onClick={() => pick(i)}
                 disabled={selected !== null}
-                aria-selected={selected === i}
+                aria-pressed={selected === i}
                 className={`w-full rounded-xl border px-4 py-3 text-left text-sm text-zinc-200 transition focus-visible:ring-2 focus-visible:ring-brand-400 ${style}`}
               >
                 {opt}

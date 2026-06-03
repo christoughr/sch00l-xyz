@@ -3,8 +3,15 @@ import type { SubjectId } from "./types";
 /** Offline/demo responses when no LLM API key is configured */
 export function demoTutorReply(
   userMessage: string,
-  subject: SubjectId
+  subject: SubjectId,
+  studentContextBlock?: string
 ): string {
+  const personalNote =
+    studentContextBlock?.includes("Needs more practice")
+      ? "\n\n(I see topics you've been building — we'll connect to what you already studied.)"
+      : studentContextBlock?.includes("learning lift")
+        ? "\n\n(Nice — your recent sessions show measurable lift. Let's keep that momentum.)"
+        : "";
   const msg = userMessage.toLowerCase();
 
   if (
@@ -26,7 +33,7 @@ Paste the **prompt** or describe **where you're stuck** (not "solve #7"), and we
 2. What have you tried so far—even a wrong attempt helps.
 3. Is there a specific line or step that lost you?
 
-Reply with those three and we'll tackle one piece at a time.`;
+Reply with those three and we'll tackle one piece at a time.${personalNote}`;
   }
 
   if (/test|exam|midterm|final/i.test(msg)) {
@@ -47,5 +54,5 @@ The gap between your guess and the real idea is where learning happens. Take 30 
 
 For now: tell me your ${subject} topic and **one specific question** you're working on. I'll guide you Socratic-style—hints first, answers only when you've shown your work.
 
-What are you studying right now?`;
+What are you studying right now?${personalNote}`;
 }

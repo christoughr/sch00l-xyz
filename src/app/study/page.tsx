@@ -9,6 +9,7 @@ import { TutorChat } from "@/components/TutorChat";
 import { SessionQuiz } from "@/components/SessionQuiz";
 import { CopyShareLink } from "@/components/CopyShareLink";
 import { TutorRequestForm } from "@/components/TutorRequestForm";
+import { StudyPersonalizationBanner } from "@/components/StudyPersonalizationBanner";
 import { onSessionComplete } from "@/lib/session-complete";
 import { trackEvent } from "@/lib/analytics";
 import {
@@ -277,6 +278,7 @@ export default function StudyPage() {
 
       {step === "study" && (
         <div className="space-y-4">
+          <StudyPersonalizationBanner subject={subject} preScore={preScore} />
           <button
             type="button"
             onClick={abandonToSetup}
@@ -289,6 +291,7 @@ export default function StudyPage() {
             gradeLevel={gradeLevel || undefined}
             topic={topic || undefined}
             trackContext={trackContext || undefined}
+            preScoreToday={preScore}
             onTranscriptChange={setTranscript}
             onEndSession={() => setStep("post")}
             allowEndWithoutChat
@@ -311,6 +314,7 @@ export default function StudyPage() {
             phase="post"
             transcript={transcript}
             sessionId={sessionId}
+            preScoreToday={preScore}
             onComplete={(score, total) => {
               const pct = Math.round((score / total) * 100);
               setPostScore(pct);
