@@ -2,7 +2,7 @@
 
 export const PLATFORM_FEE = {
   /** Human tutor: student pays hourly; sch00l keeps this % */
-  humanTutorPercent: 40,
+  humanTutorPercent: 55,
   /** Pro subscription: 100% to sch00l (no rev share) */
   proMarginPercent: 100,
   /** School B2B: per-seat SaaS, 100% to sch00l */
@@ -23,8 +23,8 @@ export const PRICING = {
   },
   pro: {
     name: "sch00l Pro",
-    priceMonthly: 79.99,
-    priceAnnual: 799,
+    priceMonthly: 149.99,
+    priceAnnual: 1499,
     features: [
       "Unlimited AI tutor sessions",
       "Cloud sync across devices",
@@ -36,13 +36,13 @@ export const PRICING = {
   humanTutor: {
     name: "Human tutor",
     /** Display anchor — actual rates are market ranges per subject */
-    studentRatePerHour: 85,
-    rateFrom: 45,
-    rateTo: 150,
+    studentRatePerHour: 120,
+    rateFrom: 60,
+    rateTo: 200,
     platformFeePerHour: 0,
     tutorPayoutPerHour: 0,
     features: [
-      "Market rates — typically $45–$150/hr by subject",
+      "Market rates — typically $60–$200/hr by subject",
       "You pick budget tier; tutors bid in range",
       "AI session summary included — no repeating yourself",
       "Pay only after you approve a match",
@@ -50,7 +50,7 @@ export const PRICING = {
   },
   school: {
     name: "School / classroom",
-    pricePerStudentMonth: 39,
+    pricePerStudentMonth: 49,
     minimumSeats: 10,
     features: [
       "Class-wide learning lift dashboard",
