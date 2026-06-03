@@ -74,15 +74,17 @@ export default function HomePage() {
         </div>
 
         <p className="mt-8 text-sm text-zinc-500">
-          Free to use — AI tutor, quizzes, and flashcards. No account required
-          (sign-in coming soon).
+          Free: 3 AI sessions/day · Pro & human tutors on{" "}
+          <Link href="/pricing" className="text-brand-400 underline">
+            pricing
+          </Link>
         </p>
 
         <div className="mt-6 max-w-xl">
           <DailyReviewBanner />
         </div>
 
-        <div className="mt-16 rounded-2xl border border-white/10 bg-white/5 p-8">
+        <div id="waitlist" className="mt-16 rounded-2xl border border-white/10 bg-white/5 p-8">
           <h2 className="text-xl font-semibold text-white">Join the waitlist</h2>
           <p className="mt-2 text-sm text-zinc-400 max-w-md">
             Early access, classroom pilots, and launch updates for {SITE_DOMAIN}.
@@ -98,7 +100,7 @@ export default function HomePage() {
 
       <section className="relative mx-auto max-w-6xl px-4 pb-24 sm:px-6">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500 mb-8">
-          Why this matters for acquisition
+          Built for real learning
         </h2>
         <div className="grid gap-6 sm:grid-cols-2">
           {features.map((f) => (
@@ -174,26 +176,28 @@ export default function HomePage() {
       <section className="relative border-t border-white/10 bg-surface-900/50">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <h2 className="text-2xl font-bold text-white">
-            The play: become undeniable
+            See your learning lift
           </h2>
           <p className="mt-4 max-w-2xl text-zinc-400 leading-relaxed">
-            Khan Academy, Duolingo, Chegg, and Pearson don&apos;t buy chatbots —
-            they buy{" "}
-            <strong className="text-zinc-200">distribution + pedagogy + data</strong>.
-            sch00l ships all three from day one: integrity-first tutoring, student
-            engagement loops, and a mastery layer competitors can plug into.
+            Every session can measure pre-quiz → post-quiz improvement. Track
+            streaks, topics, and flashcards — or book a human tutor when AI
+            isn&apos;t enough.
           </p>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2 text-sm text-zinc-400">
-            <li>→ 10k weekly active studiers with 15+ min avg session</li>
-            <li>→ Published learning outcomes (pre/post quiz lift)</li>
+            <li>→ Pre/post quiz on your topic</li>
+            <li>→ Socratic AI — no homework cheating</li>
             <li>
               →{" "}
               <Link href="/outcomes" className="text-brand-400 hover:underline">
-                Live outcomes dashboard
+                Outcomes dashboard
               </Link>
             </li>
-            <li>→ School pilot or .edu email waitlist</li>
-            <li>→ Clean codebase + API — easy diligence</li>
+            <li>
+              →{" "}
+              <Link href="/pricing" className="text-brand-400 hover:underline">
+                Pro & human tutor pricing
+              </Link>
+            </li>
           </ul>
         </div>
       </section>

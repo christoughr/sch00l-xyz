@@ -78,9 +78,13 @@ export function TutorChat({
     onTranscriptChange?.(t);
   }, [messages, onTranscriptChange]);
 
+  const persistedRef = useRef(false);
+
   const persistSession = useCallback(async () => {
+    if (persistedRef.current) return;
     const userMsgs = messages.filter((m) => m.role === "user").length;
     if (userMsgs === 0) return;
+    persistedRef.current = true;
     const minutes = Math.max(1, Math.round((Date.now() - sessionStart) / 60000));
     const progress = recordStudyActivity(loadProgress(), {
       subject,
@@ -100,12 +104,11 @@ export function TutorChat({
 
   useEffect(() => {
     const onLeave = () => {
-      persistSession();
+      void persistSession();
     };
     window.addEventListener("beforeunload", onLeave);
     return () => {
       window.removeEventListener("beforeunload", onLeave);
-      persistSession();
     };
   }, [persistSession]);
 
@@ -157,7 +160,7 @@ export function TutorChat({
           id: uid(),
           role: "assistant",
           content:
-            "Something went wrong on my end. Try again in a moment — or check that your API key is set in `.env.local`.",
+            "Tutor temporarily unavailable. Try again in a moment.",
           createdAt: new Date().toISOString(),
         },
       ]);
@@ -244,6 +247,7 @@ export function TutorChat({
             type="button"
             onClick={generateFlashcards}
             disabled={generatingCards}
+            aria-label="Generate flashcards from chat"
             className="flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-50"
           >
             {generatingCards ? (
@@ -257,6 +261,7 @@ export function TutorChat({
             type="button"
             onClick={() => setShowHumanTutor((v) => !v)}
             disabled={userMsgCount < 1}
+            aria-label="Request human tutor with session context"
             className="flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-40"
             title={userMsgCount < 1 ? "Chat first to enable handoff" : "Request human tutor"}
           >
@@ -267,7 +272,9 @@ export function TutorChat({
             <button
               type="button"
               onClick={endSession}
-              className="flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/15"
+              disabled={userMsgCount < 1}
+              aria-label="End session and start post-quiz"
+              className="flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/15 disabled:opacity-40"
             >
               <LogOut className="h-3 w-3" />
               End → quiz

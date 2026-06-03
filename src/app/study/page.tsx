@@ -11,6 +11,15 @@ import { CopyShareLink } from "@/components/CopyShareLink";
 import { TutorRequestForm } from "@/components/TutorRequestForm";
 import { onSessionComplete } from "@/lib/session-complete";
 import { trackEvent } from "@/lib/analytics";
+import {
+  canStartSession,
+  freeTierLimitMessage,
+  recordSessionStart,
+  sessionsRemainingToday,
+} from "@/lib/free-tier";
+import {
+  rotateStudySessionId,
+} from "@/lib/study-session-id";
 import { SITE_URL } from "@/lib/site";
 import type { StudyTrackId } from "@/lib/study-tracks";
 import { getStudyTrack } from "@/lib/study-tracks";
@@ -29,10 +38,14 @@ export default function StudyPage() {
     getStudyTrack("ap-calc-ab").tutorContext
   );
   const [step, setStep] = useState<Step>("setup");
+  const [sessionId, setSessionId] = useState("");
+  const [preSkipped, setPreSkipped] = useState(false);
   const [preScore, setPreScore] = useState<number | null>(null);
   const [postScore, setPostScore] = useState<number | null>(null);
   const [transcript, setTranscript] = useState("");
   const [cardsCreated, setCardsCreated] = useState<number | null>(null);
+  const [setupError, setSetupError] = useState("");
+  const [limitHit, setLimitHit] = useState(false);
   const completedRef = useRef(false);
 
   useEffect(() => {
@@ -47,13 +60,25 @@ export default function StudyPage() {
       subject,
       preScore: preScore ?? -1,
       postScore: postScore ?? -1,
+      preSkipped: preSkipped ? 1 : 0,
       lift:
-        preScore !== null && postScore !== null ? postScore - preScore : -1,
+        preScore !== null && postScore !== null && !preSkipped
+          ? postScore - preScore
+          : -1,
     });
     onSessionComplete({ subject, topic, transcript }).then(({ cardsCreated: n }) =>
       setCardsCreated(n)
     );
-  }, [step, subject, topic, transcript, trackId, preScore, postScore]);
+  }, [
+    step,
+    subject,
+    topic,
+    transcript,
+    trackId,
+    preScore,
+    postScore,
+    preSkipped,
+  ]);
 
   function applyTrack(id: StudyTrackId) {
     const track = getStudyTrack(id);
@@ -65,14 +90,39 @@ export default function StudyPage() {
       setGradeLevel(track.gradeLevel);
       setTrackContext(track.tutorContext);
     } else {
+      setSubject("other");
+      setTopic("");
+      setGradeLevel("");
       setTrackContext("");
     }
   }
 
   function startSession() {
+    setSetupError("");
+    if (!topic.trim()) {
+      setSetupError("Enter a topic so quizzes and the tutor stay focused.");
+      return;
+    }
+    if (!canStartSession()) {
+      setLimitHit(true);
+      return;
+    }
+    recordSessionStart();
+    const sid = rotateStudySessionId();
+    setSessionId(sid);
+    setPreSkipped(false);
+    setPreScore(null);
+    setPostScore(null);
     trackEvent("session_setup", { track: trackId, subject });
     setStep("pre");
   }
+
+  function liftDelta(): number | null {
+    if (preSkipped || preScore === null || postScore === null) return null;
+    return postScore - preScore;
+  }
+
+  const delta = liftDelta();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
@@ -86,7 +136,25 @@ export default function StudyPage() {
           Pre-quiz → tutor → post-quiz → flashcards. Built for measurable learning
           lift.
         </p>
+        {sessionsRemainingToday() !== Infinity && (
+          <p className="mt-2 text-xs text-zinc-500">
+            {sessionsRemainingToday()} free AI session
+            {sessionsRemainingToday() === 1 ? "" : "s"} left today ·{" "}
+            <Link href="/pricing" className="text-brand-400 underline">
+              Go Pro
+            </Link>
+          </p>
+        )}
       </div>
+
+      {limitHit && (
+        <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
+          {freeTierLimitMessage()}{" "}
+          <Link href="/pricing" className="underline text-white">
+            View pricing
+          </Link>
+        </div>
+      )}
 
       {step === "setup" && (
         <div className="space-y-6">
@@ -95,37 +163,42 @@ export default function StudyPage() {
             <StudyTrackPicker value={trackId} onChange={(t) => applyTrack(t.id)} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label htmlFor="study-topic" className="block text-sm font-medium text-zinc-300 mb-2">
               Topic (for quizzes)
             </label>
             <input
+              id="study-topic"
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="e.g. quadratic equations, cell division"
-              className="w-full max-w-md rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-brand-400 focus:outline-none"
+              className="w-full max-w-md rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-brand-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label htmlFor="study-grade" className="block text-sm font-medium text-zinc-300 mb-2">
               Grade level (optional)
             </label>
             <input
+              id="study-grade"
               type="text"
               value={gradeLevel}
               onChange={(e) => setGradeLevel(e.target.value)}
               placeholder="e.g. AP Chem, Calc II"
-              className="w-full max-w-md rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-brand-400 focus:outline-none"
+              className="w-full max-w-md rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-brand-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
             />
           </div>
           <div>
             <p className="text-sm font-medium text-zinc-300 mb-3">Subject</p>
             <SubjectPicker value={subject} onChange={setSubject} />
           </div>
+          {setupError && (
+            <p className="text-sm text-red-400">{setupError}</p>
+          )}
           <button
             type="button"
             onClick={startSession}
-            className="rounded-xl bg-brand-500 px-6 py-3 font-medium text-white hover:bg-brand-400 transition"
+            className="rounded-xl bg-brand-500 px-6 py-3 font-medium text-white hover:bg-brand-400 transition focus-visible:ring-2 focus-visible:ring-brand-400"
           >
             Continue to pre-quiz
           </button>
@@ -138,19 +211,26 @@ export default function StudyPage() {
             subject={subject}
             topic={topic || undefined}
             phase="pre"
+            sessionId={sessionId}
             onComplete={(score, total) => {
               const pct = Math.round((score / total) * 100);
               setPreScore(pct);
+              setPreSkipped(false);
               trackEvent("pre_quiz_complete", { score: pct, track: trackId });
               setStep("study");
             }}
           />
           <button
             type="button"
-            onClick={() => setStep("study")}
+            onClick={() => {
+              setPreSkipped(true);
+              setPreScore(null);
+              trackEvent("pre_quiz_skipped", { track: trackId });
+              setStep("study");
+            }}
             className="text-sm text-zinc-500 hover:text-zinc-300"
           >
-            Skip pre-quiz →
+            Skip pre-quiz (no learning lift) →
           </button>
         </div>
       )}
@@ -162,7 +242,7 @@ export default function StudyPage() {
             onClick={() => setStep("setup")}
             className="text-sm text-zinc-500 hover:text-zinc-300"
           >
-            ← Change subject
+            ← Back to setup
           </button>
           <TutorChat
             subject={subject}
@@ -182,6 +262,7 @@ export default function StudyPage() {
             topic={topic || undefined}
             phase="post"
             transcript={transcript}
+            sessionId={sessionId}
             onComplete={(score, total) => {
               const pct = Math.round((score / total) * 100);
               setPostScore(pct);
@@ -195,13 +276,28 @@ export default function StudyPage() {
       {step === "done" && (
         <div className="rounded-2xl border border-brand-400/30 bg-brand-500/10 p-8 text-center space-y-4">
           <h2 className="text-xl font-bold text-white">Session complete</h2>
-          {(preScore !== null || postScore !== null) && (
+          {(preScore !== null || postScore !== null || preSkipped) && (
             <p className="text-zinc-300">
-              {preScore !== null && <>Pre-quiz: {preScore}%</>}
-              {preScore !== null && postScore !== null && " → "}
-              {postScore !== null && <>Post-quiz: {postScore}%</>}
-              {preScore !== null && postScore !== null && postScore > preScore && (
-                <span className="text-green-400"> (+{postScore - preScore} lift)</span>
+              {preSkipped && postScore !== null && (
+                <>Post-quiz: {postScore}% (pre-quiz skipped)</>
+              )}
+              {!preSkipped && preScore !== null && <>Pre-quiz: {preScore}%</>}
+              {!preSkipped && preScore !== null && postScore !== null && " → "}
+              {!preSkipped && postScore !== null && <>Post-quiz: {postScore}%</>}
+              {delta !== null && (
+                <span
+                  className={
+                    delta > 0
+                      ? " text-green-400"
+                      : delta < 0
+                        ? " text-red-400"
+                        : " text-zinc-400"
+                  }
+                >
+                  {" "}
+                  ({delta >= 0 ? "+" : ""}
+                  {delta} lift)
+                </span>
               )}
             </p>
           )}
@@ -210,13 +306,18 @@ export default function StudyPage() {
               Generated {cardsCreated} flashcard{cardsCreated === 1 ? "" : "s"} from your chat.
             </p>
           )}
-          {preScore !== null && postScore !== null && (
+          {delta !== null && (
             <p className="text-xs text-zinc-500">
-              Learning lift is saved on{" "}
+              Learning lift saved on{" "}
               <Link href="/progress" className="text-brand-400 underline">
                 Progress
               </Link>
               .
+            </p>
+          )}
+          {preSkipped && (
+            <p className="text-xs text-zinc-500">
+              Complete the pre-quiz next time to measure learning lift.
             </p>
           )}
           <div className="flex flex-wrap justify-center gap-3">
@@ -238,10 +339,13 @@ export default function StudyPage() {
               onClick={() => {
                 completedRef.current = false;
                 setCardsCreated(null);
+                setLimitHit(false);
+                setPreSkipped(false);
                 setStep("setup");
                 setPreScore(null);
                 setPostScore(null);
                 setTranscript("");
+                setSessionId("");
               }}
               className="rounded-xl border border-white/15 px-5 py-2 text-sm text-zinc-300 hover:bg-white/5"
             >
@@ -249,7 +353,10 @@ export default function StudyPage() {
             </button>
           </div>
           <div className="mt-6 pt-6 border-t border-white/10 text-left max-w-md mx-auto">
-            <p className="text-sm font-medium text-white mb-3">Still stuck?</p>
+            <p className="text-sm font-medium text-white mb-1">Still stuck?</p>
+            <p className="text-xs text-zinc-500 mb-3">
+              Human tutors from {formatUsdLink()} — AI summary included.
+            </p>
             <TutorRequestForm
               subject={subject}
               topic={topic || undefined}
@@ -262,5 +369,13 @@ export default function StudyPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function formatUsdLink() {
+  return (
+    <Link href="/pricing" className="text-brand-400 underline">
+      $49/hr
+    </Link>
   );
 }

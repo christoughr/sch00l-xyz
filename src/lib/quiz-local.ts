@@ -24,12 +24,37 @@ export function loadQuizResultsLocal(): QuizResult[] {
   }
 }
 
+function liftLabel(prePct: number, postPct: number): string {
+  const delta = postPct - prePct;
+  const sign = delta >= 0 ? "+" : "";
+  return `${prePct}% → ${postPct}% (${sign}${delta} lift)`;
+}
+
+/** Latest valid lift: pre+post from the same sessionId, pre not skipped */
 export function latestQuizLiftLocal(): string | null {
   const list = loadQuizResultsLocal();
-  const pre = list.find((q) => q.phase === "pre");
-  const post = list.find((q) => q.phase === "post");
-  if (!pre || !post) return null;
+  const sessionIds = [
+    ...new Set(list.filter((q) => q.sessionId).map((q) => q.sessionId!)),
+  ];
+
+  for (const sid of sessionIds) {
+    const pre = list.find((q) => q.sessionId === sid && q.phase === "pre");
+    const post = list.find((q) => q.sessionId === sid && q.phase === "post");
+    if (pre && post && !pre.skipped) {
+      const prePct = Math.round((pre.score / pre.total) * 100);
+      const postPct = Math.round((post.score / post.total) * 100);
+      return liftLabel(prePct, postPct);
+    }
+  }
+  return null;
+}
+
+export function liftForSession(sessionId: string): string | null {
+  const list = loadQuizResultsLocal();
+  const pre = list.find((q) => q.sessionId === sessionId && q.phase === "pre");
+  const post = list.find((q) => q.sessionId === sessionId && q.phase === "post");
+  if (!pre || !post || pre.skipped) return null;
   const prePct = Math.round((pre.score / pre.total) * 100);
   const postPct = Math.round((post.score / post.total) * 100);
-  return `${prePct}% → ${postPct}% (${postPct - prePct >= 0 ? "+" : ""}${postPct - prePct} lift)`;
+  return liftLabel(prePct, postPct);
 }

@@ -8,7 +8,9 @@ export type AnalyticsEventName =
   | "session_complete"
   | "share_copy"
   | "track_selected"
-  | "tutor_request";
+  | "tutor_request"
+  | "pre_quiz_skipped"
+  | "upgrade_view";
 
 export function getAnalyticsSessionId(): string {
   if (typeof window === "undefined") return "server";

@@ -11,12 +11,14 @@ export function OnboardingForm() {
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
-      await fetch("/api/profile", {
+      const res = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -25,8 +27,14 @@ export function OnboardingForm() {
           onboarding_complete: true,
         }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error ?? "Could not save profile");
+      }
       router.push("/study");
       router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -57,6 +65,7 @@ export function OnboardingForm() {
       >
         {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Start studying"}
       </button>
+      {error && <p className="text-sm text-red-400">{error}</p>}
     </form>
   );
 }

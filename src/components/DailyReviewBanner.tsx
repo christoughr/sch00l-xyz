@@ -4,12 +4,16 @@ import Link from "next/link";
 import { Layers } from "lucide-react";
 import { dueFlashcards, loadFlashcards } from "@/lib/flashcards-local";
 import { useEffect, useState } from "react";
+import { FLASHCARDS_UPDATED } from "@/lib/flashcards-events";
 
 export function DailyReviewBanner() {
   const [due, setDue] = useState(0);
 
   useEffect(() => {
-    setDue(dueFlashcards(loadFlashcards()).length);
+    const refresh = () => setDue(dueFlashcards(loadFlashcards()).length);
+    refresh();
+    window.addEventListener(FLASHCARDS_UPDATED, refresh);
+    return () => window.removeEventListener(FLASHCARDS_UPDATED, refresh);
   }, []);
 
   if (due === 0) return null;

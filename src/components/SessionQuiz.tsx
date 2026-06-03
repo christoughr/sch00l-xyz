@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle, AlertCircle } from "lucide-react";
 import type { QuizQuestion, SubjectId } from "@/lib/types";
 import { saveQuizResultLocal } from "@/lib/quiz-local";
 
@@ -10,16 +10,19 @@ export function SessionQuiz({
   topic,
   phase,
   transcript,
+  sessionId,
   onComplete,
 }: {
   subject: SubjectId;
   topic?: string;
   phase: "pre" | "post";
   transcript?: string;
+  sessionId?: string;
   onComplete?: (score: number, total: number) => void;
 }) {
   const [questions, setQuestions] = useState<QuizQuestion[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -28,6 +31,7 @@ export function SessionQuiz({
 
   async function loadQuiz() {
     setLoading(true);
+    setLoadError(null);
     try {
       const res = await fetch("/api/quiz/generate", {
         method: "POST",
@@ -35,7 +39,13 @@ export function SessionQuiz({
         body: JSON.stringify({ subject, topic, phase, transcript }),
       });
       const data = await res.json();
-      setQuestions(data.questions ?? []);
+      if (!res.ok) throw new Error(data.error ?? "Could not load quiz");
+      const qs = data.questions as QuizQuestion[] | undefined;
+      if (!qs?.length) throw new Error("No questions returned. Try again.");
+      setQuestions(qs);
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Could not load quiz");
+      setQuestions(null);
     } finally {
       setLoading(false);
     }
@@ -71,6 +81,7 @@ export function SessionQuiz({
       phase,
       score: finalScore,
       total,
+      sessionId,
     });
     await fetch("/api/quiz/submit", {
       method: "POST",
@@ -82,6 +93,7 @@ export function SessionQuiz({
         score: finalScore,
         total,
         answers,
+        sessionId,
       }),
     });
     onComplete?.(finalScore, total);
@@ -98,16 +110,24 @@ export function SessionQuiz({
             ? "Quick baseline — 3 questions before you study."
             : "See what stuck — measures learning lift for your progress."}
         </p>
+        {loadError && (
+          <p className="mt-3 flex items-center gap-2 text-sm text-red-400">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            {loadError}
+          </p>
+        )}
         <button
           type="button"
           onClick={loadQuiz}
           disabled={loading}
-          className="mt-4 rounded-xl bg-brand-500 px-4 py-2 text-sm text-white hover:bg-brand-400 disabled:opacity-50"
+          className="mt-4 rounded-xl bg-brand-500 px-4 py-2 text-sm text-white hover:bg-brand-400 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-brand-400"
         >
           {loading ? (
             <span className="flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" /> Loading…
             </span>
+          ) : loadError ? (
+            "Retry quiz"
           ) : (
             `Start ${phase} quiz`
           )}
@@ -126,7 +146,7 @@ export function SessionQuiz({
         </p>
         <p className="text-sm text-zinc-400 mt-1">
           {phase === "post"
-            ? "Compare with your pre-quiz after a few sessions."
+            ? "Compare with your pre-quiz on Progress."
             : "Now study — we'll check again after."}
         </p>
       </div>
@@ -155,7 +175,7 @@ export function SessionQuiz({
                 type="button"
                 onClick={() => pick(i)}
                 disabled={selected !== null}
-                className={`w-full rounded-xl border px-4 py-3 text-left text-sm text-zinc-200 transition ${style}`}
+                className={`w-full rounded-xl border px-4 py-3 text-left text-sm text-zinc-200 transition focus-visible:ring-2 focus-visible:ring-brand-400 ${style}`}
               >
                 {opt}
               </button>
@@ -176,7 +196,7 @@ export function SessionQuiz({
           <button
             type="button"
             onClick={next}
-            className="mt-4 rounded-xl bg-brand-500 px-4 py-2 text-sm text-white hover:bg-brand-400"
+            className="mt-4 rounded-xl bg-brand-500 px-4 py-2 text-sm text-white hover:bg-brand-400 focus-visible:ring-2 focus-visible:ring-brand-400"
           >
             {index + 1 < questions.length ? "Next" : "Finish"}
           </button>

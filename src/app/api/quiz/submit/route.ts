@@ -9,6 +9,7 @@ const schema = z.object({
   score: z.number().int().min(0),
   total: z.number().int().min(1),
   answers: z.record(z.string(), z.number()).optional(),
+  sessionId: z.string().max(128).optional(),
 });
 
 export async function POST(req: Request) {
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
     score: parsed.data.score,
     total: parsed.data.total,
     answers: parsed.data.answers ?? null,
+    session_id: parsed.data.sessionId ?? null,
   });
 
   if (error) {

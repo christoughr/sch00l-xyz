@@ -10,8 +10,7 @@ export default function ProgressPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white">Your progress</h1>
         <p className="mt-2 text-zinc-400">
-          Streaks, study time, and mastery — the metrics acquirers actually look
-          at.
+          Streaks, study time, and topic mastery — your personal learning graph.
         </p>
       </div>
       <ProgressDashboard />

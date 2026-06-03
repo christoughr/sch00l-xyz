@@ -1,17 +1,30 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { Bot, UserRound, ArrowRight } from "lucide-react";
 import { TutorRequestForm } from "@/components/TutorRequestForm";
 import { TutorApplyForm } from "@/components/TutorApplyForm";
+import { SubjectPicker } from "@/components/SubjectPicker";
+import { formatUsd, PRICING } from "@/lib/pricing";
+import type { SubjectId } from "@/lib/types";
 
 export default function TutorsPage() {
+  const [subject, setSubject] = useState<SubjectId>("math");
+  const human = PRICING.humanTutor;
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white">AI + human tutors</h1>
         <p className="mt-2 text-zinc-400 max-w-xl">
-          sch00l starts with Socratic AI (24/7, integrity-first). When you need a
-          person, we hand off your session — topic, stuck points, quiz scores — so
-          nobody repeats themselves.
+          sch00l starts with Socratic AI (free tier: 3 sessions/day). When you
+          need a person, book a vetted tutor — your AI session summary travels
+          with the request.
+        </p>
+        <p className="mt-3 text-sm text-brand-300">
+          Human tutoring: {formatUsd(human.studentRatePerHour)}/hr · sch00l
+          platform coordinates matching
         </p>
       </div>
 
@@ -20,8 +33,7 @@ export default function TutorsPage() {
           <Bot className="h-8 w-8 text-brand-400 mb-3" />
           <h2 className="text-lg font-semibold text-white">Step 1 — AI tutor</h2>
           <p className="mt-2 text-sm text-zinc-400">
-            Free, instant, won&apos;t cheat. Pre-quiz → chat → post-quiz measures
-            your lift.
+            Free daily sessions. Pre-quiz → chat → post-quiz measures lift.
           </p>
           <Link
             href="/study"
@@ -34,9 +46,15 @@ export default function TutorsPage() {
           <UserRound className="h-8 w-8 text-brand-400 mb-3" />
           <h2 className="text-lg font-semibold text-white">Step 2 — Human tutor</h2>
           <p className="mt-2 text-sm text-zinc-400">
-            Still stuck? Request a partner tutor. They get your AI session summary
-            and pick up where you left off.
+            {formatUsd(human.studentRatePerHour)}/hr · tutors earn{" "}
+            {formatUsd(human.tutorPayoutPerHour)}/hr after platform fee.
           </p>
+          <Link
+            href="/pricing"
+            className="mt-4 inline-block text-sm text-brand-400 hover:underline"
+          >
+            Full pricing →
+          </Link>
         </article>
       </div>
 
@@ -44,13 +62,17 @@ export default function TutorsPage() {
         <h2 className="text-xl font-semibold text-white mb-4">
           Request a human tutor
         </h2>
-        <TutorRequestForm subject="math" />
+        <p className="text-sm text-zinc-400 mb-4">Subject for this request</p>
+        <div className="mb-6 max-w-md">
+          <SubjectPicker value={subject} onChange={setSubject} />
+        </div>
+        <TutorRequestForm subject={subject} />
         <p className="mt-4 text-xs text-zinc-500">
-          Tip: request from a{" "}
+          Best with session context — request from a{" "}
           <Link href="/study" className="text-brand-400 underline">
             study session
-          </Link>{" "}
-          to auto-attach your chat context.
+          </Link>
+          .
         </p>
       </section>
 
@@ -59,8 +81,8 @@ export default function TutorsPage() {
           Become a partner tutor
         </h2>
         <p className="text-sm text-zinc-400 mb-6">
-          AP teachers, college tutors, grad students — join the network. Students
-          arrive pre-qualified with session context (not cold leads).
+          AP teachers, college tutors — students arrive with AI session context.
+          Earn {formatUsd(human.tutorPayoutPerHour)}/hr on {formatUsd(human.studentRatePerHour)}/hr sessions.
         </p>
         <TutorApplyForm />
       </section>

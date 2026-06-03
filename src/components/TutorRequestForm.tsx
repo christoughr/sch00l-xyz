@@ -28,6 +28,11 @@ export function TutorRequestForm({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!email.trim()) {
+      setMessage("Email required so we can match you with a tutor.");
+      setStatus("error");
+      return;
+    }
     setStatus("loading");
 
     try {
@@ -91,9 +96,10 @@ export function TutorRequestForm({
         <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
         <input
           type="email"
+          required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="your@email.com (optional)"
+          placeholder="your@email.com"
           className="w-full rounded-xl border border-white/10 bg-surface-900 py-3 pl-10 pr-4 text-sm text-white placeholder:text-zinc-500 focus:border-brand-400 focus:outline-none"
         />
       </div>

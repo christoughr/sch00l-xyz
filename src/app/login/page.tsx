@@ -1,19 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Loader2, Mail } from "lucide-react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Logo } from "@/components/Logo";
 import { ComingSoonBanner } from "@/components/ComingSoonBanner";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="p-16 text-center text-zinc-400">Loading…</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
+  const searchParams = useSearchParams();
   const configured = isSupabaseConfigured();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">(
     "idle"
   );
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (searchParams.get("error") === "auth") {
+      setMessage("Sign-in link expired or invalid. Request a new one.");
+      setStatus("error");
+    }
+  }, [searchParams]);
 
   async function sendMagicLink(e: React.FormEvent) {
     e.preventDefault();

@@ -63,17 +63,25 @@ export function ProgressDashboard() {
       if (!supabase) return;
       const { data } = await supabase
         .from("quiz_results")
-        .select("phase, score, total, created_at")
+        .select("phase, score, total, session_id, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
-        .limit(20);
+        .limit(40);
       if (!data?.length) return;
-      const pre = data.find((q) => q.phase === "pre");
-      const post = data.find((q) => q.phase === "post");
-      if (pre && post) {
-        const prePct = Math.round((pre.score / pre.total) * 100);
-        const postPct = Math.round((post.score / post.total) * 100);
-        setQuizLift(`${prePct}% → ${postPct}% (${postPct - prePct >= 0 ? "+" : ""}${postPct - prePct} lift)`);
+      const sessionIds = [
+        ...new Set(data.filter((q) => q.session_id).map((q) => q.session_id as string)),
+      ];
+      for (const sid of sessionIds) {
+        const pre = data.find((q) => q.session_id === sid && q.phase === "pre");
+        const post = data.find((q) => q.session_id === sid && q.phase === "post");
+        if (pre && post) {
+          const prePct = Math.round((pre.score / pre.total) * 100);
+          const postPct = Math.round((post.score / post.total) * 100);
+          setQuizLift(
+            `${prePct}% → ${postPct}% (${postPct - prePct >= 0 ? "+" : ""}${postPct - prePct} lift)`
+          );
+          return;
+        }
       }
     }
     loadQuizzes();

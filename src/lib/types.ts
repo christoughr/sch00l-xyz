@@ -73,5 +73,7 @@ export interface QuizResult {
   phase: "pre" | "post";
   score: number;
   total: number;
+  sessionId?: string;
+  skipped?: boolean;
   createdAt: string;
 }

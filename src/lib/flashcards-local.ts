@@ -1,4 +1,5 @@
 import type { Flashcard, SubjectId } from "./types";
+import { notifyFlashcardsUpdated } from "./flashcards-events";
 
 const STORAGE_KEY = "sch00l_flashcards_v1";
 
@@ -27,6 +28,7 @@ export function addFlashcards(cards: Omit<Flashcard, "id" | "createdAt">[]): Fla
   }));
   const merged = [...added, ...existing];
   saveFlashcards(merged);
+  notifyFlashcardsUpdated();
   return merged;
 }
 

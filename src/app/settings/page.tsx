@@ -1,28 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Download, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { clearLocalUserData } from "@/lib/compliance";
 
 export default function SettingsPage() {
-  const { user, signOut, supabaseReady } = useAuth();
+  const { user, signOut } = useAuth();
   const router = useRouter();
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    if (supabaseReady && !user) {
-      router.push("/login?next=/settings");
-    }
-  }, [user, supabaseReady, router]);
+  const showCloudActions = !!user;
 
   async function exportData() {
     setBusy(true);
     setStatus(null);
     try {
       const res = await fetch("/api/account/export");
+      if (!res.ok) throw new Error("Export failed");
       const data = await res.json();
       const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
@@ -76,19 +72,23 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-lg px-4 py-12 sm:px-6">
       <h1 className="text-2xl font-bold text-white">Settings</h1>
       <p className="mt-2 text-sm text-zinc-400">
-        Export your data or delete your account (GDPR / FERPA-friendly).
+        {user
+          ? "Export your data or delete your account (GDPR / FERPA-friendly)."
+          : "Clear local browser data without signing in."}
       </p>
 
       <div className="mt-8 space-y-4">
-        <button
-          type="button"
-          onClick={exportData}
-          disabled={busy}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-sm text-white hover:bg-white/10 disabled:opacity-50"
-        >
-          <Download className="h-4 w-4" />
-          Export my data (JSON)
-        </button>
+        {showCloudActions && (
+          <button
+            type="button"
+            onClick={exportData}
+            disabled={busy}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-sm text-white hover:bg-white/10 disabled:opacity-50"
+          >
+            <Download className="h-4 w-4" />
+            Export my data (JSON)
+          </button>
+        )}
 
         <button
           type="button"
@@ -98,7 +98,7 @@ export default function SettingsPage() {
           Clear local browser data
         </button>
 
-        {user && (
+        {showCloudActions && (
           <button
             type="button"
             onClick={deleteAccount}

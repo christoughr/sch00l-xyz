@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const schema = z.object({
-  email: z.string().email().optional(),
+  email: z.string().email(),
   subject: z.enum([
     "math",
     "science",
@@ -54,14 +54,14 @@ Max 120 words. Plain text.`,
   const client = admin ?? supabase;
 
   let userId: string | null = null;
-  let studentEmail = data.email?.toLowerCase().trim() ?? null;
+  let studentEmail = data.email.toLowerCase().trim();
 
   if (supabase) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
     userId = user?.id ?? null;
-    if (!studentEmail && user?.email) studentEmail = user.email;
+    if (user?.email) studentEmail = user.email;
   }
 
   if (client) {

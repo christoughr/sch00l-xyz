@@ -1,19 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Menu, X, LogOut, User } from "lucide-react";
 import { Logo } from "./Logo";
 import { useAuth } from "./AuthProvider";
 import { dueFlashcards, loadFlashcards } from "@/lib/flashcards-local";
+import { FLASHCARDS_UPDATED } from "@/lib/flashcards-events";
 
 type NavLink = { href: string; label: string; showDue?: boolean };
 
-const coreLinks: NavLink[] = [
+const primaryLinks: NavLink[] = [
   { href: "/study", label: "Study" },
   { href: "/flashcards", label: "Cards", showDue: true },
   { href: "/progress", label: "Progress" },
+];
+
+const moreLinks: NavLink[] = [
   { href: "/tutors", label: "Tutors" },
+  { href: "/pricing", label: "Pricing" },
   { href: "/outcomes", label: "Outcomes" },
 ];
 
@@ -21,9 +26,16 @@ export function Nav() {
   const { user, loading, signOut, supabaseReady } = useAuth();
   const [isTeacher, setIsTeacher] = useState(false);
   const [cardsDue, setCardsDue] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  function refreshDue() {
+    setCardsDue(dueFlashcards(loadFlashcards()).length);
+  }
 
   useEffect(() => {
-    setCardsDue(dueFlashcards(loadFlashcards()).length);
+    refreshDue();
+    window.addEventListener(FLASHCARDS_UPDATED, refreshDue);
+    return () => window.removeEventListener(FLASHCARDS_UPDATED, refreshDue);
   }, []);
 
   useEffect(() => {
@@ -37,37 +49,52 @@ export function Nav() {
       .catch(() => setIsTeacher(false));
   }, [user, supabaseReady]);
 
-  const links: NavLink[] = supabaseReady
-    ? [...coreLinks, { href: "/join", label: "Join" }]
-    : coreLinks;
+  const mobileLinks: NavLink[] = [
+    ...primaryLinks,
+    ...moreLinks,
+    ...(supabaseReady ? [{ href: "/join", label: "Join" }] : []),
+    ...(isTeacher ? [{ href: "/teacher", label: "Teach" }] : []),
+  ];
+
+  function LinkItem({ l, onNavigate }: { l: NavLink; onNavigate?: () => void }) {
+    return (
+      <Link
+        href={l.href}
+        onClick={onNavigate}
+        className="relative rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white"
+      >
+        {l.label}
+        {l.showDue && cardsDue > 0 && (
+          <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
+            {cardsDue > 9 ? "9+" : cardsDue}
+          </span>
+        )}
+      </Link>
+    );
+  }
 
   return (
     <header className="border-b border-white/10 bg-surface-900/80 backdrop-blur-md sticky top-0 z-50">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         <Logo />
-        <nav className="flex items-center gap-1 sm:gap-2">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="relative rounded-lg px-2 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white sm:px-3"
-            >
-              {l.label}
-              {l.showDue && cardsDue > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
-                  {cardsDue > 9 ? "9+" : cardsDue}
-                </span>
-              )}
-            </Link>
+
+        {/* Desktop */}
+        <nav className="hidden md:flex items-center gap-1">
+          {primaryLinks.map((l) => (
+            <LinkItem key={l.href} l={l} />
           ))}
-          {isTeacher && (
-            <Link
-              href="/teacher"
-              className="rounded-lg px-2 py-2 text-sm text-brand-300 hover:bg-brand-500/10 sm:px-3"
-            >
-              Teach
-            </Link>
-          )}
+          <details className="relative group">
+            <summary className="list-none cursor-pointer rounded-lg px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white">
+              More
+            </summary>
+            <div className="absolute right-0 mt-1 min-w-[140px] rounded-xl border border-white/10 bg-surface-900 py-1 shadow-xl">
+              {moreLinks.map((l) => (
+                <LinkItem key={l.href} l={l} />
+              ))}
+              {supabaseReady && <LinkItem l={{ href: "/join", label: "Join" }} />}
+              {isTeacher && <LinkItem l={{ href: "/teacher", label: "Teach" }} />}
+            </div>
+          </details>
 
           {!loading && supabaseReady && (
             <>
@@ -75,8 +102,8 @@ export function Nav() {
                 <button
                   type="button"
                   onClick={() => signOut()}
-                  className="hidden sm:flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:text-white"
-                  title={user.email ?? "Account"}
+                  aria-label="Sign out"
+                  className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:text-white"
                 >
                   <User className="h-4 w-4" />
                   <LogOut className="h-3 w-3" />
@@ -84,7 +111,7 @@ export function Nav() {
               ) : (
                 <Link
                   href="/login"
-                  className="rounded-lg px-2 py-2 text-sm text-zinc-300 hover:text-white sm:px-3"
+                  className="rounded-lg px-3 py-2 text-sm text-zinc-300 hover:text-white"
                 >
                   Sign in
                 </Link>
@@ -94,12 +121,64 @@ export function Nav() {
 
           <Link
             href="/study"
-            className="rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white transition hover:bg-brand-400 sm:px-4"
+            className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-400"
           >
             Study
           </Link>
         </nav>
+
+        {/* Mobile */}
+        <div className="flex items-center gap-2 md:hidden">
+          <Link
+            href="/study"
+            className="rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white"
+          >
+            Study
+          </Link>
+          <button
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((o) => !o)}
+            className="rounded-lg border border-white/10 p-2 text-zinc-300"
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      {menuOpen && (
+        <nav className="md:hidden border-t border-white/10 px-4 py-3 space-y-1 bg-surface-900">
+          {mobileLinks.map((l) => (
+            <LinkItem key={l.href} l={l} onNavigate={() => setMenuOpen(false)} />
+          ))}
+          {!loading && supabaseReady && (
+            <>
+              {user ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    signOut();
+                    setMenuOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-lg px-3 py-2 text-sm text-zinc-300"
+                >
+                  Sign in
+                </Link>
+              )}
+            </>
+          )}
+        </nav>
+      )}
     </header>
   );
 }

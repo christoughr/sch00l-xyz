@@ -28,6 +28,9 @@ export function Footer() {
           <Link href="/outcomes" className="hover:text-zinc-300">
             Outcomes
           </Link>
+          <Link href="/pricing" className="hover:text-zinc-300">
+            Pricing
+          </Link>
           <Link href="/tutors" className="hover:text-zinc-300">
             Tutors
           </Link>

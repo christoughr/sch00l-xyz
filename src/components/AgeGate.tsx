@@ -22,27 +22,19 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState("");
 
   const isLegalPage = LEGAL_PATHS.includes(pathname);
+  const year = parseInt(birthYear, 10);
+  const under13 = !Number.isNaN(year) && isUnder13(year);
 
   useEffect(() => {
     setConsent(loadLocalConsent());
     setReady(true);
   }, []);
 
-  if (!ready) return null;
-
-  // Legal pages always readable (Terms / Privacy links must work)
-  if (isLegalPage) return <>{children}</>;
-
-  if (consent && canUseApp(consent)) return <>{children}</>;
-
-  const year = parseInt(birthYear, 10);
-  const under13 = !Number.isNaN(year) && isUnder13(year);
-
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
-    if (Number.isNaN(year) || year < 1990 || year > new Date().getFullYear()) {
+    if (Number.isNaN(year) || year < 1920 || year > new Date().getFullYear()) {
       setError("Enter a valid birth year.");
       return;
     }
@@ -77,33 +69,51 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
     }).catch(() => {});
   }
 
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-900">
+        <div className="h-8 w-8 animate-pulse rounded-full bg-brand-500/30" />
+      </div>
+    );
+  }
+
+  if (isLegalPage) return <>{children}</>;
+  if (consent && canUseApp(consent)) return <>{children}</>;
+
   return (
     <>
-      {/* Page hidden until consent — legal routes bypass above */}
-      <div className="invisible h-0 overflow-hidden" aria-hidden>
+      <div className="invisible h-0 overflow-hidden" aria-hidden inert>
         {children}
       </div>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-900 p-4">
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-900 p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="age-gate-title"
+      >
         <form
           onSubmit={submit}
           className="w-full max-w-md rounded-2xl border border-white/10 bg-surface-800 p-8 shadow-2xl"
         >
-          <h2 className="text-xl font-bold text-white">Welcome to sch00l</h2>
+          <h2 id="age-gate-title" className="text-xl font-bold text-white">
+            Welcome to sch00l
+          </h2>
           <p className="mt-2 text-sm text-zinc-400">
             We comply with COPPA and FERPA-friendly practices. Confirm your age
             to continue.
           </p>
 
-          <label className="block mt-6 text-sm text-zinc-300">
+          <label htmlFor="birth-year" className="block mt-6 text-sm text-zinc-300">
             Birth year
             <input
+              id="birth-year"
               type="number"
               required
-              min={1990}
+              min={1920}
               max={new Date().getFullYear()}
               value={birthYear}
               onChange={(e) => setBirthYear(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-white focus:border-brand-400 focus:outline-none"
+              className="mt-2 w-full rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-white focus:border-brand-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
             />
           </label>
 
@@ -137,7 +147,6 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-brand-400 underline hover:text-brand-300"
-                onClick={(e) => e.stopPropagation()}
               >
                 Terms
               </a>{" "}
@@ -147,7 +156,6 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-brand-400 underline hover:text-brand-300"
-                onClick={(e) => e.stopPropagation()}
               >
                 Privacy Policy
               </a>
@@ -159,7 +167,7 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
 
           <button
             type="submit"
-            className="mt-6 w-full rounded-xl bg-brand-500 py-3 font-medium text-white hover:bg-brand-400"
+            className="mt-6 w-full rounded-xl bg-brand-500 py-3 font-medium text-white hover:bg-brand-400 focus-visible:ring-2 focus-visible:ring-brand-400"
           >
             Continue
           </button>
