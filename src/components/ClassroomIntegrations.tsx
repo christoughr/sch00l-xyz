@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Loader2, Link2, Upload, RefreshCw } from "lucide-react";
 import { PLATFORMS, type PlatformId } from "@/lib/integrations";
+import { TeacherLmsOAuth } from "./TeacherLmsOAuth";
 
 type Connection = {
   id: string;
@@ -113,6 +114,8 @@ export function ClassroomIntegrations({
         <Link2 className="h-5 w-5 text-brand-400" />
         <h2 className="text-lg font-semibold text-white">Integrations</h2>
       </div>
+
+      <TeacherLmsOAuth />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {PLATFORMS.map((p) => (

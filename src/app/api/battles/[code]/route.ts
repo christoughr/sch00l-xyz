@@ -76,6 +76,7 @@ export async function GET(
   return NextResponse.json({
     battle: {
       id: battle.id,
+      battleId: battle.id,
       roomCode: battle.room_code,
       classroomId: battle.classroom_id,
       studyTrackId: battle.study_track_id,

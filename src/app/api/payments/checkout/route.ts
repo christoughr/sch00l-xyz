@@ -1,5 +1,6 @@
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { startCheckout } from "@/lib/payments";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -26,7 +27,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const result = await startCheckout(parsed.data.plan, parsed.data.email);
+  let userId: string | undefined;
+  let email = parsed.data.email;
+  const supabase = await createClient();
+  if (supabase) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      userId = user.id;
+      email = user.email ?? email;
+    }
+  }
+
+  const result = await startCheckout(parsed.data.plan, email, userId);
 
   if ("url" in result) {
     return NextResponse.json({ url: result.url });

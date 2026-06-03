@@ -14,9 +14,15 @@ function TeacherClassroomInner({ classroomId }: { classroomId: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const initialTab = (searchParams.get("tab") === "forum"
-    ? "forum"
-    : "overview") as HubTab;
+  const tabParam = searchParams.get("tab");
+  const initialTab = (
+    tabParam === "forum" ||
+    tabParam === "integrations" ||
+    tabParam === "battle" ||
+    tabParam === "assign"
+      ? tabParam
+      : "overview"
+  ) as HubTab;
 
   useEffect(() => {
     fetch(`/api/classrooms/${classroomId}/stats`)

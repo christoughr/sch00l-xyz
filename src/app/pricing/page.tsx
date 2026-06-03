@@ -120,7 +120,7 @@ export default function PricingPage() {
           {proReady ? (
             <PaymentButton
               plan="pro"
-              label="Subscribe to Pro"
+              label={`Subscribe — ${formatUsd(PRICING.pro.priceMonthly)}/mo`}
               highlight
               fallbackHref="/#waitlist"
               fallbackLabel="Join waitlist instead"

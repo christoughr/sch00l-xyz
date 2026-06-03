@@ -18,6 +18,7 @@ type CheckoutOpts = {
   variantId: string;
   plan: "pro" | "tutor_hour";
   email?: string;
+  userId?: string;
   redirectUrl: string;
 };
 
@@ -41,7 +42,10 @@ export async function createLemonCheckout(
         attributes: {
           checkout_data: {
             email: opts.email,
-            custom: { plan: opts.plan },
+            custom: {
+              plan: opts.plan,
+              user_id: opts.userId ?? "",
+            },
           },
           product_options: {
             redirect_url: opts.redirectUrl,

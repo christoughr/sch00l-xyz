@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Sparkles, TrendingUp, Shield, Brain } from "lucide-react";
+import { ExclusiveBattleCta } from "./ExclusiveBattleCta";
 
 const EXCLUSIVE = [
   {
@@ -52,9 +53,10 @@ export default function ExclusivePage() {
             className="flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-5"
           >
             <item.icon className="h-8 w-8 text-brand-400 shrink-0" />
-            <div>
+            <div className="flex-1">
               <h2 className="text-lg font-semibold text-white">{item.title}</h2>
               <p className="text-sm text-zinc-400 mt-1">{item.body}</p>
+              {item.title.includes("Lift Battles") && <ExclusiveBattleCta />}
             </div>
           </li>
         ))}

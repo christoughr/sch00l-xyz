@@ -32,10 +32,22 @@ export function isProUser(): boolean {
   return localStorage.getItem(PRO_KEY) === "1";
 }
 
-/** Call after Stripe Checkout success (local until account sync) */
+/** Call after checkout success (local until account sync) */
 export function activateProLocal(): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(PRO_KEY, "1");
+}
+
+export function deactivateProLocal(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(PRO_KEY);
+}
+
+/** Sync cloud is_pro into local cap bypass */
+export function syncProFromCloud(isPro: boolean): void {
+  if (typeof window === "undefined") return;
+  if (isPro) activateProLocal();
+  else deactivateProLocal();
 }
 
 export function sessionsUsedToday(): number {

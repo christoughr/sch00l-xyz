@@ -34,7 +34,8 @@ export function paymentConfig() {
 
 export async function startCheckout(
   plan: PaymentPlan,
-  email?: string
+  email?: string,
+  userId?: string
 ): Promise<{ url: string } | { error: string; fallbackUrl: string }> {
   const { provider } = paymentConfig();
   const base = SITE_URL.replace(/\/$/, "");
@@ -52,6 +53,7 @@ export async function startCheckout(
       variantId,
       plan,
       email,
+      userId,
       redirectUrl: lemonSuccessUrl(plan),
     });
     if (url) return { url };

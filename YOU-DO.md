@@ -28,7 +28,47 @@ See [RUN_ALL_SQL.md](./RUN_ALL_SQL.md) — migrations **001–011** are applied.
 
 Optional when ready: **`012_budget_tier.sql`** (tutor budget tier on requests).
 
+Before Lemon Squeezy live: **`013_pro_subscription.sql`** (`ls_subscription_id`, `ls_order_id` on profiles).
+
+Before Google/Canvas OAuth: **`014_teacher_oauth.sql`** (`teacher_integrations` table).
+
 Use **Run without RLS** in SQL Editor for large scripts if prompted.
+
+---
+
+## LMS OAuth (operator setup)
+
+### Google Classroom
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → project **sch00l**
+2. Enable **Google Classroom API** and **Google People API**
+3. OAuth consent screen (External). Scopes:
+   - `.../auth/classroom.courses.readonly`
+   - `.../auth/classroom.rosters.readonly`
+4. Credentials → OAuth 2.0 Client ID → Web application  
+   Redirect URI: `https://sch00l.ai/api/integrations/google/callback`
+5. Vercel env:
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `INTEGRATION_TOKEN_KEY` (32+ char secret for AES token encryption; optional — falls back to service role hash)
+
+### Canvas (per institution)
+
+- `CANVAS_CLIENT_ID` / `CANVAS_CLIENT_SECRET` from each school's Canvas admin
+- Teachers enter their Canvas domain (e.g. `myschool.instructure.com`) in Integrations
+- Until approved: **Request Canvas integration** emails `hello@sch00l.ai`
+
+### Lemon Squeezy
+
+| Variable | Purpose |
+|----------|---------|
+| `LEMONSQUEEZY_API_KEY` | Checkout API |
+| `LEMONSQUEEZY_STORE_ID` | Store |
+| `LEMONSQUEEZY_VARIANT_PRO` | Pro subscription variant |
+| `LEMONSQUEEZY_VARIANT_TUTOR` | Tutor hour variant (optional) |
+| `LEMONSQUEEZY_WEBHOOK_SECRET` | Webhook HMAC |
+
+Webhook URL: `https://sch00l.ai/api/lemonsqueezy/webhook`
 
 ---
 
@@ -58,5 +98,3 @@ Manual pilot:
 ## Deferred (see STARRED.md)
 
 - Discord bot marketing
-- Full LMS OAuth (CSV import works today)
-- Lemon Squeezy live checkout

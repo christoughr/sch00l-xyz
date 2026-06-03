@@ -1,31 +1,11 @@
 import crypto from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyFounder } from "@/lib/founder-notify";
+import { setProStatus } from "@/lib/pro-gate";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-async function grantProByEmail(email: string): Promise<void> {
-  const admin = createAdminClient();
-  if (!admin) return;
-
-  const normalized = email.toLowerCase().trim();
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("id")
-    .eq("email", normalized)
-    .maybeSingle();
-
-  if (!profile?.id) return;
-
-  await admin
-    .from("profiles")
-    .update({
-      is_pro: true,
-      pro_since: new Date().toISOString(),
-    })
-    .eq("id", profile.id);
-}
 
 function verifySignature(rawBody: string, signatureHeader: string | null): boolean {
   const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
@@ -39,6 +19,59 @@ function verifySignature(rawBody: string, signatureHeader: string | null): boole
 
   if (hmac.length === 0 || signature.length === 0) return false;
   return crypto.timingSafeEqual(hmac, signature);
+}
+
+async function grantPro(opts: {
+  userId?: string | null;
+  email?: string | null;
+  subscriptionId?: string;
+  orderId?: string;
+}): Promise<void> {
+  const admin = createAdminClient();
+  if (!admin) return;
+
+  if (opts.userId) {
+    await setProStatus(opts.userId, true, {
+      lsSubscriptionId: opts.subscriptionId,
+      lsOrderId: opts.orderId,
+    });
+    return;
+  }
+
+  const email = opts.email?.toLowerCase().trim();
+  if (!email) return;
+
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (profile?.id) {
+    await setProStatus(profile.id, true, {
+      lsSubscriptionId: opts.subscriptionId,
+      lsOrderId: opts.orderId,
+    });
+  }
+}
+
+async function revokePro(opts: {
+  userId?: string | null;
+  email?: string | null;
+}): Promise<void> {
+  const admin = createAdminClient();
+  if (!admin) return;
+
+  let userId = opts.userId;
+  if (!userId && opts.email) {
+    const { data } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("email", opts.email.toLowerCase().trim())
+      .maybeSingle();
+    userId = data?.id;
+  }
+  if (userId) await setProStatus(userId, false);
 }
 
 export async function POST(req: Request) {
@@ -57,9 +90,13 @@ export async function POST(req: Request) {
   const payload = JSON.parse(rawBody) as {
     meta?: {
       event_name?: string;
-      custom_data?: { plan?: string };
+      custom_data?: {
+        plan?: string;
+        user_id?: string;
+      };
     };
     data?: {
+      id?: string;
       attributes?: {
         user_email?: string;
         customer_email?: string;
@@ -71,31 +108,31 @@ export async function POST(req: Request) {
   };
 
   const event = payload.meta?.event_name ?? "";
+  const custom = payload.meta?.custom_data ?? {};
   const email =
     payload.data?.attributes?.user_email ??
     payload.data?.attributes?.customer_email ??
     null;
-  const plan = payload.meta?.custom_data?.plan ?? "unknown";
+  const userId = custom.user_id ?? null;
+  const plan = custom.plan ?? "unknown";
+  const subscriptionId =
+    event.startsWith("subscription") ? payload.data?.id ?? undefined : undefined;
+  const orderId =
+    event === "order_created" ? payload.data?.id ?? undefined : undefined;
 
   try {
     if (
       event === "subscription_created" ||
-      event === "order_created" ||
-      event === "subscription_payment_success"
+      event === "subscription_payment_success" ||
+      (event === "order_created" && plan === "pro")
     ) {
       await notifyFounder({
         kind: "waitlist",
         summary: `Lemon Squeezy: ${event}`,
-        fields: {
-          email,
-          plan,
-          amount: payload.data?.attributes?.total ?? null,
-          currency: payload.data?.attributes?.currency ?? "usd",
-        },
+        fields: { email, plan, userId },
       });
-
-      if (plan === "pro" && email) {
-        await grantProByEmail(email);
+      if (plan === "pro" || event.startsWith("subscription")) {
+        await grantPro({ userId, email, subscriptionId, orderId });
       }
     }
 
@@ -103,8 +140,9 @@ export async function POST(req: Request) {
       await notifyFounder({
         kind: "waitlist",
         summary: `Lemon Squeezy subscription ended: ${event}`,
-        fields: { email, plan },
+        fields: { email, userId },
       });
+      await revokePro({ userId, email });
     }
   } catch (e) {
     console.error("Lemon webhook:", e);
