@@ -1,7 +1,9 @@
 import type { Flashcard, SubjectId } from "./types";
 import { notifyFlashcardsUpdated } from "./flashcards-events";
+import { mapCloudCard } from "./flashcards-map";
+import { STORAGE_KEYS } from "./storage-keys";
 
-const STORAGE_KEY = "sch00l_flashcards_v1";
+const STORAGE_KEY = STORAGE_KEYS.flashcards;
 
 export function loadFlashcards(): Flashcard[] {
   if (typeof window === "undefined") return [];
@@ -78,4 +80,26 @@ export function defaultCardFields(subject: SubjectId) {
     repetitions: 0,
     nextReviewAt: new Date().toISOString(),
   };
+}
+
+/** Merge cloud API rows into localStorage (Nav badge + offline review stay in sync) */
+export function mergeCloudFlashcards(
+  rows: Record<string, unknown>[] | Flashcard[]
+): number {
+  if (typeof window === "undefined" || !rows.length) return 0;
+  const mapped = rows.map((r) =>
+    "front" in r && typeof r.front === "string"
+      ? (r as Flashcard)
+      : mapCloudCard(r as Record<string, unknown>)
+  );
+  const existing = loadFlashcards();
+  const byId = new Map(existing.map((c) => [c.id, c]));
+  for (const c of mapped) byId.set(c.id, c);
+  const merged = Array.from(byId.values()).sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  saveFlashcards(merged);
+  notifyFlashcardsUpdated();
+  return mapped.length;
 }

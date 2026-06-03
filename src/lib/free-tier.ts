@@ -1,7 +1,8 @@
 import { PRICING } from "./pricing";
+import { STORAGE_KEYS } from "./storage-keys";
 
-const KEY = "sch00l_daily_sessions";
-const PRO_KEY = "sch00l_pro_beta";
+const KEY = STORAGE_KEYS.dailySessions;
+const PRO_KEY = STORAGE_KEYS.proBeta;
 
 function todayKey(): string {
   return new Date().toISOString().slice(0, 10);
@@ -63,7 +64,7 @@ export function unrecordSessionStart(): void {
   if (r.count > 0) saveRecord({ date: todayKey(), count: r.count - 1 });
 }
 
-const PENDING_CHECKOUT_KEY = "sch00l_pending_checkout";
+const PENDING_CHECKOUT_KEY = STORAGE_KEYS.pendingCheckout;
 
 export function markPendingCheckout(plan: "pro" | "tutor_hour"): void {
   if (typeof window === "undefined") return;

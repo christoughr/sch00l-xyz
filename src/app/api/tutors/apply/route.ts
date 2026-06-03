@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyFounder } from "@/lib/founder-notify";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -12,6 +13,18 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = clientIp(req);
+  const limited = rateLimit(`tutor-apply:${ip}`, {
+    limit: 5,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many applications. Try later." },
+      { status: 429 }
+    );
+  }
+
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });

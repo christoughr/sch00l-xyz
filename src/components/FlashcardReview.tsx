@@ -5,26 +5,13 @@ import { Layers, Loader2, RotateCcw } from "lucide-react";
 import {
   dueFlashcards,
   loadFlashcards,
+  mergeCloudFlashcards,
   reviewCard,
   saveFlashcards,
 } from "@/lib/flashcards-local";
 import type { Flashcard } from "@/lib/types";
 import { useAuth } from "./AuthProvider";
 import Link from "next/link";
-
-function mapCloudCard(row: Record<string, unknown>): Flashcard {
-  return {
-    id: row.id as string,
-    subject: row.subject as Flashcard["subject"],
-    front: row.front as string,
-    back: row.back as string,
-    easeFactor: row.ease_factor as number,
-    intervalDays: row.interval_days as number,
-    repetitions: row.repetitions as number,
-    nextReviewAt: row.next_review_at as string,
-    createdAt: row.created_at as string,
-  };
-}
 
 export function FlashcardReview() {
   const { user } = useAuth();
@@ -33,19 +20,27 @@ export function FlashcardReview() {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [deck, setDeck] = useState<Flashcard[]>([]);
+  const [syncWarning, setSyncWarning] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setSyncWarning(null);
     if (user) {
-      const res = await fetch("/api/flashcards");
-      if (res.ok) {
-        const data = await res.json();
-        const mapped = (data.cards ?? []).map(mapCloudCard);
-        setCards(mapped);
-        saveFlashcards(mapped);
-        setDeck(dueFlashcards(mapped));
-        setLoading(false);
-        return;
+      try {
+        const res = await fetch("/api/flashcards");
+        if (res.ok) {
+          const data = await res.json();
+          const rows = (data.cards ?? []) as Record<string, unknown>[];
+          mergeCloudFlashcards(rows);
+          const merged = loadFlashcards();
+          setCards(merged);
+          setDeck(dueFlashcards(merged));
+          setLoading(false);
+          return;
+        }
+        setSyncWarning("Using cards saved on this device — cloud sync unavailable.");
+      } catch {
+        setSyncWarning("Using cards saved on this device — cloud sync unavailable.");
       }
     }
     const local = loadFlashcards();
@@ -67,17 +62,24 @@ export function FlashcardReview() {
     saveFlashcards(all);
 
     if (user) {
-      await fetch("/api/flashcards", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: updated.id,
-          ease_factor: updated.easeFactor,
-          interval_days: updated.intervalDays,
-          repetitions: updated.repetitions,
-          next_review_at: updated.nextReviewAt,
-        }),
-      });
+      try {
+        const res = await fetch("/api/flashcards", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: updated.id,
+            ease_factor: updated.easeFactor,
+            interval_days: updated.intervalDays,
+            repetitions: updated.repetitions,
+            next_review_at: updated.nextReviewAt,
+          }),
+        });
+        if (!res.ok) {
+          setSyncWarning("Review saved locally; cloud sync failed.");
+        }
+      } catch {
+        setSyncWarning("Review saved locally; cloud sync failed.");
+      }
     }
 
     const remaining = deck.filter((_, i) => i !== index);
@@ -134,12 +136,19 @@ export function FlashcardReview() {
 
   return (
     <div className="max-w-lg mx-auto">
+      {syncWarning && (
+        <p className="mb-4 text-sm text-amber-300 text-center" role="status">
+          {syncWarning}
+        </p>
+      )}
       <p className="text-center text-sm text-zinc-500 mb-4">
         {deck.length} due · {cards.length} total
       </p>
       <button
         type="button"
         onClick={() => setFlipped((f) => !f)}
+        aria-expanded={flipped}
+        aria-label={flipped ? "Show question" : "Show answer"}
         className="w-full min-h-[220px] rounded-2xl border border-white/10 bg-surface-800 p-8 text-center transition hover:border-brand-400/40"
       >
         <p className="text-xs uppercase tracking-wider text-zinc-500 mb-3">

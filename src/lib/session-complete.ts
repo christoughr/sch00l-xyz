@@ -1,4 +1,8 @@
-import { addFlashcards, defaultCardFields } from "./flashcards-local";
+import {
+  addFlashcards,
+  defaultCardFields,
+  mergeCloudFlashcards,
+} from "./flashcards-local";
 import { bumpMastery, loadProgress, saveProgress } from "./progress";
 import type { SubjectId } from "./types";
 
@@ -51,7 +55,18 @@ export async function onSessionComplete(opts: {
     return { cardsCreated: 0 };
   }
 
-  if (data.mode === "local" && data.cards.length) {
+  if (data.mode === "cloud") {
+    mergeCloudFlashcards(data.cards);
+    if (data.cloudSaveFailed) {
+      return {
+        cardsCreated: data.cards.length,
+        error: "Cards generated but cloud save failed — saved on this device.",
+      };
+    }
+    return { cardsCreated: data.cards.length };
+  }
+
+  if (data.cards.length) {
     const base = defaultCardFields(subject);
     addFlashcards(
       data.cards.map((c: { front: string; back: string }) => ({

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { aggregateLift } from "@/lib/quiz-lift";
 import { isTeacherEmail } from "@/lib/teacher";
 import { NextResponse } from "next/server";
 
@@ -59,7 +60,7 @@ export async function GET(
     supabase.from("student_stats").select("*").in("user_id", userIds),
     supabase
       .from("quiz_results")
-      .select("user_id, phase, score, total, created_at")
+      .select("user_id, phase, score, total, session_id, skipped, created_at")
       .in("user_id", userIds)
       .order("created_at", { ascending: false }),
   ]);
@@ -70,14 +71,20 @@ export async function GET(
     const profile = profiles.data?.find((p) => p.id === uid);
     const st = statsMap.get(uid);
     const userQuizzes = (quizzes.data ?? []).filter((q) => q.user_id === uid);
-    const pre = userQuizzes.find((q) => q.phase === "pre");
-    const post = userQuizzes.find((q) => q.phase === "post");
-    let quizLift: number | null = null;
-    if (pre && post && pre.total > 0 && post.total > 0) {
-      const prePct = (pre.score / pre.total) * 100;
-      const postPct = (post.score / post.total) * 100;
-      quizLift = Math.round(postPct - prePct);
-    }
+    const { lifts } = aggregateLift(
+      userQuizzes.map((q) => ({
+        session_id: q.session_id,
+        user_id: q.user_id,
+        phase: q.phase,
+        score: q.score,
+        total: q.total,
+        skipped: q.skipped,
+      }))
+    );
+    const quizLift =
+      lifts.length > 0
+        ? Math.round(lifts.reduce((a, b) => a + b, 0) / lifts.length)
+        : null;
     return {
       id: uid,
       email: profile?.email ?? "—",

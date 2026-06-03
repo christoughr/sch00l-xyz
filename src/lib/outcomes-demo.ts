@@ -3,7 +3,7 @@ export const OUTCOMES_DEMO = {
   mode: "demo" as const,
   periodDays: 30,
   sessionsCompleted: 127,
-  uniqueStudiers: 48,
+  sessionsTracked: 48,
   averageLiftPercent: 18,
   totalStudyMinutes: 340,
   liftSampleSize: 32,

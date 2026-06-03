@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Loader2, Mail, GraduationCap } from "lucide-react";
+import { STORAGE_KEYS } from "@/lib/storage-keys";
 
 export function WaitlistForm({ source = "landing" }: { source?: string }) {
   const [email, setEmail] = useState("");
@@ -35,13 +37,13 @@ export function WaitlistForm({ source = "landing" }: { source?: string }) {
       setIsEdu(false);
       if (data.mode === "local" && typeof window !== "undefined") {
         const pending = JSON.parse(
-          localStorage.getItem("sch00l_waitlist_pending") ?? "[]"
+          localStorage.getItem(STORAGE_KEYS.waitlist) ?? "[]"
         ) as string[];
         const normalized = email.toLowerCase().trim();
         if (!pending.includes(normalized)) {
           pending.push(normalized);
           localStorage.setItem(
-            "sch00l_waitlist_pending",
+            STORAGE_KEYS.waitlist,
             JSON.stringify(pending)
           );
         }
@@ -57,8 +59,12 @@ export function WaitlistForm({ source = "landing" }: { source?: string }) {
       <form onSubmit={submit} className="space-y-3">
         <div className="flex flex-col gap-2 sm:flex-row">
           <div className="relative flex-1">
+            <label htmlFor={`waitlist-email-${source}`} className="sr-only">
+              Email
+            </label>
             <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
             <input
+              id={`waitlist-email-${source}`}
               type="email"
               required
               value={email}
@@ -82,8 +88,12 @@ export function WaitlistForm({ source = "landing" }: { source?: string }) {
             )}
           </button>
         </div>
-        <label className="flex items-center gap-2 text-sm text-zinc-400">
+        <label
+          htmlFor={`waitlist-edu-${source}`}
+          className="flex items-center gap-2 text-sm text-zinc-400 cursor-pointer"
+        >
           <input
+            id={`waitlist-edu-${source}`}
             type="checkbox"
             checked={isEdu}
             onChange={(e) => setIsEdu(e.target.checked)}
@@ -95,8 +105,18 @@ export function WaitlistForm({ source = "landing" }: { source?: string }) {
       {message && (
         <p
           className={`mt-3 text-sm ${status === "error" ? "text-red-400" : "text-brand-300"}`}
+          role={status === "error" ? "alert" : "status"}
         >
           {message}
+          {status === "ok" && (
+            <>
+              {" "}
+              <Link href="/settings" className="underline text-white">
+                Settings
+              </Link>{" "}
+              → export local data if you need a backup.
+            </>
+          )}
         </p>
       )}
     </div>

@@ -59,8 +59,9 @@ function ProSuccessContent() {
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-white">Almost there</h1>
         <p className="mt-3 text-zinc-400 text-sm">
-          We couldn&apos;t verify checkout from this link. If you just paid, wait
-          a minute and refresh — or email support with your receipt.
+          Pro unlocks only after a real checkout (Stripe or Lemon Squeezy). Opening
+          this URL directly won&apos;t activate Pro. If you just paid, wait a minute
+          and refresh — or join the waitlist on Pricing.
         </p>
         <Link
           href="/pricing"

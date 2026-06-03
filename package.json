@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "check:env": "node scripts/check-env.mjs",
+    "test": "npx --yes tsx --test tests/*.test.ts",
     "discord:register": "node scripts/register-discord-commands.mjs"
   },
   "dependencies": {

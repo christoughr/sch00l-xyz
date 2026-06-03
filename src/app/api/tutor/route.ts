@@ -1,5 +1,6 @@
 import { buildSystemPrompt } from "@/lib/tutor-prompt";
 import { demoTutorReply } from "@/lib/demo-tutor";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import type { SubjectId } from "@/lib/types";
 import { z } from "zod";
 import { NextResponse } from "next/server";
@@ -26,6 +27,18 @@ const requestSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = clientIp(req);
+  const limited = rateLimit(`tutor:${ip}`, {
+    limit: 60,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Try again later." },
+      { status: 429 }
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();

@@ -1,6 +1,6 @@
 # ⭐ STARRED — do later (not blocking launch)
 
-Skip these until you're ready. Everything else runs **local-first** without them.
+Skip these until you're ready. Everything else runs **local-first** without them — see [LOCAL-FIRST.md](./LOCAL-FIRST.md).
 
 ---
 

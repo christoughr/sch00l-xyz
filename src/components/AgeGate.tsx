@@ -170,7 +170,11 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
             </label>
           </div>
 
-          {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+          {error && (
+            <p className="mt-3 text-sm text-red-400" role="alert">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"

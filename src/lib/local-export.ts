@@ -1,16 +1,28 @@
+import { loadLocalConsent } from "./compliance";
 import { loadQuizResultsLocal } from "./quiz-local";
 import { loadProgress } from "./progress";
 import { loadFlashcards } from "./flashcards-local";
 import { loadTutorApplicationsLocal, loadTutorRequestsLocal } from "./tutor-handoff";
-
-const WAITLIST_KEY = "sch00l_waitlist_pending";
+import { STORAGE_KEYS } from "./storage-keys";
 
 export function loadWaitlistLocal(): string[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem(WAITLIST_KEY) ?? "[]") as string[];
+    return JSON.parse(
+      localStorage.getItem(STORAGE_KEYS.waitlist) ?? "[]"
+    ) as string[];
   } catch {
     return [];
+  }
+}
+
+function readRaw(key: string): unknown {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
   }
 }
 
@@ -24,6 +36,10 @@ export function exportLocalDataJson(): string {
       progress: loadProgress(),
       quizResults: loadQuizResultsLocal(),
       flashcards: loadFlashcards(),
+      ageConsent: loadLocalConsent(),
+      freeTier: readRaw(STORAGE_KEYS.dailySessions),
+      proLocal: readRaw(STORAGE_KEYS.proBeta),
+      analyticsSession: readRaw(STORAGE_KEYS.analyticsSession),
     },
     null,
     2

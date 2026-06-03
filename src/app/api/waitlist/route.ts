@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { notifyFounder } from "@/lib/founder-notify";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -13,6 +14,18 @@ const schema = z.object({
 const WAITLIST_LOCAL_KEY = "sch00l_waitlist_pending";
 
 export async function POST(req: Request) {
+  const ip = clientIp(req);
+  const limited = rateLimit(`waitlist:${ip}`, {
+    limit: 10,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many signups from this network. Try later." },
+      { status: 429 }
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();

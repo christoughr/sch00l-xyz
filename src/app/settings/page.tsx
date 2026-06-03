@@ -87,7 +87,7 @@ export default function SettingsPage() {
       <p className="mt-2 text-sm text-zinc-400">
         {user
           ? "Export your data or delete your account (GDPR / FERPA-friendly)."
-          : "Export or clear local browser data — no account required."}
+          : "Export or clear local browser data — includes waitlist, tutor requests, progress, and consent."}
       </p>
 
       {(waitlistLocal > 0 || tutorLocal > 0) && (

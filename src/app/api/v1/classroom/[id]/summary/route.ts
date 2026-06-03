@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { aggregateLift } from "@/lib/quiz-lift";
 import { NextResponse } from "next/server";
 
 /** B2B read-only summary — pass Authorization: Bearer SCH00L_API_KEY */
@@ -43,22 +44,32 @@ export async function GET(
   if (userIds.length > 0) {
     const { data: quizzes } = await admin
       .from("quiz_results")
-      .select("user_id, phase, score, total")
+      .select("user_id, phase, score, total, session_id, skipped")
       .in("user_id", userIds);
 
-    const lifts: number[] = [];
+    const perStudentLifts: number[] = [];
     for (const uid of userIds) {
       const uq = (quizzes ?? []).filter((q) => q.user_id === uid);
-      const pre = uq.find((q) => q.phase === "pre");
-      const post = uq.find((q) => q.phase === "post");
-      if (pre && post && pre.total > 0 && post.total > 0) {
-        lifts.push(
-          Math.round((post.score / post.total) * 100 - (pre.score / pre.total) * 100)
+      const { lifts } = aggregateLift(
+        uq.map((q) => ({
+          session_id: q.session_id,
+          user_id: q.user_id,
+          phase: q.phase,
+          score: q.score,
+          total: q.total,
+          skipped: q.skipped,
+        }))
+      );
+      if (lifts.length) {
+        perStudentLifts.push(
+          Math.round(lifts.reduce((a, b) => a + b, 0) / lifts.length)
         );
       }
     }
-    if (lifts.length) {
-      avgLift = Math.round(lifts.reduce((a, b) => a + b, 0) / lifts.length);
+    if (perStudentLifts.length) {
+      avgLift = Math.round(
+        perStudentLifts.reduce((a, b) => a + b, 0) / perStudentLifts.length
+      );
     }
   }
 

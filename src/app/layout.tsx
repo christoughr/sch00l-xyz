@@ -59,8 +59,16 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <AuthProvider>
           <AgeGate>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:m-2 focus:rounded-lg focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-white"
+            >
+              Skip to main content
+            </a>
             <Nav />
-            <main className="flex-1">{children}</main>
+            <main id="main-content" className="flex-1">
+              {children}
+            </main>
             <Footer />
           </AgeGate>
         </AuthProvider>

@@ -6,6 +6,7 @@ import { PLATFORM_FEE, PRICING, formatUsd } from "@/lib/pricing";
 import { trackEvent } from "@/lib/analytics";
 import { useEffect, useState } from "react";
 import { PaymentButton } from "@/components/PaymentButton";
+import { WaitlistForm } from "@/components/WaitlistForm";
 
 function PlanCard({
   name,
@@ -166,6 +167,22 @@ export default function PricingPage() {
           </Link>
         </PlanCard>
       </div>
+
+      {!proReady && configLoaded && (
+        <section
+          id="waitlist"
+          className="rounded-2xl border border-brand-400/30 bg-brand-500/10 p-8 mb-12 scroll-mt-24"
+        >
+          <h2 className="text-lg font-semibold text-white">Join the Pro waitlist</h2>
+          <p className="mt-2 text-sm text-zinc-400 max-w-lg">
+            Checkout isn&apos;t live yet. Get notified when unlimited AI sessions
+            are available.
+          </p>
+          <div className="mt-6">
+            <WaitlistForm source="pricing" />
+          </div>
+        </section>
+      )}
 
       <section className="rounded-2xl border border-white/10 bg-white/5 p-8">
         <h2 className="text-lg font-semibold text-white">How sch00l makes money</h2>

@@ -1,4 +1,6 @@
-const CONSENT_KEY = "sch00l_age_consent_v1";
+import { ALL_LOCAL_STORAGE_KEYS, STORAGE_KEYS } from "./storage-keys";
+
+const CONSENT_KEY = STORAGE_KEYS.ageConsent;
 
 export type AgeConsent = {
   birthYear: number;
@@ -33,16 +35,7 @@ export function saveLocalConsent(consent: AgeConsent): void {
 
 export function clearLocalUserData(): void {
   if (typeof window === "undefined") return;
-  const keys = [
-    CONSENT_KEY,
-    "sch00l_progress_v1",
-    "sch00l_flashcards_v1",
-    "sch00l_quiz_results_v1",
-    "sch00l_waitlist_pending",
-    "sch00l_tutor_requests_v1",
-    "sch00l_tutor_applications_v1",
-  ];
-  keys.forEach((k) => localStorage.removeItem(k));
+  ALL_LOCAL_STORAGE_KEYS.forEach((k) => localStorage.removeItem(k));
 }
 
 export function canUseApp(consent: AgeConsent | null): boolean {

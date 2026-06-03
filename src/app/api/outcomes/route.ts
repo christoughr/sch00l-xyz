@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { OUTCOMES_DEMO } from "@/lib/outcomes-demo";
+import { aggregateLift } from "@/lib/quiz-lift";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -23,7 +24,7 @@ export async function GET() {
       .in("event_name", ["session_complete", "session_setup"]),
     client
       .from("quiz_results")
-      .select("user_id, phase, score, total, created_at")
+      .select("user_id, phase, score, total, session_id, skipped, created_at")
       .gte("created_at", since.toISOString())
       .order("created_at", { ascending: false })
       .limit(500),
@@ -36,30 +37,23 @@ export async function GET() {
   const completedSessions =
     eventsRes.data?.filter((e) => e.event_name === "session_complete").length ?? 0;
 
-  const uniqueStudiers = new Set(
-    eventsRes.data?.map((e) => e.session_id) ?? []
+  const sessionsTracked = new Set(
+    eventsRes.data
+      ?.filter((e) => e.event_name === "session_complete" && e.session_id)
+      .map((e) => e.session_id) ?? []
   ).size;
 
-  let averageLiftPercent: number | null = null;
   const quizzes = quizRes.data ?? [];
-  const byUser = new Map<string, { pre?: number; post?: number }>();
-  for (const q of quizzes) {
-    const key = q.user_id ?? "anon";
-    const pct = Math.round((q.score / q.total) * 100);
-    const entry = byUser.get(key) ?? {};
-    if (q.phase === "pre" && entry.pre === undefined) entry.pre = pct;
-    if (q.phase === "post" && entry.post === undefined) entry.post = pct;
-    byUser.set(key, entry);
-  }
-  const lifts: number[] = [];
-  for (const { pre, post } of byUser.values()) {
-    if (pre !== undefined && post !== undefined) lifts.push(post - pre);
-  }
-  if (lifts.length) {
-    averageLiftPercent = Math.round(
-      lifts.reduce((a, b) => a + b, 0) / lifts.length
-    );
-  }
+  const { lifts, averageLiftPercent } = aggregateLift(
+    quizzes.map((q) => ({
+      session_id: (q as { session_id?: string }).session_id,
+      user_id: q.user_id,
+      phase: q.phase,
+      score: q.score,
+      total: q.total,
+      skipped: (q as { skipped?: boolean }).skipped,
+    }))
+  );
 
   const totalStudyMinutes =
     sessionsRes.data?.reduce((acc, s) => acc + (s.minutes_studied ?? 0), 0) ?? 0;
@@ -68,7 +62,7 @@ export async function GET() {
     mode: "cloud" as const,
     periodDays: 30,
     sessionsCompleted: completedSessions,
-    uniqueStudiers,
+    sessionsTracked,
     averageLiftPercent,
     totalStudyMinutes,
     liftSampleSize: lifts.length,

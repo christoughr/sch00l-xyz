@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { demoFlashcardsFromChat } from "@/lib/demo-generators";
 import { chatCompletion, parseJsonArray } from "@/lib/llm";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import type { SubjectId } from "@/lib/types";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -24,6 +25,18 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = clientIp(req);
+  const limited = rateLimit(`flashcards-gen:${ip}`, {
+    limit: 30,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Try again later." },
+      { status: 429 }
+    );
+  }
+
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -71,9 +84,13 @@ Front = question/prompt. Back = concise answer (1-3 sentences). Based on the stu
     const { data, error } = await supabase.from("flashcards").insert(rows).select();
     if (error) {
       console.error("Flashcard insert:", error);
-    } else {
-      return NextResponse.json({ cards: data, mode: "cloud" as const });
+      return NextResponse.json({
+        cards,
+        mode: "local" as const,
+        cloudSaveFailed: true,
+      });
     }
+    return NextResponse.json({ cards: data, mode: "cloud" as const });
   }
 
   return NextResponse.json({ cards, mode: "local" as const });

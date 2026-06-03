@@ -13,6 +13,7 @@ import {
 import {
   addFlashcards,
   defaultCardFields,
+  mergeCloudFlashcards,
 } from "@/lib/flashcards-local";
 import { useAuth } from "./AuthProvider";
 import { TutorRequestForm } from "./TutorRequestForm";
@@ -204,7 +205,15 @@ export function TutorChat({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      if (data.mode === "local" && data.cards) {
+      if (data.mode === "cloud" && Array.isArray(data.cards)) {
+        mergeCloudFlashcards(data.cards);
+        const count = data.cards.length;
+        setCardsMsg(
+          data.cloudSaveFailed
+            ? `Created ${count} cards on this device (cloud save failed).`
+            : `Created ${count} flashcards. Review them in Cards.`
+        );
+      } else if (data.cards) {
         const base = defaultCardFields(subject);
         addFlashcards(
           data.cards.map((c: { front: string; back: string }) => ({
@@ -213,10 +222,10 @@ export function TutorChat({
             back: c.back,
           }))
         );
+        setCardsMsg(
+          `Created ${data.cards.length} flashcards. Review them in Cards.`
+        );
       }
-
-      const count = Array.isArray(data.cards) ? data.cards.length : 0;
-      setCardsMsg(`Created ${count} flashcards. Review them in Cards.`);
     } catch {
       setCardsMsg("Could not generate flashcards. Try again.");
     } finally {

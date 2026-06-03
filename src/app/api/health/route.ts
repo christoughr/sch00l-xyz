@@ -6,10 +6,10 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const payments = paymentConfig();
-  return NextResponse.json({
-    ok: true,
-    service: "sch00l",
-    time: new Date().toISOString(),
+  const hasAiKey = !!process.env.OPENAI_API_KEY;
+  const aiMode = hasAiKey ? "live" : "demo";
+
+  const checks = {
     supabase: !!(
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -19,6 +19,15 @@ export async function GET() {
     proCheckout: payments.proReady,
     founderWebhook: founderWebhookConfigured(),
     discordBot: discordBotConfigured(),
-    ai: !!process.env.OPENAI_API_KEY,
+    ai: hasAiKey,
+    aiMode,
+  };
+
+  return NextResponse.json({
+    ok: true,
+    service: "sch00l",
+    version: process.env.npm_package_version ?? "0.1.0",
+    time: new Date().toISOString(),
+    ...checks,
   });
 }

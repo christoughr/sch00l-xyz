@@ -1,5 +1,6 @@
 import { demoQuiz } from "@/lib/demo-generators";
 import { chatCompletion, parseJsonArray } from "@/lib/llm";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import type { QuizQuestion, SubjectId } from "@/lib/types";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -20,6 +21,18 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = clientIp(req);
+  const limited = rateLimit(`quiz-gen:${ip}`, {
+    limit: 40,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Try again later." },
+      { status: 429 }
+    );
+  }
+
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });

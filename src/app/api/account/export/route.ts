@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { ALL_LOCAL_STORAGE_KEYS } from "@/lib/storage-keys";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -6,12 +7,9 @@ export async function GET() {
   if (!supabase) {
     return NextResponse.json({
       export: {
-        note: "Sign in with Supabase for cloud export. Local data is in browser storage.",
-        localKeys: [
-          "sch00l_progress_v1",
-          "sch00l_flashcards_v1",
-          "sch00l_quiz_results_v1",
-        ],
+        note:
+          "Sign in with Supabase for cloud export. For browser data use Settings → Export local data.",
+        localKeys: ALL_LOCAL_STORAGE_KEYS,
       },
     });
   }
