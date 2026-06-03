@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { SITE_URL } from "@/lib/site";
 import { decryptToken, encryptToken } from "@/lib/token-crypto";
 
 const SCOPES = [
@@ -11,9 +12,7 @@ export function googleOAuthConfigured(): boolean {
 }
 
 export function siteUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "http://localhost:3000"
-  );
+  return SITE_URL.replace(/\/$/, "");
 }
 
 export function googleRedirectUri(): string {
