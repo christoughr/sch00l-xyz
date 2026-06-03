@@ -24,6 +24,9 @@ export function TeacherPilotGuide() {
   const [supabaseLive, setSupabaseLive] = useState(false);
   const [isTeacher, setIsTeacher] = useState(false);
   const [classroomCount, setClassroomCount] = useState(0);
+  const [studentCount, setStudentCount] = useState(0);
+  const [totalClassMinutes, setTotalClassMinutes] = useState(0);
+  const [hasQuizLift, setHasQuizLift] = useState(false);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -44,22 +47,34 @@ export function TeacherPilotGuide() {
           if (!cancelled) setIsTeacher(!!me.isTeacher);
 
           if (me.isTeacher) {
-            const rooms = await fetch("/api/classrooms").then((r) => r.json());
+            const [rooms, pilot] = await Promise.all([
+              fetch("/api/classrooms").then((r) => r.json()),
+              fetch("/api/teacher/pilot-status").then((r) => r.json()),
+            ]);
             if (!cancelled) {
               setClassroomCount(
                 Array.isArray(rooms.classrooms) ? rooms.classrooms.length : 0
               );
+              setStudentCount(pilot.studentCount ?? 0);
+              setTotalClassMinutes(pilot.totalClassMinutes ?? 0);
+              setHasQuizLift(!!pilot.hasQuizLift);
             }
           }
         } catch {
           if (!cancelled) {
             setIsTeacher(false);
             setClassroomCount(0);
+            setStudentCount(0);
+            setTotalClassMinutes(0);
+            setHasQuizLift(false);
           }
         }
       } else if (!cancelled) {
         setIsTeacher(false);
         setClassroomCount(0);
+        setStudentCount(0);
+        setTotalClassMinutes(0);
+        setHasQuizLift(false);
       }
 
       if (!cancelled) setChecking(false);
@@ -72,6 +87,9 @@ export function TeacherPilotGuide() {
   }, [user]);
 
   const teacherEmailOk = supabaseReady && isTeacher;
+  const inviteDone = studentCount >= 1;
+  const unitDone = totalClassMinutes >= 15 || hasQuizLift;
+  const exportReady = inviteDone && unitDone;
 
   const steps: { title: string; body: string; state: StepState }[] = [
     {
@@ -99,19 +117,23 @@ export function TeacherPilotGuide() {
       state: classroomCount > 0 ? "done" : teacherEmailOk ? "current" : "pending",
     },
     {
-      title: "Invite 15–30 students",
-      body: "Share code + https://sch00l.ai/join",
-      state: classroomCount > 0 ? "current" : "pending",
+      title: "Invite students",
+      body: inviteDone
+        ? `${studentCount} on roster — any class size (1 to 100+). Share https://sch00l.ai/join + your code.`
+        : "Share https://sch00l.ai/join + classroom code (any class size).",
+      state: inviteDone ? "done" : classroomCount > 0 ? "current" : "pending",
     },
     {
       title: "Run one 2-week unit",
-      body: "Same topic for everyone — measure class-wide lift.",
-      state: "pending",
+      body: unitDone
+        ? `${totalClassMinutes} min logged — keep same track for the class.`
+        : "Pick one track on Study — everyone does the same topic (~2 weeks).",
+      state: unitDone ? "done" : inviteDone ? "current" : "pending",
     },
     {
       title: "Export outcomes",
-      body: "Screenshot /outcomes + classroom stats for your pitch deck.",
-      state: "pending",
+      body: "Screenshot /outcomes + classroom Dashboard for your pitch deck.",
+      state: exportReady ? "current" : "pending",
     },
   ];
 

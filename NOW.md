@@ -29,6 +29,12 @@ npm run test:e2e
 
 ---
 
+## Roadmap vs rivals
+
+See **[COMPETITORS.md](./COMPETITORS.md)** — Kahoot-style battles, class forums, assign unit, timed practice tests (1600.io / AP / GMAT / etc.), build order.
+
+---
+
 ## When ready (any order)
 
 | Service | Doc |
