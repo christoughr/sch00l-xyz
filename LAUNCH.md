@@ -8,7 +8,8 @@
 - Study tracks: AP Calc AB, SAT Math, AP Bio, Custom
 - Analytics events + `/outcomes` dashboard (cloud stats when Supabase on)
 - Auto flashcards, learning lift, share link, teacher pilot guide
-- Migrations `001`–`004` ready in `supabase/migrations/`
+- **AI + human tutor linkage** — `/tutors`, session handoff, teacher request inbox
+- Migrations `001`–`005` ready in `supabase/migrations/`
 
 ## Skipped (your choice)
 
