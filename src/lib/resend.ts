@@ -26,16 +26,11 @@ export function magicLinkEmailHtml(email: string, actionLink: string): string {
 </body></html>`;
 }
 
-export async function sendViaResend(opts: {
-  to: string;
-  subject: string;
-  html: string;
-}): Promise<{ ok: true } | { ok: false; error: string }> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  if (!apiKey) {
-    return { ok: false, error: "RESEND_API_KEY not configured" };
-  }
-
+async function sendOnce(
+  apiKey: string,
+  from: string,
+  opts: { to: string; subject: string; html: string }
+): Promise<{ ok: true } | { ok: false; error: string }> {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -43,7 +38,7 @@ export async function sendViaResend(opts: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: resendFromAddress(),
+      from,
       to: [opts.to],
       subject: opts.subject,
       html: opts.html,
@@ -63,4 +58,33 @@ export async function sendViaResend(opts: {
   }
 
   return { ok: true };
+}
+
+export async function sendViaResend(opts: {
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (!apiKey) {
+    return { ok: false, error: "RESEND_API_KEY not configured" };
+  }
+
+  const primary = resendFromAddress();
+  let result = await sendOnce(apiKey, primary, opts);
+
+  if (
+    !result.ok &&
+    result.error.toLowerCase().includes("domain is not verified")
+  ) {
+    const fallback = "sch00l <onboarding@resend.dev>";
+    result = await sendOnce(apiKey, fallback, opts);
+    if (result.ok) return result;
+    return {
+      ok: false,
+      error: `${result.error} — Verify sch00l.ai at https://resend.com/domains then use hello@sch00l.ai as sender.`,
+    };
+  }
+
+  return result;
 }
