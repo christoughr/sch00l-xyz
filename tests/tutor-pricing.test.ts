@@ -5,7 +5,7 @@ import { tutorRateRange } from "../src/lib/tutor-pricing";
 describe("tutor-pricing", () => {
   it("returns competitive ranges by subject", () => {
     const m = tutorRateRange("math");
-    assert.ok(m.min >= 28 && m.max <= 100);
+    assert.ok(m.min >= 45 && m.max <= 150);
     assert.ok(m.typical >= m.min && m.typical <= m.max);
   });
 

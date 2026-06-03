@@ -89,8 +89,8 @@ export default function PricingPage() {
         </p>
         <h1 className="text-3xl font-bold text-white sm:text-4xl">Pricing</h1>
         <p className="mt-3 text-zinc-400 max-w-xl mx-auto">
-          Start free with Socratic AI. Join the Pro waitlist for unlimited sessions,
-          or request a human tutor with your AI session summary included.
+          Start free with Socratic AI (1 session/day). Pro checkout opens when our
+          payment store is live — join the waitlist meanwhile, or request a human tutor.
         </p>
         {configLoaded && !proReady && !tutorReady && (
           <p className="mt-4 text-sm text-amber-200/90 max-w-md mx-auto">

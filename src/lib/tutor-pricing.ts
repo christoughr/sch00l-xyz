@@ -3,8 +3,10 @@ import type { SubjectId } from "./subject-ids";
 /** Market-competitive ranges — tutors set their own rate inside band. */
 export type TutorBudgetTier = "budget" | "standard" | "premium" | "urgent";
 
+import { PLATFORM_FEE } from "./pricing";
+
 export const TUTOR_MARKET = {
-  platformFeePercent: 25,
+  platformFeePercent: PLATFORM_FEE.humanTutorPercent,
   tiers: {
     budget: { label: "Budget", multiplier: 0.75 },
     standard: { label: "Standard", multiplier: 1 },
@@ -14,24 +16,24 @@ export const TUTOR_MARKET = {
 } as const;
 
 const BASE_RATES: Record<SubjectId, { min: number; typical: number; max: number }> = {
-  math: { min: 32, typical: 48, max: 78 },
-  science: { min: 34, typical: 52, max: 85 },
-  english: { min: 28, typical: 42, max: 65 },
-  history: { min: 28, typical: 40, max: 60 },
-  cs: { min: 38, typical: 55, max: 90 },
-  languages: { min: 30, typical: 45, max: 70 },
-  economics: { min: 32, typical: 48, max: 72 },
-  psychology: { min: 30, typical: 44, max: 68 },
-  geography: { min: 28, typical: 40, max: 58 },
-  philosophy: { min: 30, typical: 45, max: 70 },
-  art: { min: 28, typical: 42, max: 62 },
-  music: { min: 32, typical: 48, max: 75 },
-  business: { min: 35, typical: 52, max: 80 },
-  engineering: { min: 40, typical: 58, max: 95 },
-  health: { min: 36, typical: 52, max: 82 },
-  statistics: { min: 34, typical: 50, max: 78 },
-  social_studies: { min: 28, typical: 40, max: 58 },
-  other: { min: 28, typical: 42, max: 70 },
+  math: { min: 45, typical: 65, max: 110 },
+  science: { min: 48, typical: 70, max: 120 },
+  english: { min: 40, typical: 58, max: 95 },
+  history: { min: 40, typical: 55, max: 85 },
+  cs: { min: 52, typical: 75, max: 130 },
+  languages: { min: 42, typical: 62, max: 100 },
+  economics: { min: 45, typical: 65, max: 105 },
+  psychology: { min: 42, typical: 60, max: 98 },
+  geography: { min: 40, typical: 55, max: 80 },
+  philosophy: { min: 42, typical: 62, max: 100 },
+  art: { min: 40, typical: 58, max: 90 },
+  music: { min: 45, typical: 68, max: 110 },
+  business: { min: 48, typical: 70, max: 115 },
+  engineering: { min: 55, typical: 78, max: 140 },
+  health: { min: 50, typical: 72, max: 115 },
+  statistics: { min: 48, typical: 68, max: 110 },
+  social_studies: { min: 40, typical: 55, max: 85 },
+  other: { min: 40, typical: 58, max: 95 },
 };
 
 export function tutorRateRange(
