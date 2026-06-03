@@ -10,6 +10,8 @@ import { SessionQuiz } from "@/components/SessionQuiz";
 import { CopyShareLink } from "@/components/CopyShareLink";
 import { TutorRequestForm } from "@/components/TutorRequestForm";
 import { StudyPersonalizationBanner } from "@/components/StudyPersonalizationBanner";
+import { ClassDiscussionBanner } from "@/components/ClassDiscussionBanner";
+import { StudyFeatureStrip } from "@/components/StudyFeatureStrip";
 import { onSessionComplete } from "@/lib/session-complete";
 import { trackEvent } from "@/lib/analytics";
 import {
@@ -28,6 +30,7 @@ import { SITE_URL } from "@/lib/site";
 import type { StudyTrackId } from "@/lib/study-tracks";
 import { getStudyTrack } from "@/lib/study-tracks";
 import type { SubjectId } from "@/lib/types";
+import { tutorRateRange } from "@/lib/tutor-pricing";
 
 const SHARE_URL = `${SITE_URL}/study`;
 
@@ -183,8 +186,10 @@ export default function StudyPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <div className="mb-6">
+      <div className="mb-6 space-y-4">
         <DailyReviewBanner />
+        <ClassDiscussionBanner />
+        <StudyFeatureStrip />
       </div>
 
       <div className="mb-8">
@@ -450,10 +455,13 @@ export default function StudyPage() {
               New session
             </button>
           </div>
-          <div className="mt-6 pt-6 border-t border-white/10 text-left max-w-md mx-auto">
+          <div className="mt-6 pt-6 border-t border-white/10 text-left max-w-lg mx-auto w-full">
             <p className="text-sm font-medium text-white mb-1">Still stuck?</p>
             <p className="text-xs text-zinc-500 mb-3">
-              Human tutors from {formatUsdLink()} — AI summary included.
+              Human tutors {formatUsdLink(subject)} — AI summary included.{" "}
+              <Link href="/tutors" className="text-brand-400 underline">
+                Full request form
+              </Link>
             </p>
             <TutorRequestForm
               subject={subject}
@@ -461,6 +469,7 @@ export default function StudyPage() {
               transcript={transcript}
               preScore={preScore}
               postScore={postScore}
+              rateRange={tutorRateRange(subject)}
               compact
             />
           </div>
@@ -470,10 +479,11 @@ export default function StudyPage() {
   );
 }
 
-function formatUsdLink() {
+function formatUsdLink(subject: SubjectId) {
+  const r = tutorRateRange(subject);
   return (
-    <Link href="/pricing" className="text-brand-400 underline">
-      $49/hr
+    <Link href="/tutors" className="text-brand-400 underline">
+      ${r.min}–${r.max}/hr
     </Link>
   );
 }

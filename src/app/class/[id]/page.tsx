@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { BookOpen, Loader2, MessageSquare } from "lucide-react";
 import { ClassroomAnnouncements } from "@/components/ClassroomAnnouncements";
 import { ClassroomForum } from "@/components/ClassroomForum";
@@ -16,19 +17,24 @@ type Assignment = {
   dueAt: string | null;
 };
 
-export default function StudentClassPage({
+function StudentClassContent({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const [classroomId, setClassroomId] = useState("");
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState<"home" | "forum">("home");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     params.then((p) => setClassroomId(p.id));
   }, [params]);
+
+  useEffect(() => {
+    if (searchParams.get("tab") === "forum") setTab("forum");
+  }, [searchParams]);
 
   useEffect(() => {
     if (!classroomId) return;
@@ -54,7 +60,7 @@ export default function StudentClassPage({
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <Link
-        href="/join"
+        href="/my-classes"
         className="text-sm text-zinc-500 hover:text-zinc-300 mb-6 inline-block"
       >
         ← My classes
@@ -132,5 +138,23 @@ export default function StudentClassPage({
         <ClassroomForum classroomId={classroomId} isTeacher={false} />
       )}
     </div>
+  );
+}
+
+export default function StudentClassPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-400" />
+        </div>
+      }
+    >
+      <StudentClassContent params={params} />
+    </Suspense>
   );
 }

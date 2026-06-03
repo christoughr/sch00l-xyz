@@ -173,6 +173,12 @@ export function TeacherPortal() {
 
   return (
     <div className="space-y-10">
+      <p className="text-sm text-zinc-500 mb-6">
+        Open a class → tabs for Assign, Live battle, Forum, Integrations.{" "}
+        <Link href="/community" className="text-brand-400 hover:underline">
+          Feature map
+        </Link>
+      </p>
       <section>
         <h2 className="text-lg font-semibold text-white mb-4">Your classrooms</h2>
         <form onSubmit={createClass} className="flex gap-2 mb-6">

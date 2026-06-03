@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X, LogOut, User } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { Logo } from "./Logo";
 import { useAuth } from "./AuthProvider";
 import { dueFlashcards, loadFlashcards } from "@/lib/flashcards-local";
@@ -13,12 +13,14 @@ type NavLink = { href: string; label: string; showDue?: boolean };
 
 const primaryLinks: NavLink[] = [
   { href: "/study", label: "Study" },
+  { href: "/my-classes", label: "Classes" },
   { href: "/practice", label: "Practice" },
   { href: "/flashcards", label: "Cards", showDue: true },
   { href: "/progress", label: "Progress" },
 ];
 
 const moreLinks: NavLink[] = [
+  { href: "/community", label: "Community" },
   { href: "/tutors", label: "Tutors" },
   { href: "/pricing", label: "Pricing" },
   { href: "/outcomes", label: "Outcomes" },
@@ -30,6 +32,17 @@ export function Nav() {
   const [cardsDue, setCardsDue] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pro, setPro] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await signOut();
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   useEffect(() => {
     setPro(isProUser());
@@ -134,12 +147,12 @@ export function Nav() {
               {user ? (
                 <button
                   type="button"
-                  onClick={() => signOut()}
-                  aria-label="Sign out"
-                  className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:text-white"
+                  onClick={handleSignOut}
+                  disabled={signingOut}
+                  className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:text-white disabled:opacity-50"
                 >
-                  <User className="h-4 w-4" />
-                  <LogOut className="h-3 w-3" />
+                  <LogOut className="h-4 w-4" />
+                  {signingOut ? "Signing out…" : "Sign out"}
                 </button>
               ) : (
                 <Link
@@ -198,13 +211,14 @@ export function Nav() {
                 <button
                   type="button"
                   onClick={() => {
-                    signOut();
                     setMenuOpen(false);
+                    void handleSignOut();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400"
+                  disabled={signingOut}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400 disabled:opacity-50"
                 >
                   <LogOut className="h-4 w-4" />
-                  Sign out
+                  {signingOut ? "Signing out…" : "Sign out"}
                 </button>
               ) : (
                 <Link

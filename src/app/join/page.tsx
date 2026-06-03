@@ -33,6 +33,12 @@ export default function JoinPage() {
             <JoinClassroom />
           </div>
           <StudentAssignments />
+          <p className="mt-6 text-center text-sm text-zinc-500">
+            Already joined?{" "}
+            <Link href="/my-classes" className="text-brand-400 hover:underline">
+              My classes & discussion →
+            </Link>
+          </p>
         </>
       )}
     </div>

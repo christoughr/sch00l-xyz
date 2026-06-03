@@ -133,11 +133,11 @@ export default function PricingPage() {
         </PlanCard>
         <PlanCard
           name={human.name}
-          price={formatUsd(human.studentRatePerHour)}
+          price={`${formatUsd(human.rateFrom)}–${formatUsd(human.rateTo)}`}
           period="/hr"
           features={[
             ...human.features,
-            `Tutors earn ${formatUsd(human.tutorPayoutPerHour)}/hr · platform ${PLATFORM_FEE.humanTutorPercent}%`,
+            "18% platform fee — tutors keep the rest",
           ]}
         >
           {tutorReady ? (
@@ -187,10 +187,9 @@ export default function PricingPage() {
       <section className="rounded-2xl border border-white/10 bg-white/5 p-8">
         <h2 className="text-lg font-semibold text-white">How sch00l makes money</h2>
         <p className="mt-2 text-sm text-zinc-400 max-w-2xl">
-          We keep the platform fee on human tutoring ({PLATFORM_FEE.humanTutorPercent}%
-          of {formatUsd(human.studentRatePerHour)}/hr ={" "}
-          {formatUsd(human.platformFeePerHour)} to sch00l per hour). Pro subscriptions
-          and school seats are 100% platform revenue.
+          Human tutoring uses competitive market ranges (not one fixed price). Typical
+          ~{formatUsd(human.studentRatePerHour)}/hr with 18% platform fee. Pro and school
+          seats are platform revenue.
         </p>
       </section>
     </div>

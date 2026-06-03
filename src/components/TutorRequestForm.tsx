@@ -5,6 +5,7 @@ import { Loader2, UserRound, Mail } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { saveTutorRequestLocal } from "@/lib/tutor-handoff";
 import type { SubjectId } from "@/lib/types";
+import type { TutorBudgetTier } from "@/lib/tutor-pricing";
 
 export function TutorRequestForm({
   subject,
@@ -12,6 +13,8 @@ export function TutorRequestForm({
   transcript,
   preScore,
   postScore,
+  budgetTier = "standard",
+  rateRange,
   compact = false,
 }: {
   subject: SubjectId;
@@ -19,6 +22,8 @@ export function TutorRequestForm({
   transcript?: string;
   preScore?: number | null;
   postScore?: number | null;
+  budgetTier?: TutorBudgetTier;
+  rateRange?: { min: number; typical: number; max: number };
   compact?: boolean;
 }) {
   const [email, setEmail] = useState("");
@@ -47,6 +52,9 @@ export function TutorRequestForm({
           preScore: preScore ?? undefined,
           postScore: postScore ?? undefined,
           urgency,
+          budgetTier,
+          rateMin: rateRange?.min,
+          rateMax: rateRange?.max,
           summarize: !!transcript,
         }),
       });
@@ -65,12 +73,11 @@ export function TutorRequestForm({
         });
       }
 
-      trackEvent("tutor_request", { subject, urgency });
+      trackEvent("tutor_request", { subject, urgency, budgetTier });
       setStatus("ok");
       setMessage(
-        urgency === "before_test"
-          ? `${data.message} (Marked urgent — exam within 48h.)`
-          : data.message
+        data.message ??
+          `We'll match tutors in your $${rateRange?.min ?? "?"}-$${rateRange?.max ?? "?"}/hr range.`
       );
       setEmail("");
       setUrgency("normal");
@@ -90,11 +97,9 @@ export function TutorRequestForm({
 
   return (
     <form onSubmit={submit} className={compact ? "space-y-3" : "space-y-4"}>
-      {!compact && (
-        <p className="text-sm text-zinc-400">
-          AI got you started — a human tutor can go deeper. We send your session
-          summary (topic, where you&apos;re stuck, quiz scores) so they pick up
-          where the AI left off.
+      {compact && rateRange && (
+        <p className="text-xs text-zinc-500">
+          Human tutors ~${rateRange.min}–${rateRange.max}/hr · you approve the match
         </p>
       )}
       <div className="relative">
@@ -121,7 +126,7 @@ export function TutorRequestForm({
       <button
         type="submit"
         disabled={status === "loading"}
-        className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-400 disabled:opacity-50"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-400 disabled:opacity-50"
       >
         {status === "loading" ? (
           <Loader2 className="h-4 w-4 animate-spin" />

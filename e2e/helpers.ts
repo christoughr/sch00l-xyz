@@ -1,5 +1,15 @@
 import type { Page } from "@playwright/test";
 
+const CONSENT_KEY = "sch00l_age_consent_v1";
+
+const E2E_CONSENT = {
+  birthYear: 2000,
+  isUnder13: false,
+  parentalConsent: true,
+  termsAccepted: true,
+  at: new Date().toISOString(),
+};
+
 export async function acceptAgeGate(page: Page) {
   await page.addInitScript(() => {
     localStorage.setItem(
@@ -13,6 +23,23 @@ export async function acceptAgeGate(page: Page) {
       })
     );
   });
+}
+
+/** Navigate after consent; reload once if age gate still blocks content. */
+export async function gotoApp(page: Page, path: string) {
+  await acceptAgeGate(page);
+  await page.goto(path, { waitUntil: "domcontentloaded" });
+
+  const gate = page.getByRole("heading", { name: "Welcome to sch00l" });
+  if (await gate.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await page.evaluate(
+      ({ key, data }) => localStorage.setItem(key, data),
+      { key: CONSENT_KEY, data: JSON.stringify(E2E_CONSENT) }
+    );
+    await page.reload({ waitUntil: "domcontentloaded" });
+  }
+
+  await gate.waitFor({ state: "hidden", timeout: 15_000 }).catch(() => {});
 }
 
 /** Seed paired pre/post quiz for learning lift on /progress */

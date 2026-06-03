@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Download, Trash2 } from "lucide-react";
+import { Loader2, Download, Trash2, LogOut } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { clearLocalUserData } from "@/lib/compliance";
 import { downloadLocalExport, loadWaitlistLocal } from "@/lib/local-export";
@@ -19,7 +19,17 @@ export default function SettingsPage() {
     setStatusKind(kind);
   }
   const [busy, setBusy] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const showCloudActions = !!user;
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    try {
+      await signOut();
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   async function exportData() {
     setBusy(true);
@@ -96,6 +106,22 @@ export default function SettingsPage() {
           {waitlistLocal === 1 ? "" : "s"}, {tutorLocal} tutor request
           {tutorLocal === 1 ? "" : "s"}.
         </p>
+      )}
+
+      {user && (
+        <button
+          type="button"
+          onClick={handleSignOut}
+          disabled={signingOut || busy}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-sm text-white hover:bg-white/10 disabled:opacity-50"
+        >
+          {signingOut ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <LogOut className="h-4 w-4" />
+          )}
+          {signingOut ? "Signing out…" : "Sign out"}
+        </button>
       )}
 
       <div className="mt-8 space-y-4">

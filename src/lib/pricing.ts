@@ -2,7 +2,7 @@
 
 export const PLATFORM_FEE = {
   /** Human tutor: student pays hourly; sch00l keeps this % */
-  humanTutorPercent: 35,
+  humanTutorPercent: 18,
   /** Pro subscription: 100% to sch00l (no rev share) */
   proMarginPercent: 100,
   /** School B2B: per-seat SaaS, 100% to sch00l */
@@ -34,15 +34,17 @@ export const PRICING = {
   },
   humanTutor: {
     name: "Human tutor",
-    /** What student pays per hour */
-    studentRatePerHour: 49,
-    /** sch00l platform fee per hour at 35% */
-    platformFeePerHour: Math.round(49 * (PLATFORM_FEE.humanTutorPercent / 100)),
-    tutorPayoutPerHour: Math.round(49 * (1 - PLATFORM_FEE.humanTutorPercent / 100)),
+    /** Display anchor — actual rates are market ranges per subject */
+    studentRatePerHour: 42,
+    rateFrom: 28,
+    rateTo: 95,
+    platformFeePerHour: 0,
+    tutorPayoutPerHour: 0,
     features: [
-      "Vetted AP/SAT tutors",
+      "Market rates — typically $28–$95/hr by subject",
+      "You pick budget tier; tutors bid in range",
       "AI session summary included — no repeating yourself",
-      "Pay only for time used",
+      "Pay only after you approve a match",
     ],
   },
   school: {

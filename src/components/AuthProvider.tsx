@@ -74,8 +74,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signOut() {
     const supabase = createClient();
-    if (supabase) await supabase.auth.signOut();
+    try {
+      if (supabase) {
+        await supabase.auth.signOut({ scope: "global" });
+      }
+      await fetch("/api/auth/signout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      /* still clear local state */
+    }
     setUser(null);
+    if (typeof window !== "undefined") {
+      window.location.assign("/");
+    }
   }
 
   return (

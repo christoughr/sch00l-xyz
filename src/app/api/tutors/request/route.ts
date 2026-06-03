@@ -17,6 +17,9 @@ const schema = z.object({
   preScore: z.number().int().min(0).max(100).optional(),
   postScore: z.number().int().min(0).max(100).optional(),
   urgency: z.enum(["normal", "before_test"]).default("normal"),
+  budgetTier: z.enum(["budget", "standard", "premium", "urgent"]).optional(),
+  rateMin: z.number().int().optional(),
+  rateMax: z.number().int().optional(),
   summarize: z.boolean().optional(),
 });
 
