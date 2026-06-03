@@ -38,10 +38,16 @@ function LoginForm() {
     if (!supabase) return;
 
     setStatus("loading");
+    const trimmed = email.trim().toLowerCase();
+    const next =
+      trimmed === "hello@sch00l.ai" || trimmed.endsWith("@sch00l.ai")
+        ? "/teacher"
+        : "/study";
+
     const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
+      email: trimmed,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/study`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
 
@@ -50,7 +56,10 @@ function LoginForm() {
       setMessage(error.message);
     } else {
       setStatus("sent");
-      setMessage("Check your email for the magic link.");
+      setMessage(
+        "If you don’t see it in 2–3 minutes, check spam and Promotions. " +
+          "Still nothing? Set up custom SMTP in Supabase (see SUPABASE_AUTH.md in the repo)."
+      );
     }
   }
 
@@ -115,11 +124,18 @@ function LoginForm() {
       </form>
 
       {message && (
-        <p
-          className={`mt-4 text-sm ${status === "error" ? "text-red-400" : "text-brand-300"}`}
+        <div
+          className={`mt-4 text-sm space-y-2 ${status === "error" ? "text-red-400" : "text-brand-300"}`}
         >
-          {message}
-        </p>
+          <p>{message}</p>
+          {status === "sent" && (
+            <p className="text-zinc-500 text-xs leading-relaxed">
+              Sender is usually Supabase until you add SMTP (Resend + hello@sch00l.ai).
+              Link goes to <span className="text-zinc-400">/auth/callback</span> on
+              this domain.
+            </p>
+          )}
+        </div>
       )}
 
       <p className="mt-8 text-center text-sm text-zinc-500">
