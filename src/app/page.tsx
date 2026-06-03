@@ -9,6 +9,7 @@ import {
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { CopyShareLink } from "@/components/CopyShareLink";
 import { DailyReviewBanner } from "@/components/DailyReviewBanner";
+import { OutcomesTeaser } from "@/components/OutcomesTeaser";
 import { LEGACY_DOMAIN, SITE_DOMAIN, SITE_URL } from "@/lib/site";
 
 const features = [
@@ -72,6 +73,8 @@ export default function HomePage() {
           </Link>
           <CopyShareLink url={`${SITE_URL}/study`} />
         </div>
+
+        <OutcomesTeaser />
 
         <p className="mt-8 text-sm text-zinc-500">
           Free: 3 AI sessions/day · Pro & human tutors on{" "}

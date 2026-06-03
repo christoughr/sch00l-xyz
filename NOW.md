@@ -1,34 +1,33 @@
-# NOW — code only (no Discord server yet)
+# NOW — code shipped, keys when ready
 
-**⭐ Starred (do later):** [STARRED.md](./STARRED.md)  
-- Supabase · Lemon Squeezy · **Discord** · marketing (X pin, sharing)
-
-**Site works without all of these:** https://sch00l.ai/study
+**⭐ Starred:** [STARRED.md](./STARRED.md)
 
 ---
 
-## What works today (no setup)
+## ✅ Just deployed
 
-| Feature | URL |
-|---------|-----|
-| Study + lift | /study |
-| Progress | /progress |
-| Flashcards | /flashcards |
-| Tutor request | /tutors (saved on user's device) |
-| Pro interest | /#waitlist (local until cloud) |
+| # | What |
+|---|------|
+| 1 | **Lemon Squeezy** — `/api/payments/checkout`, webhook, pricing wired |
+| 2 | **UX** — waitlist dedupe, tutor apply local save, pricing cleanup, a11y |
+| 3 | **Outcomes demo** — `/outcomes` + landing teaser (+18% avg lift) |
 
 ---
 
-## Next code tasks (pick one — tell the agent)
+## Verify (no keys needed)
 
-1. **Lemon Squeezy** checkout scaffold (when you have LS account)
-2. **Product polish** — bugs, UX, mobile
-3. **Outcomes page** — show demo lift stats for landing
-
-Reply with what you want, e.g. `코드 2` or `Lemon Squeezy 준비`.
+- https://sch00l.ai/outcomes — demo stats + example sessions
+- https://sch00l.ai — “Early beta: avg learning lift +18%” banner
+- https://sch00l.ai/pricing — waitlist mode until LS keys
 
 ---
 
-## When you create a Discord server
+## When Lemon Squeezy account ready
 
-Open [DISCORD.md](./DISCORD.md) — Part A takes ~5 min. No code changes needed.
+Paste env vars → redeploy. Details in [STARRED.md](./STARRED.md) Lemon Squeezy section.
+
+---
+
+## When Discord server ready
+
+[DISCORD.md](./DISCORD.md) Part A (webhook only).

@@ -40,6 +40,7 @@ export function clearLocalUserData(): void {
     "sch00l_quiz_results_v1",
     "sch00l_waitlist_pending",
     "sch00l_tutor_requests_v1",
+    "sch00l_tutor_applications_v1",
   ];
   keys.forEach((k) => localStorage.removeItem(k));
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2, GraduationCap } from "lucide-react";
+import { saveTutorApplicationLocal } from "@/lib/tutor-handoff";
 import { SUBJECTS } from "@/lib/subjects";
 
 export function TutorApplyForm() {
@@ -38,6 +39,17 @@ export function TutorApplyForm() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+
+      if (data.mode === "local") {
+        saveTutorApplicationLocal({
+          email: email.trim(),
+          displayName: displayName.trim(),
+          subjects,
+          bio: bio || undefined,
+          credentials: credentials || undefined,
+        });
+      }
+
       setStatus("ok");
       setMessage(data.message);
     } catch (err) {
@@ -75,6 +87,7 @@ export function TutorApplyForm() {
             <button
               key={s.id}
               type="button"
+              aria-pressed={subjects.includes(s.id)}
               onClick={() => toggleSubject(s.id)}
               className={`rounded-lg px-3 py-1 text-xs border ${
                 subjects.includes(s.id)

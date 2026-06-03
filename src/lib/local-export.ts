@@ -1,7 +1,7 @@
 import { loadQuizResultsLocal } from "./quiz-local";
 import { loadProgress } from "./progress";
 import { loadFlashcards } from "./flashcards-local";
-import { loadTutorRequestsLocal } from "./tutor-handoff";
+import { loadTutorApplicationsLocal, loadTutorRequestsLocal } from "./tutor-handoff";
 
 const WAITLIST_KEY = "sch00l_waitlist_pending";
 
@@ -20,6 +20,7 @@ export function exportLocalDataJson(): string {
       exportedAt: new Date().toISOString(),
       waitlist: loadWaitlistLocal(),
       tutorRequests: loadTutorRequestsLocal(),
+      tutorApplications: loadTutorApplicationsLocal(),
       progress: loadProgress(),
       quizResults: loadQuizResultsLocal(),
       flashcards: loadFlashcards(),

@@ -26,28 +26,27 @@ Skip these until you're ready. Everything else runs **local-first** without them
 
 ## ⭐ Lemon Squeezy (payments — Korea-friendly)
 
-**Why later:** Stripe doesn't support Korea; LS is the planned MoR.
+**Why later:** need LS account + variant IDs. **Code is ready** — paste env vars when account exists.
 
 **When ready:**
 
 1. [lemonsqueezy.com](https://lemonsqueezy.com) → Store
-2. Products:
-   - **Pro** — $14.99/mo subscription
-   - **Human tutor** — $49 one-time (optional)
-3. Vercel env (agent will wire checkout when you paste these):
+2. Products: **Pro** $14.99/mo · **Human tutor** $49 (optional)
+3. Vercel env:
 
 | Variable | Example |
 |----------|---------|
-| `LEMONSQUEEZY_API_KEY` | from Settings → API |
-| `LEMONSQUEEZY_STORE_ID` | store numeric ID |
-| `LEMONSQUEEZY_VARIANT_PRO` | variant ID for Pro |
-| `LEMONSQUEEZY_VARIANT_TUTOR` | variant ID for 1hr tutor |
-| `LEMONSQUEEZY_WEBHOOK_SECRET` | from webhook settings |
+| `LEMONSQUEEZY_API_KEY` | Settings → API |
+| `LEMONSQUEEZY_STORE_ID` | store ID |
+| `LEMONSQUEEZY_VARIANT_PRO` | variant ID |
+| `LEMONSQUEEZY_VARIANT_TUTOR` | variant ID (optional) |
+| `LEMONSQUEEZY_WEBHOOK_SECRET` | webhook signing secret |
 
-4. Webhook URL: `https://sch00l.ai/api/lemonsqueezy/webhook` *(route TBD when keys ready)*
-5. Success redirect → `https://sch00l.ai/pro/success`
+4. Webhook URL: `https://sch00l.ai/api/lemonsqueezy/webhook`  
+   Events: `order_created`, `subscription_created`, `subscription_payment_success`, `subscription_cancelled`
+5. Redeploy → `/pricing` shows **Subscribe to Pro**
 
-**Until then:** Pro → waitlist · Tutor → `/tutors` request form · manual matching by email.
+**Until then:** Pro waitlist · Tutor request form.
 
 ---
 

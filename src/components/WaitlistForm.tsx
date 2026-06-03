@@ -37,11 +37,14 @@ export function WaitlistForm({ source = "landing" }: { source?: string }) {
         const pending = JSON.parse(
           localStorage.getItem("sch00l_waitlist_pending") ?? "[]"
         ) as string[];
-        pending.push(email);
-        localStorage.setItem(
-          "sch00l_waitlist_pending",
-          JSON.stringify(pending)
-        );
+        const normalized = email.toLowerCase().trim();
+        if (!pending.includes(normalized)) {
+          pending.push(normalized);
+          localStorage.setItem(
+            "sch00l_waitlist_pending",
+            JSON.stringify(pending)
+          );
+        }
       }
     } catch (err) {
       setStatus("error");

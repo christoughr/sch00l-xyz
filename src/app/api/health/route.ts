@@ -1,9 +1,11 @@
 import { discordBotConfigured } from "@/lib/discord-bot";
 import { founderWebhookConfigured } from "@/lib/founder-notify";
-import { isStripeConfigured } from "@/lib/stripe";
+import { isLemonSqueezyConfigured } from "@/lib/lemonsqueezy";
+import { paymentConfig } from "@/lib/payments";
 import { NextResponse } from "next/server";
 
 export async function GET() {
+  const payments = paymentConfig();
   return NextResponse.json({
     ok: true,
     service: "sch00l",
@@ -12,7 +14,9 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     ),
-    stripe: isStripeConfigured(),
+    lemonSqueezy: isLemonSqueezyConfigured(),
+    payments: payments.provider,
+    proCheckout: payments.proReady,
     founderWebhook: founderWebhookConfigured(),
     discordBot: discordBotConfigured(),
     ai: !!process.env.OPENAI_API_KEY,

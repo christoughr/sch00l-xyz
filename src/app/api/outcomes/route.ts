@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { OUTCOMES_DEMO } from "@/lib/outcomes-demo";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -7,14 +8,7 @@ export async function GET() {
   const supabase = await createClient();
 
   if (!admin && !supabase) {
-    return NextResponse.json({
-      mode: "local" as const,
-      message: "Cloud stats unlock when Supabase is configured.",
-      sessionsCompleted: null,
-      averageLiftPercent: null,
-      totalStudyMinutes: null,
-      uniqueStudiers: null,
-    });
+    return NextResponse.json(OUTCOMES_DEMO);
   }
 
   const client = admin ?? supabase!;
