@@ -28,6 +28,9 @@ export function JoinClassroom() {
       if (!res.ok) throw new Error(data.error);
       setStatus("ok");
       setMessage(`Joined "${data.classroom.name}"!`);
+      if (data.classroom?.id && typeof localStorage !== "undefined") {
+        localStorage.setItem("sch00l_classroom_id", data.classroom.id);
+      }
       setCode("");
     } catch (err) {
       setStatus("error");

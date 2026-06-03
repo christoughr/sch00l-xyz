@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ComingSoonBanner } from "@/components/ComingSoonBanner";
 import { JoinClassroom } from "@/components/JoinClassroom";
+import { StudentAssignments } from "@/components/StudentAssignments";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 
 export default function JoinPage() {
@@ -31,6 +32,7 @@ export default function JoinPage() {
           <div className="mt-8">
             <JoinClassroom />
           </div>
+          <StudentAssignments />
         </>
       )}
     </div>

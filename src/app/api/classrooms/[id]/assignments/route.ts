@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { buildSectionTopic } from "@/lib/track-sections";
 import { isTeacherEmail } from "@/lib/teacher";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -6,7 +7,9 @@ import { z } from "zod";
 const createSchema = z.object({
   title: z.string().min(2).max(120),
   studyTrackId: z.string().min(1).max(80).optional(),
-  topic: z.string().max(200).optional(),
+  sectionId: z.string().max(40).optional(),
+  topic: z.string().max(300).optional(),
+  materialId: z.string().uuid().optional(),
   dueAt: z.string().datetime().optional(),
   assignToAll: z.boolean().default(true),
   studentIds: z.array(z.string().uuid()).optional(),
@@ -48,7 +51,7 @@ export async function GET(
   const { data: assignments, error } = await supabase
     .from("classroom_assignments")
     .select(
-      "id, title, study_track_id, topic, due_at, assign_to_all, created_at"
+      "id, title, study_track_id, section_id, topic, material_id, due_at, assign_to_all, created_at"
     )
     .eq("classroom_id", classroomId)
     .order("created_at", { ascending: false });
@@ -78,6 +81,8 @@ export async function GET(
       id: a.id,
       title: a.title,
       studyTrackId: a.study_track_id,
+      sectionId: a.section_id,
+      materialId: a.material_id,
       topic: a.topic,
       dueAt: a.due_at,
       assignToAll: a.assign_to_all,
@@ -123,6 +128,11 @@ export async function POST(
 
   const body = parsed.data;
   const assignToAll = body.assignToAll !== false && !body.studentIds?.length;
+  const topic =
+    body.topic ??
+    (body.studyTrackId && body.sectionId
+      ? buildSectionTopic(body.studyTrackId, body.sectionId)
+      : body.topic ?? null);
 
   const { data: row, error } = await supabase
     .from("classroom_assignments")
@@ -131,7 +141,9 @@ export async function POST(
       teacher_id: user.id,
       title: body.title,
       study_track_id: body.studyTrackId ?? null,
-      topic: body.topic ?? null,
+      section_id: body.sectionId ?? null,
+      topic,
+      material_id: body.materialId ?? null,
       due_at: body.dueAt ?? null,
       assign_to_all: assignToAll,
     })

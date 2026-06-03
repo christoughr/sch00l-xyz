@@ -157,6 +157,10 @@ export function TutorChat({
           gradeLevel,
           topic: topic?.trim() || undefined,
           trackContext: trackContext?.trim() || undefined,
+          classroomId:
+            typeof localStorage !== "undefined"
+              ? localStorage.getItem("sch00l_classroom_id") ?? undefined
+              : undefined,
           studentContext: (() => {
             const ctx = getLocalStudentContext({
               subject,

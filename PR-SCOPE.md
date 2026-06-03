@@ -14,11 +14,11 @@
 | A2 | **Assign study track** | API + dashboard UI: pick track, due date, whole class or selected students |
 | A3 | **Student assignment home** | `/join` or `/home` shows “Your assignments” with deep link to Study |
 | A4 | **Per-student progress on assignment** | Dashboard: % complete, minutes, lift per student per assignment |
-| A5 | **Upload materials** | Drag-drop + click upload → Supabase Storage bucket `classroom-materials` |
-| A6 | **Material → AI context** | Tutor/quiz prompts include uploaded PDF/text excerpts (RAG-lite) |
-| A7 | **Manual gradebook column** | Teacher override score / notes per assignment |
-| A8 | **Google Classroom import** | CSV or Classroom API: roster + assignment sync (read-only v1) |
-| A9 | **Canvas LTI / Common Cartridge** | Import course structure (phase 2) |
+| A5 | **Upload materials** | ✅ Drag-drop + Storage `classroom-materials` |
+| A6 | **Material → AI context** | ✅ Tutor gets classroom material excerpts |
+| A7 | **Manual gradebook column** | ✅ Score + notes per student (first assignment) |
+| A8 | **Google Classroom import** | ✅ CSV roster import + invite copy |
+| A9 | **Canvas LTI / Common Cartridge** | ✅ CSV + basic CC XML parse (full LTI later) |
 | A10 | **Announcements stream** | Teacher posts; students see pinned on class home |
 | A11 | **Calendar + due dates** | iCal export, email reminders (Resend) |
 
@@ -82,7 +82,7 @@
 | PR | Title | Deliverables |
 |----|--------|--------------|
 | F1 | **Assign → default track** | Student opens assignment → pre-selected track |
-| F2 | **Section-level assign** | Sub-unit within track (chapter tags) |
+| F2 | **Section-level assign** | ✅ Unit sections per track on assign form |
 | F3 | **Class-wide lift dashboard** | Chart over 2-week unit |
 | F4 | **Parent read-only portal** | Minutes + lift only |
 

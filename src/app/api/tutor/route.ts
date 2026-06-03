@@ -1,3 +1,4 @@
+import { getClassroomMaterialContext } from "@/lib/classroom-material-context";
 import { buildSystemPrompt } from "@/lib/tutor-prompt";
 import { demoTutorReply } from "@/lib/demo-tutor";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
@@ -22,6 +23,7 @@ const requestSchema = z.object({
   gradeLevel: z.string().max(80).optional(),
   topic: z.string().max(120).optional(),
   trackContext: z.string().max(500).optional(),
+  classroomId: z.string().uuid().optional(),
   studentContext: studentContextSchema,
 });
 
@@ -53,8 +55,12 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages, subject, gradeLevel, topic, trackContext, studentContext } =
+  const { messages, subject, gradeLevel, topic, trackContext, classroomId, studentContext } =
     parsed.data;
+
+  const materialContext = classroomId
+    ? await getClassroomMaterialContext(classroomId)
+    : "";
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
 
   const studentBlock = studentContext
@@ -110,7 +116,7 @@ export async function POST(req: Request) {
               gradeLevel,
               topic,
               trackContext,
-              studentBlock
+              studentBlock + materialContext
             ),
           },
           ...messages.map((m) => ({
