@@ -1,56 +1,80 @@
 # YOU-DO — only things you must do
 
-Everything else is built and deployed. See **`CODE_REVIEW.md`** for full audit + Claude second-review prompt.
+Everything else is built and deployed. Stripe checkout + webhook code is ready — you only add keys.
 
 ---
 
-## 💰 Monetization (your decisions + setup)
+## Phase 0 — Today (15 min)
 
-We built pricing + limits. **You connect payments:**
-
-| Stream | Your action |
-|--------|-------------|
-| **Pro $14.99/mo** | Stripe Checkout → unlock unlimited AI (replace `free-tier` local hack) |
-| **Human tutor $49/hr** | Stripe Connect or manual invoice; sch00l keeps **35%** (~$17/hr) |
-| **School $9/seat/mo** | Find 1 teacher → pilot → invoice or Stripe |
-
-**Pages live:** https://sch00l.ai/pricing · https://sch00l.ai/tutors
+1. Open https://sch00l.ai/study → complete one session (pre → tutor → post)
+2. Screenshot your **learning lift** %
+3. Share using copy in **`SHARE.md`** (10–20 people)
 
 ---
 
-## 🔥 This week
+## Phase 1 — This week
 
-1. **Share** https://sch00l.ai/study (10–20 people)
-2. **Recruit 3 tutors** → https://sch00l.ai/tutors apply form
-3. **Match tutor requests manually** (email) until Stripe live
-4. Collect lift screenshots + feedback
-
----
-
-## 📅 Supabase (when support replies)
-
-Run SQL **001 → 006** (006 = quiz session pairing for accurate lift)
-
-Vercel env: `NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY`, `TEACHER_EMAILS`
-
-Auth redirect: `https://sch00l.ai/auth/callback` → Redeploy
+| Task | Link / action |
+|------|----------------|
+| Share study link | https://sch00l.ai/study |
+| Recruit 3 human tutors | https://sch00l.ai/tutors (apply form) |
+| Match tutor requests by email | Until Stripe keys are live |
+| Collect feedback + lift screenshots | For `/outcomes` social proof |
 
 ---
 
-## 📅 Stripe (when ready — big revenue unlock)
+## Phase 2 — Supabase (when support replies)
 
-1. Create Stripe account
-2. Products: Pro monthly, Human tutor hour
-3. Webhook → Vercel `/api/stripe/webhook` (TODO in code)
-4. Tutor payouts: Stripe Connect Express for partner tutors
+Run SQL in order: **001 → 007** (`007` = Pro + payments tables)
+
+Vercel env:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `TEACHER_EMAILS` (your email)
+
+Auth redirect: `https://sch00l.ai/auth/callback` → **Redeploy**
 
 ---
 
-## ❌ Skip (your choice)
+## Phase 3 — Stripe (revenue unlock)
 
-- Groq key rotation
-- DNS (working)
+1. [dashboard.stripe.com](https://dashboard.stripe.com) → create account
+2. **Products**
+   - Pro — recurring **$14.99/month**
+   - Human tutor — one-time **$49** (1 hour)
+3. Copy **Price IDs** → Vercel:
+
+| Variable | Value |
+|----------|--------|
+| `STRIPE_SECRET_KEY` | `sk_live_...` |
+| `STRIPE_WEBHOOK_SECRET` | from webhook endpoint |
+| `STRIPE_PRICE_PRO_MONTHLY` | `price_...` |
+| `STRIPE_PRICE_TUTOR_HOUR` | `price_...` |
+
+4. Stripe → **Developers → Webhooks** → Add endpoint:
+   - URL: `https://sch00l.ai/api/stripe/webhook`
+   - Events: `checkout.session.completed`, `customer.subscription.deleted`
+5. **Redeploy** Vercel → test https://sch00l.ai/pricing → Subscribe to Pro
+
+Tutor payouts later: Stripe Connect Express (manual email matching until then).
 
 ---
 
-**Now:** share + recruit tutors. **Next money:** Stripe + Supabase.
+## Phase 4 — Optional school pilot
+
+1 teacher → 1 classroom → https://sch00l.ai/teacher
+
+---
+
+## Skip (your choice)
+
+- Groq API key rotation
+- DNS (working on sch00l.ai)
+
+---
+
+**Agent already shipped:** pricing, free tier limits, tutor linkage, analytics, PWA, Stripe APIs, migration 007.
+
+**You ship:** share → tutors → Supabase → Stripe keys.

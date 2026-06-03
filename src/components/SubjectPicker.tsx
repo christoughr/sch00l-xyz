@@ -16,6 +16,7 @@ export function SubjectPicker({
         <button
           key={s.id}
           type="button"
+          aria-pressed={value === s.id}
           onClick={() => onChange(s.id)}
           className={`rounded-xl border p-3 text-left transition ${
             value === s.id

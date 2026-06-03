@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
 import { PLATFORM_FEE, PRICING, formatUsd } from "@/lib/pricing";
 import { trackEvent } from "@/lib/analytics";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { CheckoutButton } from "@/components/CheckoutButton";
 
 function PlanCard({
   name,
@@ -12,16 +13,14 @@ function PlanCard({
   period,
   highlight,
   features,
-  cta,
-  href,
+  children,
 }: {
   name: string;
   price: string;
   period?: string;
   highlight?: boolean;
   features: readonly string[];
-  cta: string;
-  href: string;
+  children: React.ReactNode;
 }) {
   return (
     <article
@@ -46,23 +45,20 @@ function PlanCard({
           </li>
         ))}
       </ul>
-      <Link
-        href={href}
-        className={`mt-6 block text-center rounded-xl py-3 text-sm font-medium ${
-          highlight
-            ? "bg-brand-500 text-white hover:bg-brand-400"
-            : "border border-white/15 text-zinc-300 hover:bg-white/5"
-        }`}
-      >
-        {cta}
-      </Link>
+      {children}
     </article>
   );
 }
 
 export default function PricingPage() {
+  const [stripeReady, setStripeReady] = useState(false);
+
   useEffect(() => {
     trackEvent("upgrade_view", { page: "pricing" });
+    fetch("/api/stripe/config")
+      .then((r) => r.json())
+      .then((d) => setStripeReady(!!d.enabled && !!d.proPriceConfigured))
+      .catch(() => setStripeReady(false));
   }, []);
 
   const human = PRICING.humanTutor;
@@ -86,18 +82,29 @@ export default function PricingPage() {
           name={PRICING.free.name}
           price={formatUsd(0)}
           features={PRICING.free.features}
-          cta="Start free"
-          href="/study"
-        />
+        >
+          <Link
+            href="/study"
+            className="mt-6 block text-center rounded-xl py-3 text-sm font-medium border border-white/15 text-zinc-300 hover:bg-white/5"
+          >
+            Start free
+          </Link>
+        </PlanCard>
         <PlanCard
           name={PRICING.pro.name}
           price={formatUsd(PRICING.pro.priceMonthly)}
           period="/mo"
           highlight
           features={PRICING.pro.features}
-          cta="Join Pro waitlist"
-          href="/#waitlist"
-        />
+        >
+          <CheckoutButton
+            plan="pro"
+            label={stripeReady ? "Subscribe to Pro" : "Join Pro waitlist"}
+            highlight
+            fallbackHref="/#waitlist"
+            fallbackLabel="Join waitlist instead"
+          />
+        </PlanCard>
         <PlanCard
           name={human.name}
           price={formatUsd(human.studentRatePerHour)}
@@ -106,9 +113,14 @@ export default function PricingPage() {
             ...human.features,
             `Tutors earn ${formatUsd(human.tutorPayoutPerHour)}/hr · platform ${PLATFORM_FEE.humanTutorPercent}%`,
           ]}
-          cta="Request tutor"
-          href="/tutors"
-        />
+        >
+          <CheckoutButton
+            plan="tutor_hour"
+            label="Book 1 hour"
+            fallbackHref="/tutors"
+            fallbackLabel="Request tutor instead"
+          />
+        </PlanCard>
         <PlanCard
           name={PRICING.school.name}
           price={formatUsd(PRICING.school.pricePerStudentMonth)}
@@ -117,9 +129,14 @@ export default function PricingPage() {
             ...PRICING.school.features,
             `Min ${PRICING.school.minimumSeats} seats`,
           ]}
-          cta="Contact for pilot"
-          href="/teacher"
-        />
+        >
+          <Link
+            href="/teacher"
+            className="mt-6 block text-center rounded-xl py-3 text-sm font-medium border border-white/15 text-zinc-300 hover:bg-white/5"
+          >
+            Contact for pilot
+          </Link>
+        </PlanCard>
       </div>
 
       <section className="rounded-2xl border border-white/10 bg-white/5 p-8">

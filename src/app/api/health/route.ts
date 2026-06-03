@@ -1,3 +1,4 @@
+import { isStripeConfigured } from "@/lib/stripe";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -5,5 +6,11 @@ export async function GET() {
     ok: true,
     service: "sch00l",
     time: new Date().toISOString(),
+    supabase: !!(
+      process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ),
+    stripe: isStripeConfigured(),
+    ai: !!process.env.OPENAI_API_KEY,
   });
 }

@@ -8,7 +8,7 @@
 
 ## Executive summary
 
-sch00l is a Next.js 16 student tutoring app with AI (Groq), local-first progress, optional Supabase, human tutor handoff, and a freemium pricing model. This review found **3 P0 bugs** (now fixed), several UX/a11y gaps (mostly fixed), and **monetization gaps** (pricing page + free tier limits added; Stripe still TODO).
+sch00l is a Next.js 16 student tutoring app with AI (Groq), local-first progress, optional Supabase, human tutor handoff, and a freemium pricing model. P0 bugs fixed; Stripe checkout + webhook scaffolded (needs Vercel env keys).
 
 ---
 
@@ -16,8 +16,8 @@ sch00l is a Next.js 16 student tutoring app with AI (Groq), local-first progress
 
 | Stream | Student pays | sch00l keeps | Status |
 |--------|-------------|--------------|--------|
-| **Pro** | $14.99/mo | ~100% | Waitlist / local limit only — **Stripe TODO** |
-| **Human tutor** | $49/hr | **35% (~$17/hr)** | Request flow live — **payment TODO** |
+| **Pro** | $14.99/mo | ~100% | Checkout API + webhook — **add Stripe keys** |
+| **Human tutor** | $49/hr | **35% (~$17/hr)** | Checkout + request flow — **add Stripe keys** |
 | **School B2B** | $9/seat/mo (30 min) | ~100% | Teacher portal — **contracts TODO** |
 | **Free AI** | $0 | Loss leader (3 sessions/day) | **Implemented** |
 
@@ -66,7 +66,7 @@ See `src/lib/pricing.ts` and `/pricing`.
 
 | Item | Recommendation |
 |------|----------------|
-| **Stripe** | Pro checkout + tutor session payment; webhooks |
+| **Stripe keys** | Set env vars in Vercel (code shipped) |
 | **SubjectPicker a11y** | `aria-pressed` on toggles |
 | **TeacherPortal.tsx** | Split `ClassroomStats`; replace `alert()` |
 | **Outcomes API** | Rename "unique studiers" → sessions tracked |
@@ -111,4 +111,4 @@ Data
 
 ## Verdict
 
-**Ship-ready for public beta** with local-first mode. **Not payment-ready** until Stripe + Supabase migrations 001–006 are run in production.
+**Ship-ready for public beta** with local-first mode. **Payment-ready** once Stripe env vars + webhook are set; run Supabase migrations 001–007 for cloud Pro sync.

@@ -51,6 +51,7 @@ export function TeacherPortal() {
   const [newName, setNewName] = useState("");
   const [isTeacher, setIsTeacher] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -98,6 +99,7 @@ export function TeacherPortal() {
     e.preventDefault();
     if (!newName.trim()) return;
     setCreating(true);
+    setCreateError(null);
     try {
       const res = await fetch("/api/classrooms", {
         method: "POST",
@@ -105,11 +107,13 @@ export function TeacherPortal() {
         body: JSON.stringify({ name: newName.trim() }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error ?? "Could not create classroom");
       setNewName("");
       await load();
-    } catch {
-      alert("Could not create classroom");
+    } catch (e) {
+      setCreateError(
+        e instanceof Error ? e.message : "Could not create classroom"
+      );
     } finally {
       setCreating(false);
     }
@@ -190,6 +194,11 @@ export function TeacherPortal() {
             Create
           </button>
         </form>
+        {createError && (
+          <p className="mb-4 text-sm text-amber-300" role="alert">
+            {createError}
+          </p>
+        )}
 
         {classrooms.length === 0 ? (
           <p className="text-sm text-zinc-500">

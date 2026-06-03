@@ -16,6 +16,7 @@ export function StudyTrackPicker({
         <button
           key={track.id}
           type="button"
+          aria-pressed={value === track.id}
           onClick={() => onChange(track)}
           className={`rounded-xl border p-4 text-left transition ${
             value === track.id

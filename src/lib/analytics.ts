@@ -10,7 +10,9 @@ export type AnalyticsEventName =
   | "track_selected"
   | "tutor_request"
   | "pre_quiz_skipped"
-  | "upgrade_view";
+  | "upgrade_view"
+  | "checkout_start"
+  | "pro_activated";
 
 export function getAnalyticsSessionId(): string {
   if (typeof window === "undefined") return "server";

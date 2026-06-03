@@ -26,6 +26,10 @@ git push -u origin main
    - `supabase/migrations/001_initial.sql`
    - `supabase/migrations/002_classrooms.sql`
    - `supabase/migrations/003_compliance.sql`
+   - `supabase/migrations/004_analytics.sql`
+   - `supabase/migrations/005_tutor_linkage.sql`
+   - `supabase/migrations/006_quiz_session_id.sql`
+   - `supabase/migrations/007_stripe_pro.sql`
 3. **Authentication → URL Configuration**
    - Site URL: `https://sch00l.ai`
    - Redirect URLs:
@@ -53,8 +57,18 @@ git push -u origin main
 | `OPENAI_BASE_URL` | `https://api.groq.com/openai/v1` (optional) |
 | `OPENAI_MODEL` | `llama-3.3-70b-versatile` (optional) |
 | `TEACHER_EMAILS` | `you@gmail.com,co-founder@school.edu` |
+| `STRIPE_SECRET_KEY` | `sk_live_...` (optional until monetization) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_...` |
+| `STRIPE_PRICE_PRO_MONTHLY` | `price_...` ($14.99/mo) |
+| `STRIPE_PRICE_TUTOR_HOUR` | `price_...` ($49 one-time) |
 
 4. Deploy → note the `.vercel.app` URL
+
+### Stripe webhook
+
+- Endpoint: `https://sch00l.ai/api/stripe/webhook`
+- Events: `checkout.session.completed`, `customer.subscription.deleted`
+- After checkout, Pro unlocks via `/pro/success` (local) + `profiles.is_pro` (when Supabase + same email)
 
 ## 4. Domains (sch00l.ai + sch00l.xyz)
 

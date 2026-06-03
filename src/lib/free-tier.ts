@@ -25,10 +25,16 @@ function saveRecord(r: DailyRecord): void {
   localStorage.setItem(KEY, JSON.stringify(r));
 }
 
-/** Beta: Pro unlock via localStorage until Stripe */
+/** Pro unlock: Stripe success page or legacy beta flag */
 export function isProUser(): boolean {
   if (typeof window === "undefined") return false;
   return localStorage.getItem(PRO_KEY) === "1";
+}
+
+/** Call after Stripe Checkout success (local until account sync) */
+export function activateProLocal(): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(PRO_KEY, "1");
 }
 
 export function sessionsUsedToday(): number {
