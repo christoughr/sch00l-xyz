@@ -3,6 +3,7 @@ import { STORAGE_KEYS } from "./storage-keys";
 
 const KEY = STORAGE_KEYS.dailySessions;
 const PRO_KEY = STORAGE_KEYS.proBeta;
+export const PRO_STATUS_UPDATED = "sch00l-pro-status-updated";
 
 function todayKey(): string {
   return new Date().toISOString().slice(0, 10);
@@ -36,6 +37,25 @@ export function isProUser(): boolean {
 export function activateProLocal(): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(PRO_KEY, "1");
+  window.dispatchEvent(new CustomEvent(PRO_STATUS_UPDATED));
+}
+
+export async function refreshProStatusFromServer(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  try {
+    const res = await fetch("/api/payments/pro-status", {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return false;
+    const data = (await res.json()) as { isPro?: boolean };
+    if (data.isPro) {
+      activateProLocal();
+      return true;
+    }
+  } catch {
+    // Keep the existing local state when the cloud check is unavailable.
+  }
+  return false;
 }
 
 export function sessionsUsedToday(): number {
@@ -62,33 +82,6 @@ export function unrecordSessionStart(): void {
   if (isProUser()) return;
   const r = loadRecord();
   if (r.count > 0) saveRecord({ date: todayKey(), count: r.count - 1 });
-}
-
-const PENDING_CHECKOUT_KEY = STORAGE_KEYS.pendingCheckout;
-
-export function markPendingCheckout(plan: "pro" | "tutor_hour"): void {
-  if (typeof window === "undefined") return;
-  sessionStorage.setItem(
-    PENDING_CHECKOUT_KEY,
-    JSON.stringify({ plan, at: Date.now() })
-  );
-}
-
-export function consumePendingCheckout(
-  expected: "pro"
-): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const raw = sessionStorage.getItem(PENDING_CHECKOUT_KEY);
-    sessionStorage.removeItem(PENDING_CHECKOUT_KEY);
-    if (!raw) return false;
-    const { plan, at } = JSON.parse(raw) as { plan: string; at: number };
-    if (plan !== expected) return false;
-    if (Date.now() - at > 2 * 60 * 60 * 1000) return false;
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 export function freeTierLimitMessage(): string {

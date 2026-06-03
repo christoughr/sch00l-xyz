@@ -6,7 +6,11 @@ import { Menu, X, LogOut, User } from "lucide-react";
 import { Logo } from "./Logo";
 import { useAuth } from "./AuthProvider";
 import { dueFlashcards, loadFlashcards } from "@/lib/flashcards-local";
-import { isProUser } from "@/lib/free-tier";
+import {
+  isProUser,
+  PRO_STATUS_UPDATED,
+  refreshProStatusFromServer,
+} from "@/lib/free-tier";
 import { FLASHCARDS_UPDATED } from "@/lib/flashcards-events";
 
 type NavLink = { href: string; label: string; showDue?: boolean };
@@ -61,8 +65,15 @@ export function Nav() {
   useEffect(() => {
     setPro(isProUser());
     const onStorage = () => setPro(isProUser());
+    void refreshProStatusFromServer().then((isPro) => {
+      if (isPro) setPro(true);
+    });
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener(PRO_STATUS_UPDATED, onStorage);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(PRO_STATUS_UPDATED, onStorage);
+    };
   }, []);
 
   function refreshDue() {

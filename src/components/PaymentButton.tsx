@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
-import { markPendingCheckout } from "@/lib/free-tier";
 
 type Plan = "pro" | "tutor_hour";
 
@@ -38,7 +37,6 @@ export function PaymentButton({
       const data = await res.json();
 
       if (res.ok && data.url) {
-        if (plan === "pro") markPendingCheckout("pro");
         window.location.href = data.url;
         return;
       }
