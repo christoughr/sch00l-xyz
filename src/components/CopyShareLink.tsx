@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Link2, Check } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export function CopyShareLink({ url }: { url: string }) {
   const [copied, setCopied] = useState(false);
@@ -9,6 +10,7 @@ export function CopyShareLink({ url }: { url: string }) {
   async function copy() {
     try {
       await navigator.clipboard.writeText(url);
+      trackEvent("share_copy", { url });
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {

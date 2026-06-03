@@ -22,6 +22,12 @@ export const metadata: Metadata = {
   description:
     "Student-first AI study partner. Socratic tutoring, streaks, and mastery tracking — built to learn, not cheat.",
   metadataBase: new URL(SITE_URL),
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "sch00l",
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
     title: SITE_DOMAIN,
     description: "AI dedicated to students who study.",

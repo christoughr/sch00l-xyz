@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { CopyShareLink } from "@/components/CopyShareLink";
+import { DailyReviewBanner } from "@/components/DailyReviewBanner";
 import { LEGACY_DOMAIN, SITE_DOMAIN, SITE_URL } from "@/lib/site";
 
 const features = [
@@ -76,6 +77,10 @@ export default function HomePage() {
           Free to use — AI tutor, quizzes, and flashcards. No account required
           (sign-in coming soon).
         </p>
+
+        <div className="mt-6 max-w-xl">
+          <DailyReviewBanner />
+        </div>
 
         <div className="mt-16 rounded-2xl border border-white/10 bg-white/5 p-8">
           <h2 className="text-xl font-semibold text-white">Join the waitlist</h2>
@@ -156,6 +161,12 @@ export default function HomePage() {
           <ul className="mt-6 grid gap-3 sm:grid-cols-2 text-sm text-zinc-400">
             <li>→ 10k weekly active studiers with 15+ min avg session</li>
             <li>→ Published learning outcomes (pre/post quiz lift)</li>
+            <li>
+              →{" "}
+              <Link href="/outcomes" className="text-brand-400 hover:underline">
+                Live outcomes dashboard
+              </Link>
+            </li>
             <li>→ School pilot or .edu email waitlist</li>
             <li>→ Clean codebase + API — easy diligence</li>
           </ul>

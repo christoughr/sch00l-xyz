@@ -5,16 +5,25 @@ import { LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { useAuth } from "./AuthProvider";
+import { dueFlashcards, loadFlashcards } from "@/lib/flashcards-local";
 
-const coreLinks = [
+type NavLink = { href: string; label: string; showDue?: boolean };
+
+const coreLinks: NavLink[] = [
   { href: "/study", label: "Study" },
-  { href: "/flashcards", label: "Cards" },
+  { href: "/flashcards", label: "Cards", showDue: true },
   { href: "/progress", label: "Progress" },
+  { href: "/outcomes", label: "Outcomes" },
 ];
 
 export function Nav() {
   const { user, loading, signOut, supabaseReady } = useAuth();
   const [isTeacher, setIsTeacher] = useState(false);
+  const [cardsDue, setCardsDue] = useState(0);
+
+  useEffect(() => {
+    setCardsDue(dueFlashcards(loadFlashcards()).length);
+  }, []);
 
   useEffect(() => {
     if (!user || !supabaseReady) {
@@ -27,7 +36,7 @@ export function Nav() {
       .catch(() => setIsTeacher(false));
   }, [user, supabaseReady]);
 
-  const links = supabaseReady
+  const links: NavLink[] = supabaseReady
     ? [...coreLinks, { href: "/join", label: "Join" }]
     : coreLinks;
 
@@ -40,9 +49,14 @@ export function Nav() {
             <Link
               key={l.href}
               href={l.href}
-              className="rounded-lg px-2 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white sm:px-3"
+              className="relative rounded-lg px-2 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white sm:px-3"
             >
               {l.label}
+              {l.showDue && cardsDue > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
+                  {cardsDue > 9 ? "9+" : cardsDue}
+                </span>
+              )}
             </Link>
           ))}
           {isTeacher && (

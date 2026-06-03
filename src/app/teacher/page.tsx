@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TeacherPortal } from "@/components/TeacherPortal";
+import { TeacherPilotGuide } from "@/components/TeacherPilotGuide";
 import { ComingSoonBanner } from "@/components/ComingSoonBanner";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 
@@ -18,7 +19,10 @@ export default function TeacherPage() {
       {!configured ? (
         <>
           <ComingSoonBanner feature="Teacher dashboard" />
-          <p className="text-sm text-zinc-400">
+          <div className="mt-6">
+            <TeacherPilotGuide />
+          </div>
+          <p className="mt-6 text-sm text-zinc-400">
             Launching with student study first. Teacher tools activate when cloud
             accounts go live.
           </p>
@@ -30,7 +34,12 @@ export default function TeacherPage() {
           </Link>
         </>
       ) : (
-        <TeacherPortal />
+        <>
+          <TeacherPilotGuide />
+          <div className="mt-8">
+            <TeacherPortal />
+          </div>
+        </>
       )}
     </div>
   );

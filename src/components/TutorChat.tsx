@@ -33,12 +33,14 @@ export function TutorChat({
   subject,
   gradeLevel,
   topic,
+  trackContext,
   onTranscriptChange,
   onEndSession,
 }: {
   subject: SubjectId;
   gradeLevel?: string;
   topic?: string;
+  trackContext?: string;
   onTranscriptChange?: (t: string) => void;
   onEndSession?: () => void;
 }) {
@@ -129,6 +131,7 @@ export function TutorChat({
           subject,
           gradeLevel,
           topic: topic?.trim() || undefined,
+          trackContext: trackContext?.trim() || undefined,
           messages: next.map((m) => ({ role: m.role, content: m.content })),
         }),
       });

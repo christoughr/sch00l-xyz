@@ -25,6 +25,9 @@ export function Footer() {
           <Link href="/teacher" className="hover:text-zinc-300">
             Teachers
           </Link>
+          <Link href="/outcomes" className="hover:text-zinc-300">
+            Outcomes
+          </Link>
         </nav>
       </div>
     </footer>

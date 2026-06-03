@@ -22,6 +22,7 @@ const requestSchema = z.object({
   ]),
   gradeLevel: z.string().max(80).optional(),
   topic: z.string().max(120).optional(),
+  trackContext: z.string().max(500).optional(),
 });
 
 export async function POST(req: Request) {
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages, subject, gradeLevel, topic } = parsed.data;
+  const { messages, subject, gradeLevel, topic, trackContext } = parsed.data;
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
 
   if (!lastUser) {
@@ -77,7 +78,8 @@ export async function POST(req: Request) {
             content: buildSystemPrompt(
               subject as SubjectId,
               gradeLevel,
-              topic
+              topic,
+              trackContext
             ),
           },
           ...messages.map((m) => ({

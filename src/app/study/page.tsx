@@ -3,11 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { SubjectPicker } from "@/components/SubjectPicker";
+import { StudyTrackPicker } from "@/components/StudyTrackPicker";
+import { DailyReviewBanner } from "@/components/DailyReviewBanner";
 import { TutorChat } from "@/components/TutorChat";
 import { SessionQuiz } from "@/components/SessionQuiz";
 import { CopyShareLink } from "@/components/CopyShareLink";
 import { onSessionComplete } from "@/lib/session-complete";
+import { trackEvent } from "@/lib/analytics";
 import { SITE_URL } from "@/lib/site";
+import type { StudyTrackId } from "@/lib/study-tracks";
+import { getStudyTrack } from "@/lib/study-tracks";
 import type { SubjectId } from "@/lib/types";
 
 const SHARE_URL = `${SITE_URL}/study`;
@@ -15,9 +20,13 @@ const SHARE_URL = `${SITE_URL}/study`;
 type Step = "setup" | "pre" | "study" | "post" | "done";
 
 export default function StudyPage() {
+  const [trackId, setTrackId] = useState<StudyTrackId>("ap-calc-ab");
   const [subject, setSubject] = useState<SubjectId>("math");
-  const [gradeLevel, setGradeLevel] = useState("");
-  const [topic, setTopic] = useState("");
+  const [gradeLevel, setGradeLevel] = useState("AP Calculus AB");
+  const [topic, setTopic] = useState("AP Calculus AB — derivatives and integrals");
+  const [trackContext, setTrackContext] = useState(
+    getStudyTrack("ap-calc-ab").tutorContext
+  );
   const [step, setStep] = useState<Step>("setup");
   const [preScore, setPreScore] = useState<number | null>(null);
   const [postScore, setPostScore] = useState<number | null>(null);
@@ -26,15 +35,50 @@ export default function StudyPage() {
   const completedRef = useRef(false);
 
   useEffect(() => {
+    trackEvent("page_view", { page: "study" });
+  }, []);
+
+  useEffect(() => {
     if (step !== "done" || completedRef.current) return;
     completedRef.current = true;
+    trackEvent("session_complete", {
+      track: trackId,
+      subject,
+      preScore: preScore ?? -1,
+      postScore: postScore ?? -1,
+      lift:
+        preScore !== null && postScore !== null ? postScore - preScore : -1,
+    });
     onSessionComplete({ subject, topic, transcript }).then(({ cardsCreated: n }) =>
       setCardsCreated(n)
     );
-  }, [step, subject, topic, transcript]);
+  }, [step, subject, topic, transcript, trackId, preScore, postScore]);
+
+  function applyTrack(id: StudyTrackId) {
+    const track = getStudyTrack(id);
+    setTrackId(id);
+    trackEvent("track_selected", { track: id });
+    if (id !== "custom") {
+      setSubject(track.subject);
+      setTopic(track.topic);
+      setGradeLevel(track.gradeLevel);
+      setTrackContext(track.tutorContext);
+    } else {
+      setTrackContext("");
+    }
+  }
+
+  function startSession() {
+    trackEvent("session_setup", { track: trackId, subject });
+    setStep("pre");
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <div className="mb-6">
+        <DailyReviewBanner />
+      </div>
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white">Study session</h1>
         <p className="mt-2 text-zinc-400">
@@ -45,6 +89,10 @@ export default function StudyPage() {
 
       {step === "setup" && (
         <div className="space-y-6">
+          <div>
+            <p className="text-sm font-medium text-zinc-300 mb-3">Study track</p>
+            <StudyTrackPicker value={trackId} onChange={(t) => applyTrack(t.id)} />
+          </div>
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-2">
               Topic (for quizzes)
@@ -75,7 +123,7 @@ export default function StudyPage() {
           </div>
           <button
             type="button"
-            onClick={() => setStep("pre")}
+            onClick={startSession}
             className="rounded-xl bg-brand-500 px-6 py-3 font-medium text-white hover:bg-brand-400 transition"
           >
             Continue to pre-quiz
@@ -90,7 +138,9 @@ export default function StudyPage() {
             topic={topic || undefined}
             phase="pre"
             onComplete={(score, total) => {
-              setPreScore(Math.round((score / total) * 100));
+              const pct = Math.round((score / total) * 100);
+              setPreScore(pct);
+              trackEvent("pre_quiz_complete", { score: pct, track: trackId });
               setStep("study");
             }}
           />
@@ -117,6 +167,7 @@ export default function StudyPage() {
             subject={subject}
             gradeLevel={gradeLevel || undefined}
             topic={topic || undefined}
+            trackContext={trackContext || undefined}
             onTranscriptChange={setTranscript}
             onEndSession={() => setStep("post")}
           />
@@ -131,7 +182,9 @@ export default function StudyPage() {
             phase="post"
             transcript={transcript}
             onComplete={(score, total) => {
-              setPostScore(Math.round((score / total) * 100));
+              const pct = Math.round((score / total) * 100);
+              setPostScore(pct);
+              trackEvent("post_quiz_complete", { score: pct, track: trackId });
               setStep("done");
             }}
           />
