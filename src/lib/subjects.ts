@@ -1,5 +1,4 @@
 import type { Subject } from "./types";
-import type { SubjectId } from "./subject-ids";
 
 export { SUBJECT_IDS, type SubjectId } from "./subject-ids";
 

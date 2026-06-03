@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Check, Sparkles, Loader2 } from "lucide-react";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { activateProLocal, consumePendingCheckout } from "@/lib/free-tier";
+import { activateProLocal, refreshProStatusFromServer } from "@/lib/free-tier";
 import { trackEvent } from "@/lib/analytics";
 
 function ProSuccessContent() {
@@ -17,21 +17,25 @@ function ProSuccessContent() {
 
     async function verify() {
       if (sessionId) {
-        const res = await fetch(
-          `/api/payments/verify-success?session_id=${encodeURIComponent(sessionId)}`
-        );
-        const data = await res.json();
-        if (!cancelled && data.verified) {
-          activateProLocal();
-          trackEvent("pro_activated", { source: "stripe_verify" });
-          setState("ok");
-          return;
+        try {
+          const res = await fetch(
+            `/api/payments/verify-success?session_id=${encodeURIComponent(sessionId)}`
+          );
+          const data = await res.json();
+          if (!cancelled && data.verified) {
+            activateProLocal();
+            trackEvent("pro_activated", { source: "stripe_verify" });
+            setState("ok");
+            return;
+          }
+        } catch {
+          // Fall through to the account-level Pro status check.
         }
       }
 
-      if (!cancelled && consumePendingCheckout("pro")) {
-        activateProLocal();
-        trackEvent("pro_activated", { source: "checkout_return" });
+      const serverPro = await refreshProStatusFromServer();
+      if (!cancelled && serverPro) {
+        trackEvent("pro_activated", { source: "subscription_status" });
         setState("ok");
         return;
       }
@@ -59,9 +63,10 @@ function ProSuccessContent() {
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-white">Almost there</h1>
         <p className="mt-3 text-zinc-400 text-sm">
-          Pro unlocks only after a real checkout (Stripe or Lemon Squeezy). Opening
-          this URL directly won&apos;t activate Pro. If you just paid, wait a minute
-          and refresh — or join the waitlist on Pricing.
+          Pro unlocks only after a verified checkout or active subscription.
+          Opening this URL directly won&apos;t activate Pro. If you just paid with
+          Lemon Squeezy, sign in with the same email, wait a minute for the
+          webhook, then refresh — or join the waitlist on Pricing.
         </p>
         <Link
           href="/pricing"

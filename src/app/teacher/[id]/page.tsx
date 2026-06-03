@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClassroomStats } from "@/components/TeacherPortal";
+import { ClassroomStats } from "@/components/ClassroomStats";
 
 export default async function ClassroomPage({
   params,

@@ -16,7 +16,9 @@ import {
   canStartSession,
   freeTierLimitMessage,
   isProUser,
+  PRO_STATUS_UPDATED,
   recordSessionStart,
+  refreshProStatusFromServer,
   sessionsRemainingToday,
   unrecordSessionStart,
 } from "@/lib/free-tier";
@@ -53,11 +55,26 @@ export default function StudyPage() {
   const [sessionCounted, setSessionCounted] = useState(false);
   const [cardsLoading, setCardsLoading] = useState(false);
   const [cardsError, setCardsError] = useState<string | null>(null);
+  const [pro, setPro] = useState(false);
   const completedRef = useRef(false);
   const remaining = sessionsRemainingToday();
 
   useEffect(() => {
     trackEvent("page_view", { page: "study" });
+  }, []);
+
+  useEffect(() => {
+    const syncPro = () => setPro(isProUser());
+    syncPro();
+    void refreshProStatusFromServer().then((isPro) => {
+      if (isPro) syncPro();
+    });
+    window.addEventListener("storage", syncPro);
+    window.addEventListener(PRO_STATUS_UPDATED, syncPro);
+    return () => {
+      window.removeEventListener("storage", syncPro);
+      window.removeEventListener(PRO_STATUS_UPDATED, syncPro);
+    };
   }, []);
 
   useEffect(() => {
@@ -179,7 +196,7 @@ export default function StudyPage() {
           Pre-quiz → tutor → post-quiz → flashcards. Built for measurable learning
           lift.
         </p>
-        {isProUser() ? (
+        {pro ? (
           <p className="mt-2 text-xs text-brand-300">Pro — unlimited AI sessions</p>
         ) : (
           <p className="mt-2 text-xs text-zinc-500">
