@@ -62,17 +62,17 @@ See `src/lib/pricing.ts` and `/pricing`.
 
 ---
 
-## P2 — OPEN (future)
+## P2 — FOLLOW-UP STATUS
 
 | Item | Recommendation |
 |------|----------------|
-| **Stripe keys** | Set env vars in Vercel (code shipped) |
-| **SubjectPicker a11y** | `aria-pressed` on toggles |
-| **TeacherPortal.tsx** | Split `ClassroomStats`; replace `alert()` |
-| **Outcomes API** | Rename "unique studiers" → sessions tracked |
-| **E2E tests** | Playwright: study flow + lift |
-| **Rate limiting** | API routes (tutor, quiz, analytics) |
-| **Pro unlock** | Replace `localStorage` hack with Stripe subscription check |
+| **Payment keys** | Set Lemon Squeezy or Stripe env vars in Vercel (code shipped) |
+| **SubjectPicker a11y** | Done — selected toggles expose `aria-pressed` |
+| **TeacherPortal.tsx** | Done — `ClassroomStats` split out; no `alert()` usage remains |
+| **Outcomes API** | Done — aggregate copy/API uses sessions tracked |
+| **E2E tests** | Done — Playwright covers skip-pre smoke and measured lift flow |
+| **Rate limiting** | Done — tutor, quiz, analytics, checkout, and verification APIs use rate limits |
+| **Pro unlock** | Done — success page requires verified checkout or server subscription status |
 
 ---
 
