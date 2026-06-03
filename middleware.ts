@@ -1,21 +1,9 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  const host = request.headers.get("host") ?? "";
-  const proto = request.headers.get("x-forwarded-proto");
-
-  // Force HTTPS in production (fixes browser "Not secure" on HTTP)
-  if (
-    proto === "http" &&
-    !host.includes("localhost") &&
-    !host.includes("127.0.0.1")
-  ) {
-    const url = request.nextUrl.clone();
-    url.protocol = "https:";
-    return NextResponse.redirect(url, 308);
-  }
-
+  // HTTPS is enforced by Vercel at the edge — do NOT redirect here
+  // (custom redirect caused infinite 308 loops on sch00l.ai)
   return await updateSession(request);
 }
 
