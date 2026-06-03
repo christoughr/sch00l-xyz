@@ -49,15 +49,17 @@ export async function POST(req: Request) {
   }
 
   const next = isTeacherEmail(email) ? "/teacher" : "/study";
-  const redirectTo = `${SITE_URL}/auth/callback?next=${encodeURIComponent(next)}`;
 
   const { data, error } = await admin.auth.admin.generateLink({
     type: "magiclink",
     email,
-    options: { redirectTo },
+    options: {
+      redirectTo: `${SITE_URL}/auth/callback?next=${encodeURIComponent(next)}`,
+    },
   });
 
-  if (error || !data?.properties?.action_link) {
+  const tokenHash = data?.properties?.hashed_token;
+  if (error || !tokenHash) {
     return NextResponse.json(
       {
         error: error?.message ?? "Could not generate sign-in link",
@@ -66,7 +68,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const actionLink = data.properties.action_link;
+  // Two-step link: scanners won't POST — user taps button on /auth/link
+  const actionLink =
+    `${SITE_URL}/auth/link?token_hash=${encodeURIComponent(tokenHash)}` +
+    `&type=magiclink&next=${encodeURIComponent(next)}`;
   const sent = await sendViaResend({
     to: email,
     subject: "Sign in to sch00l.ai",

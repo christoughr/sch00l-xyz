@@ -18,8 +18,8 @@ export function magicLinkEmailHtml(email: string, actionLink: string): string {
       <tr><td style="padding:32px 28px;">
         <p style="margin:0 0 8px;font-size:22px;font-weight:700;color:#fff;">sch00l.ai</p>
         <p style="margin:0 0 24px;font-size:14px;color:#a1a1aa;">Sign-in link for <strong style="color:#e4e4e7;">${email}</strong>.</p>
-        <a href="${actionLink}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:12px;">Sign in to sch00l</a>
-        <p style="margin:24px 0 0;font-size:12px;color:#71717a;">Link expires soon. One-time use.</p>
+        <a href="${actionLink}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:12px;">Continue to sch00l</a>
+        <p style="margin:24px 0 0;font-size:12px;color:#71717a;">Opens a confirm page — tap the button to sign in (stops email scanners from burning your link).</p>
       </td></tr>
     </table>
   </td></tr></table>
