@@ -1,3 +1,4 @@
+import { founderWebhookConfigured } from "@/lib/founder-notify";
 import { isStripeConfigured } from "@/lib/stripe";
 import { NextResponse } from "next/server";
 
@@ -11,6 +12,7 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     ),
     stripe: isStripeConfigured(),
+    founderWebhook: founderWebhookConfigured(),
     ai: !!process.env.OPENAI_API_KEY,
   });
 }

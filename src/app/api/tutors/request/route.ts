@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { notifyFounder } from "@/lib/founder-notify";
 import { buildSessionHandoffSummary } from "@/lib/tutor-handoff";
 import { chatCompletion } from "@/lib/llm";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
@@ -104,6 +105,19 @@ Max 120 words. Plain text.`,
       message: "Request sent. A human tutor will reach out soon.",
     });
   }
+
+  await notifyFounder({
+    kind: "tutor_request",
+    summary: "New human tutor request",
+    fields: {
+      email: studentEmail,
+      subject: data.subject,
+      topic: data.topic ?? null,
+      urgency: data.urgency,
+      pre_score: data.preScore ?? null,
+      post_score: data.postScore ?? null,
+    },
+  });
 
   return NextResponse.json({
     ok: true,

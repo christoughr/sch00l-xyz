@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyFounder } from "@/lib/founder-notify";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -37,6 +38,16 @@ export async function POST(req: Request) {
       );
     }
 
+    await notifyFounder({
+      kind: "tutor_apply",
+      summary: "New tutor application (cloud)",
+      fields: {
+        email: email.toLowerCase().trim(),
+        name: displayName.trim(),
+        subjects: subjects.join(", "),
+      },
+    });
+
     return NextResponse.json({
       ok: true,
       mode: "cloud" as const,
@@ -44,10 +55,20 @@ export async function POST(req: Request) {
     });
   }
 
+  await notifyFounder({
+    kind: "tutor_apply",
+    summary: "New tutor application",
+    fields: {
+      email: email.toLowerCase().trim(),
+      name: displayName.trim(),
+      subjects: subjects.join(", "),
+      bio: bio?.trim() ?? null,
+    },
+  });
+
   return NextResponse.json({
     ok: true,
     mode: "local" as const,
-    message:
-      "Application noted locally. Email support@sch00l.ai with your subjects to apply.",
+    message: "Application received! We'll email you within a few days.",
   });
 }

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { notifyFounder } from "@/lib/founder-notify";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -52,16 +53,27 @@ export async function POST(req: Request) {
       );
     }
 
+    await notifyFounder({
+      kind: "waitlist",
+      summary: "New waitlist signup (cloud)",
+      fields: { email: normalized, source: source ?? "landing", edu },
+    });
+
     return NextResponse.json({
       ok: true,
       message: "You're on the waitlist. We'll email you at launch.",
     });
   }
 
+  await notifyFounder({
+    kind: "waitlist",
+    summary: "New waitlist signup",
+    fields: { email: normalized, source: source ?? "landing", edu },
+  });
+
   return NextResponse.json({
     ok: true,
-    message:
-      "Saved locally — configure Supabase to persist waitlist emails.",
+    message: "You're on the list! We'll reach out soon.",
     mode: "local" as const,
     hint: WAITLIST_LOCAL_KEY,
   });

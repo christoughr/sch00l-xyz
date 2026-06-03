@@ -1,17 +1,20 @@
 # Launch — sch00l.ai
 
-**Your checklist:** see **[YOU-DO.md](./YOU-DO.md)** — only things a human must do.
+**Do now:** [NOW.md](./NOW.md)  
+**Your tasks:** [YOU-DO.md](./YOU-DO.md)  
+**Later (starred):** [STARRED.md](./STARRED.md) — Supabase + Lemon Squeezy
 
-## ✅ Shipped (agent)
+## ✅ Shipped (local-first beta)
 
-- https://sch00l.ai — Groq AI, study flow, PWA manifest
-- Study tracks: AP Calc AB, SAT Math, AP Bio, Custom
-- Analytics events + `/outcomes` dashboard (cloud stats when Supabase on)
-- Auto flashcards, learning lift, share link, teacher pilot guide
-- **AI + human tutor linkage** — `/tutors`, session handoff, teacher request inbox
-- Migrations `001`–`005` ready in `supabase/migrations/`
+- https://sch00l.ai — Groq AI, full study flow, PWA
+- Learning lift (pre/post quiz), flashcards, progress
+- Tutor request + apply (founder webhook optional)
+- Pricing in waitlist mode (no payments required)
+- Twitter assets + [MARKETING.md](./MARKETING.md)
+- Open Graph preview for social shares
 
-## Skipped (your choice)
+## Skipped for now ⭐
 
+- Supabase (see STARRED.md)
+- Lemon Squeezy / Stripe payments (see STARRED.md)
 - Groq key rotation
-- Supabase until signup works

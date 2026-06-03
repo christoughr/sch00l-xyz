@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Loader2, Download, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { clearLocalUserData } from "@/lib/compliance";
+import { downloadLocalExport, loadWaitlistLocal } from "@/lib/local-export";
+import { loadTutorRequestsLocal } from "@/lib/tutor-handoff";
 
 export default function SettingsPage() {
   const { user, signOut } = useAuth();
@@ -68,16 +70,39 @@ export default function SettingsPage() {
     setStatus("Local browser data cleared. Refresh to see age gate again.");
   }
 
+  const waitlistLocal = loadWaitlistLocal().length;
+  const tutorLocal = loadTutorRequestsLocal().length;
+
   return (
     <div className="mx-auto max-w-lg px-4 py-12 sm:px-6">
       <h1 className="text-2xl font-bold text-white">Settings</h1>
       <p className="mt-2 text-sm text-zinc-400">
         {user
           ? "Export your data or delete your account (GDPR / FERPA-friendly)."
-          : "Clear local browser data without signing in."}
+          : "Export or clear local browser data — no account required."}
       </p>
 
+      {(waitlistLocal > 0 || tutorLocal > 0) && (
+        <p className="mt-3 text-xs text-zinc-500">
+          On this device: {waitlistLocal} waitlist email
+          {waitlistLocal === 1 ? "" : "s"}, {tutorLocal} tutor request
+          {tutorLocal === 1 ? "" : "s"}.
+        </p>
+      )}
+
       <div className="mt-8 space-y-4">
+        <button
+          type="button"
+          onClick={() => {
+            downloadLocalExport();
+            setStatus("Local export downloaded.");
+          }}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-400/30 bg-brand-500/10 py-3 text-sm text-brand-200 hover:bg-brand-500/20"
+        >
+          <Download className="h-4 w-4" />
+          Export local data (JSON)
+        </button>
+
         {showCloudActions && (
           <button
             type="button"

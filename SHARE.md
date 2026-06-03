@@ -71,6 +71,8 @@ Pre-quiz → tutor → post-quiz on the same topic
 Free: https://sch00l.ai/study
 ```
 
+**Pin this** on your profile after uploading header + avatar.
+
 ---
 
 ## Social one-liner
