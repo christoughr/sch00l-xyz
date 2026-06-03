@@ -53,6 +53,7 @@ function PlanCard({
 export default function PricingPage() {
   const [proReady, setProReady] = useState(false);
   const [tutorReady, setTutorReady] = useState(false);
+  const [configLoaded, setConfigLoaded] = useState(false);
 
   useEffect(() => {
     trackEvent("upgrade_view", { page: "pricing" });
@@ -61,10 +62,12 @@ export default function PricingPage() {
       .then((d) => {
         setProReady(!!d.proReady);
         setTutorReady(!!d.tutorReady);
+        setConfigLoaded(true);
       })
       .catch(() => {
         setProReady(false);
         setTutorReady(false);
+        setConfigLoaded(true);
       });
   }, []);
 
@@ -88,9 +91,15 @@ export default function PricingPage() {
           Start free with Socratic AI. Join the Pro waitlist for unlimited sessions,
           or request a human tutor with your AI session summary included.
         </p>
+        {configLoaded && !proReady && !tutorReady && (
+          <p className="mt-4 text-sm text-amber-200/90 max-w-md mx-auto">
+            Card checkout is not live yet — use the waitlist below. We&apos;ll email
+            when Lemon Squeezy is connected.
+          </p>
+        )}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-12">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4 mb-12">
         <PlanCard
           name={PRICING.free.name}
           price={formatUsd(0)}

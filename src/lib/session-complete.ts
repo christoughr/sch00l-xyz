@@ -21,7 +21,7 @@ export async function onSessionComplete(opts: {
   subject: SubjectId;
   topic?: string;
   transcript: string;
-}): Promise<{ cardsCreated: number }> {
+}): Promise<{ cardsCreated: number; error?: string }> {
   const { subject, topic, transcript } = opts;
 
   if (topic?.trim()) {
@@ -38,8 +38,18 @@ export async function onSessionComplete(opts: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ subject, messages }),
   });
-  const data = await res.json();
-  if (!res.ok || !Array.isArray(data.cards)) return { cardsCreated: 0 };
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    return {
+      cardsCreated: 0,
+      error:
+        (data as { error?: string }).error ??
+        "Could not generate flashcards. Saved locally otherwise.",
+    };
+  }
+  if (!Array.isArray(data.cards) || data.cards.length === 0) {
+    return { cardsCreated: 0 };
+  }
 
   if (data.mode === "local" && data.cards.length) {
     const base = defaultCardFields(subject);

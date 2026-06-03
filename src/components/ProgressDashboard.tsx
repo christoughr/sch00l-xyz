@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { Flame, Clock, BookOpen, TrendingUp, BarChart2 } from "lucide-react";
 import { loadProgress, saveProgress } from "@/lib/progress";
 import { latestQuizLiftLocal } from "@/lib/quiz-local";
@@ -33,22 +34,29 @@ export function ProgressDashboard() {
   const { user } = useAuth();
   const [progress, setProgress] = useState<StudentProgress | null>(null);
   const [quizLift, setQuizLift] = useState<string | null>(null);
+  const [syncWarning, setSyncWarning] = useState<string | null>(null);
 
   const refreshLift = useCallback(() => {
     setQuizLift(latestQuizLiftLocal());
   }, []);
 
   const load = useCallback(async () => {
+    setSyncWarning(null);
     if (user) {
-      const res = await fetch("/api/progress/sync");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.progress) {
-          saveProgress(data.progress);
-          setProgress(data.progress);
-          refreshLift();
-          return;
+      try {
+        const res = await fetch("/api/progress/sync");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.progress) {
+            saveProgress(data.progress);
+            setProgress(data.progress);
+            refreshLift();
+            return;
+          }
         }
+        setSyncWarning("Showing data saved on this device — cloud sync unavailable.");
+      } catch {
+        setSyncWarning("Showing data saved on this device — cloud sync unavailable.");
       }
     }
     setProgress(loadProgress());
@@ -126,6 +134,11 @@ export function ProgressDashboard() {
 
   return (
     <div className="space-y-8">
+      {syncWarning && (
+        <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          {syncWarning}
+        </p>
+      )}
       {quizLift ? (
         <div className="rounded-2xl border border-brand-400/30 bg-brand-500/10 p-4 flex items-center gap-3">
           <BarChart2 className="h-5 w-5 text-brand-400" />
@@ -139,9 +152,9 @@ export function ProgressDashboard() {
           Complete a session with{" "}
           <strong className="text-zinc-300">pre-quiz + post-quiz</strong> (don&apos;t skip
           pre) to see your learning lift here.{" "}
-          <a href="/study" className="text-brand-400 hover:underline">
+          <Link href="/study" className="text-brand-400 hover:underline">
             Start a session
-          </a>
+          </Link>
         </div>
       )}
 
@@ -202,21 +215,21 @@ export function ProgressDashboard() {
         {recent.length === 0 ? (
           <p className="text-zinc-400 text-sm">
             No sessions yet.{" "}
-            <a href="/study" className="text-brand-400 hover:underline">
+            <Link href="/study" className="text-brand-400 hover:underline">
               Start studying
-            </a>
+            </Link>
           </p>
         ) : (
           <ul className="space-y-2">
             {recent.map((s) => (
               <li
                 key={s.id}
-                className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm"
+                className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm"
               >
                 <span className="text-white">
                   {getSubject(s.subject).label} · {s.messageCount} messages
                 </span>
-                <span className="text-zinc-500">
+                <span className="text-zinc-500 shrink-0">
                   {s.minutesStudied} min ·{" "}
                   {new Date(s.startedAt).toLocaleDateString()}
                 </span>

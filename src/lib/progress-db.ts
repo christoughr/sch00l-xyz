@@ -99,6 +99,10 @@ export async function mergeLocalProgressToCloud(
   const local = loadProgress();
   const remote = await fetchProgressFromDb(supabase, userId);
 
+  const sessions = remote
+    ? dedupeSessions([...local.sessions, ...remote.sessions])
+    : local.sessions;
+
   const merged: StudentProgress = remote
     ? {
         streakDays: Math.max(local.streakDays, remote.streakDays),
@@ -106,9 +110,9 @@ export async function mergeLocalProgressToCloud(
           local.lastStudyDate,
           remote.lastStudyDate
         ),
-        totalMinutes: local.totalMinutes + remote.totalMinutes,
-        totalSessions: local.totalSessions + remote.totalSessions,
-        sessions: dedupeSessions([...local.sessions, ...remote.sessions]),
+        totalMinutes: sessions.reduce((n, s) => n + s.minutesStudied, 0),
+        totalSessions: sessions.length,
+        sessions,
         mastery: mergeMastery(local.mastery, remote.mastery),
       }
     : local;

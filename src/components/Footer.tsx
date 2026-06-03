@@ -10,9 +10,20 @@ export function Footer() {
           <span className="text-zinc-600 hidden sm:inline">
             ({LEGACY_DOMAIN} redirects here)
           </span>
-          <span className="text-zinc-600">Built for students.</span>
+          <span className="text-zinc-600 block sm:inline sm:ml-1">
+            Built for students.
+          </span>
         </p>
         <nav className="flex flex-wrap justify-center gap-4">
+          <Link href="/study" className="hover:text-zinc-300">
+            Study
+          </Link>
+          <Link href="/progress" className="hover:text-zinc-300">
+            Progress
+          </Link>
+          <Link href="/flashcards" className="hover:text-zinc-300">
+            Cards
+          </Link>
           <Link href="/privacy" className="hover:text-zinc-300">
             Privacy
           </Link>
@@ -22,8 +33,8 @@ export function Footer() {
           <Link href="/settings" className="hover:text-zinc-300">
             Settings
           </Link>
-          <Link href="/teacher" className="hover:text-zinc-300">
-            Teachers
+          <Link href="/teacher" className="hover:text-zinc-300" title="Educators & pilot schools">
+            For educators
           </Link>
           <Link href="/outcomes" className="hover:text-zinc-300">
             Outcomes

@@ -29,7 +29,12 @@ export async function GET() {
 const patchSchema = z.object({
   display_name: z.string().max(80).optional(),
   grade_level: z.string().max(80).optional(),
-  birth_year: z.number().int().min(1990).max(new Date().getFullYear()).optional(),
+  birth_year: z
+    .number()
+    .int()
+    .min(1920)
+    .max(new Date().getFullYear())
+    .optional(),
   is_under_13: z.boolean().optional(),
   parental_consent: z.boolean().optional(),
   terms_accepted: z.boolean().optional(),

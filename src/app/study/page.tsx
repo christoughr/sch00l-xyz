@@ -14,8 +14,10 @@ import { trackEvent } from "@/lib/analytics";
 import {
   canStartSession,
   freeTierLimitMessage,
+  isProUser,
   recordSessionStart,
   sessionsRemainingToday,
+  unrecordSessionStart,
 } from "@/lib/free-tier";
 import {
   rotateStudySessionId,
@@ -47,7 +49,11 @@ export default function StudyPage() {
   const [cardsCreated, setCardsCreated] = useState<number | null>(null);
   const [setupError, setSetupError] = useState("");
   const [limitHit, setLimitHit] = useState(false);
+  const [sessionCounted, setSessionCounted] = useState(false);
+  const [cardsLoading, setCardsLoading] = useState(false);
+  const [cardsError, setCardsError] = useState<string | null>(null);
   const completedRef = useRef(false);
+  const remaining = sessionsRemainingToday();
 
   useEffect(() => {
     trackEvent("page_view", { page: "study" });
@@ -67,8 +73,14 @@ export default function StudyPage() {
           ? postScore - preScore
           : -1,
     });
-    onSessionComplete({ subject, topic, transcript }).then(({ cardsCreated: n }) =>
-      setCardsCreated(n)
+    setCardsLoading(true);
+    setCardsError(null);
+    onSessionComplete({ subject, topic, transcript }).then(
+      ({ cardsCreated: n, error }) => {
+        setCardsCreated(n);
+        setCardsError(error ?? null);
+        setCardsLoading(false);
+      }
     );
   }, [
     step,
@@ -108,7 +120,6 @@ export default function StudyPage() {
       setLimitHit(true);
       return;
     }
-    recordSessionStart();
     const sid = rotateStudySessionId();
     setSessionId(sid);
     setPreSkipped(false);
@@ -125,6 +136,29 @@ export default function StudyPage() {
 
   const delta = liftDelta();
 
+  function enterStudyPhase() {
+    if (!sessionCounted) {
+      recordSessionStart();
+      setSessionCounted(true);
+    }
+    setStep("study");
+  }
+
+  function abandonToSetup() {
+    if (
+      !confirm(
+        "Leave this session? Progress in this quiz/chat will be lost."
+      )
+    ) {
+      return;
+    }
+    if (sessionCounted) {
+      unrecordSessionStart();
+      setSessionCounted(false);
+    }
+    setStep("setup");
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <div className="mb-6">
@@ -137,10 +171,12 @@ export default function StudyPage() {
           Pre-quiz → tutor → post-quiz → flashcards. Built for measurable learning
           lift.
         </p>
-        {sessionsRemainingToday() !== Infinity && (
+        {isProUser() ? (
+          <p className="mt-2 text-xs text-brand-300">Pro — unlimited AI sessions</p>
+        ) : (
           <p className="mt-2 text-xs text-zinc-500">
-            {sessionsRemainingToday()} free AI session
-            {sessionsRemainingToday() === 1 ? "" : "s"} left today ·{" "}
+            {remaining} free AI session
+            {remaining === 1 ? "" : "s"} left today ·{" "}
             <Link href="/pricing" className="text-brand-400 underline">
               Go Pro
             </Link>
@@ -199,9 +235,12 @@ export default function StudyPage() {
           <button
             type="button"
             onClick={startSession}
-            className="rounded-xl bg-brand-500 px-6 py-3 font-medium text-white hover:bg-brand-400 transition focus-visible:ring-2 focus-visible:ring-brand-400"
+            disabled={!canStartSession()}
+            className="rounded-xl bg-brand-500 px-6 py-3 font-medium text-white hover:bg-brand-400 transition focus-visible:ring-2 focus-visible:ring-brand-400 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Continue to pre-quiz
+            {canStartSession()
+              ? "Continue to pre-quiz"
+              : "Daily limit reached — upgrade to Pro"}
           </button>
         </div>
       )}
@@ -218,7 +257,7 @@ export default function StudyPage() {
               setPreScore(pct);
               setPreSkipped(false);
               trackEvent("pre_quiz_complete", { score: pct, track: trackId });
-              setStep("study");
+              enterStudyPhase();
             }}
           />
           <button
@@ -227,7 +266,7 @@ export default function StudyPage() {
               setPreSkipped(true);
               setPreScore(null);
               trackEvent("pre_quiz_skipped", { track: trackId });
-              setStep("study");
+              enterStudyPhase();
             }}
             className="text-sm text-zinc-500 hover:text-zinc-300"
           >
@@ -240,7 +279,7 @@ export default function StudyPage() {
         <div className="space-y-4">
           <button
             type="button"
-            onClick={() => setStep("setup")}
+            onClick={abandonToSetup}
             className="text-sm text-zinc-500 hover:text-zinc-300"
           >
             ← Back to setup
@@ -252,12 +291,20 @@ export default function StudyPage() {
             trackContext={trackContext || undefined}
             onTranscriptChange={setTranscript}
             onEndSession={() => setStep("post")}
+            allowEndWithoutChat
           />
         </div>
       )}
 
       {step === "post" && (
         <div className="space-y-6">
+          <button
+            type="button"
+            onClick={() => setStep("study")}
+            className="text-sm text-zinc-500 hover:text-zinc-300"
+          >
+            ← Back to tutor
+          </button>
           <SessionQuiz
             subject={subject}
             topic={topic || undefined}
@@ -302,11 +349,25 @@ export default function StudyPage() {
               )}
             </p>
           )}
-          {cardsCreated !== null && cardsCreated > 0 && (
+          {cardsLoading && (
+            <p className="text-sm text-zinc-400">Generating flashcards from your chat…</p>
+          )}
+          {cardsError && (
+            <p className="text-sm text-amber-300">{cardsError}</p>
+          )}
+          {!cardsLoading && cardsCreated !== null && cardsCreated > 0 && (
             <p className="text-sm text-brand-300">
               Generated {cardsCreated} flashcard{cardsCreated === 1 ? "" : "s"} from your chat.
             </p>
           )}
+          {!cardsLoading &&
+            cardsCreated === 0 &&
+            !cardsError &&
+            transcript.includes("user:") && (
+              <p className="text-sm text-zinc-500">
+                No flashcards generated — try chatting more next session.
+              </p>
+            )}
           {delta !== null && (
             <p className="text-xs text-zinc-500">
               Learning lift saved on{" "}
@@ -348,6 +409,9 @@ export default function StudyPage() {
                 completedRef.current = false;
                 setCardsCreated(null);
                 setLimitHit(false);
+                setSessionCounted(false);
+                setCardsLoading(false);
+                setCardsError(null);
                 setPreSkipped(false);
                 setStep("setup");
                 setPreScore(null);

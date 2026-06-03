@@ -22,7 +22,11 @@ export function TutorApplyForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim() || !displayName.trim() || subjects.length === 0) return;
+    if (!email.trim() || !displayName.trim() || subjects.length === 0) {
+      setStatus("error");
+      setMessage("Fill in name, email, and at least one subject.");
+      return;
+    }
     setStatus("loading");
 
     try {
@@ -64,6 +68,11 @@ export function TutorApplyForm() {
 
   return (
     <form onSubmit={submit} className="space-y-4">
+      {status === "error" && message && (
+        <p className="text-sm text-red-400" role="alert">
+          {message}
+        </p>
+      )}
       <input
         type="text"
         required

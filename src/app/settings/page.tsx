@@ -12,6 +12,12 @@ export default function SettingsPage() {
   const { user, signOut } = useAuth();
   const router = useRouter();
   const [status, setStatus] = useState<string | null>(null);
+  const [statusKind, setStatusKind] = useState<"ok" | "error">("ok");
+
+  function setStatusMsg(msg: string, kind: "ok" | "error" = "ok") {
+    setStatus(msg);
+    setStatusKind(kind);
+  }
   const [busy, setBusy] = useState(false);
   const showCloudActions = !!user;
 
@@ -31,9 +37,9 @@ export default function SettingsPage() {
       a.download = `sch00l-export-${Date.now()}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      setStatus("Download started.");
+      setStatusMsg("Download started.");
     } catch {
-      setStatus("Export failed.");
+      setStatusMsg("Export failed.", "error");
     } finally {
       setBusy(false);
     }
@@ -57,9 +63,9 @@ export default function SettingsPage() {
       clearLocalUserData();
       await signOut();
       router.push("/");
-      setStatus("Account deleted.");
+      setStatusMsg("Account deleted.");
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : "Delete failed.");
+      setStatusMsg(e instanceof Error ? e.message : "Delete failed.", "error");
     } finally {
       setBusy(false);
     }
@@ -67,7 +73,9 @@ export default function SettingsPage() {
 
   function clearLocal() {
     clearLocalUserData();
-    setStatus("Local browser data cleared. Refresh to see age gate again.");
+    setStatusMsg(
+      "Local browser data cleared. Refresh the page — age gate may appear again if consent was removed."
+    );
   }
 
   const waitlistLocal = loadWaitlistLocal().length;
@@ -95,7 +103,7 @@ export default function SettingsPage() {
           type="button"
           onClick={() => {
             downloadLocalExport();
-            setStatus("Local export downloaded.");
+            setStatusMsg("Local export downloaded.");
           }}
           className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-400/30 bg-brand-500/10 py-3 text-sm text-brand-200 hover:bg-brand-500/20"
         >
@@ -140,7 +148,14 @@ export default function SettingsPage() {
         )}
       </div>
 
-      {status && <p className="mt-4 text-sm text-brand-300">{status}</p>}
+      {status && (
+        <p
+          className={`mt-4 text-sm ${statusKind === "error" ? "text-red-400" : "text-brand-300"}`}
+          role="status"
+        >
+          {status}
+        </p>
+      )}
     </div>
   );
 }

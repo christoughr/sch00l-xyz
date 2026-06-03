@@ -66,7 +66,14 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
         parental_consent: under13 ? parental : true,
         terms_accepted: true,
       }),
-    }).catch(() => {});
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const d = await res.json().catch(() => ({}));
+          console.warn("Profile sync:", (d as { error?: string }).error ?? res.status);
+        }
+      })
+      .catch(() => {});
   }
 
   if (!ready) {

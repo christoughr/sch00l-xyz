@@ -1,16 +1,76 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Sparkles } from "lucide-react";
-import { useEffect } from "react";
-import { activateProLocal } from "@/lib/free-tier";
+import { Check, Sparkles, Loader2 } from "lucide-react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { activateProLocal, consumePendingCheckout } from "@/lib/free-tier";
 import { trackEvent } from "@/lib/analytics";
 
-export default function ProSuccessPage() {
+function ProSuccessContent() {
+  const params = useSearchParams();
+  const sessionId = params.get("session_id");
+  const [state, setState] = useState<"loading" | "ok" | "pending">("loading");
+
   useEffect(() => {
-    activateProLocal();
-    trackEvent("pro_activated", { source: "checkout_success" });
-  }, []);
+    let cancelled = false;
+
+    async function verify() {
+      if (sessionId) {
+        const res = await fetch(
+          `/api/payments/verify-success?session_id=${encodeURIComponent(sessionId)}`
+        );
+        const data = await res.json();
+        if (!cancelled && data.verified) {
+          activateProLocal();
+          trackEvent("pro_activated", { source: "stripe_verify" });
+          setState("ok");
+          return;
+        }
+      }
+
+      if (!cancelled && consumePendingCheckout("pro")) {
+        activateProLocal();
+        trackEvent("pro_activated", { source: "checkout_return" });
+        setState("ok");
+        return;
+      }
+
+      if (!cancelled) setState("pending");
+    }
+
+    void verify();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionId]);
+
+  if (state === "loading") {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-16 text-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-400 mx-auto" />
+        <p className="mt-4 text-sm text-zinc-400">Confirming your purchase…</p>
+      </div>
+    );
+  }
+
+  if (state === "pending") {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold text-white">Almost there</h1>
+        <p className="mt-3 text-zinc-400 text-sm">
+          We couldn&apos;t verify checkout from this link. If you just paid, wait
+          a minute and refresh — or email support with your receipt.
+        </p>
+        <Link
+          href="/pricing"
+          className="mt-8 inline-block rounded-xl border border-white/15 px-6 py-3 text-sm text-zinc-300 hover:bg-white/5"
+        >
+          Back to pricing
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16 text-center">
@@ -33,5 +93,19 @@ export default function ProSuccessPage() {
         Start studying
       </Link>
     </div>
+  );
+}
+
+export default function ProSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-lg px-4 py-16 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-400 mx-auto" />
+        </div>
+      }
+    >
+      <ProSuccessContent />
+    </Suspense>
   );
 }

@@ -6,6 +6,7 @@ import { Menu, X, LogOut, User } from "lucide-react";
 import { Logo } from "./Logo";
 import { useAuth } from "./AuthProvider";
 import { dueFlashcards, loadFlashcards } from "@/lib/flashcards-local";
+import { isProUser } from "@/lib/free-tier";
 import { FLASHCARDS_UPDATED } from "@/lib/flashcards-events";
 
 type NavLink = { href: string; label: string; showDue?: boolean };
@@ -27,6 +28,14 @@ export function Nav() {
   const [isTeacher, setIsTeacher] = useState(false);
   const [cardsDue, setCardsDue] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [pro, setPro] = useState(false);
+
+  useEffect(() => {
+    setPro(isProUser());
+    const onStorage = () => setPro(isProUser());
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   function refreshDue() {
     setCardsDue(dueFlashcards(loadFlashcards()).length);
@@ -52,9 +61,24 @@ export function Nav() {
   const mobileLinks: NavLink[] = [
     ...primaryLinks,
     ...moreLinks,
+    { href: "/settings", label: "Settings" },
     ...(supabaseReady ? [{ href: "/join", label: "Join" }] : []),
     ...(isTeacher ? [{ href: "/teacher", label: "Teach" }] : []),
   ];
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
   function LinkItem({ l, onNavigate }: { l: NavLink; onNavigate?: () => void }) {
     return (
@@ -83,8 +107,16 @@ export function Nav() {
           {primaryLinks.map((l) => (
             <LinkItem key={l.href} l={l} />
           ))}
+          {pro && (
+            <span className="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-300">
+              Pro
+            </span>
+          )}
           <details className="relative group">
-            <summary className="list-none cursor-pointer rounded-lg px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white">
+            <summary
+              className="list-none cursor-pointer rounded-lg px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
+              aria-haspopup="menu"
+            >
               More
             </summary>
             <div className="absolute right-0 mt-1 min-w-[140px] rounded-xl border border-white/10 bg-surface-900 py-1 shadow-xl">
@@ -148,7 +180,14 @@ export function Nav() {
       </div>
 
       {menuOpen && (
-        <nav className="md:hidden border-t border-white/10 px-4 py-3 space-y-1 bg-surface-900">
+        <>
+          <button
+            type="button"
+            aria-label="Close menu"
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={() => setMenuOpen(false)}
+          />
+          <nav className="relative z-50 md:hidden border-t border-white/10 px-4 py-3 space-y-1 bg-surface-900">
           {mobileLinks.map((l) => (
             <LinkItem key={l.href} l={l} onNavigate={() => setMenuOpen(false)} />
           ))}
@@ -178,6 +217,7 @@ export function Nav() {
             </>
           )}
         </nav>
+        </>
       )}
     </header>
   );

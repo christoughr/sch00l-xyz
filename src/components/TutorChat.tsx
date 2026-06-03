@@ -37,6 +37,7 @@ export function TutorChat({
   trackContext,
   onTranscriptChange,
   onEndSession,
+  allowEndWithoutChat,
 }: {
   subject: SubjectId;
   gradeLevel?: string;
@@ -44,6 +45,8 @@ export function TutorChat({
   trackContext?: string;
   onTranscriptChange?: (t: string) => void;
   onEndSession?: () => void;
+  /** Post-quiz flow: allow ending even with no chat */
+  allowEndWithoutChat?: boolean;
 }) {
   const sub = getSubject(subject);
   const { user, syncProgress } = useAuth();
@@ -54,6 +57,7 @@ export function TutorChat({
   const [cardsMsg, setCardsMsg] = useState<string | null>(null);
   const [mode, setMode] = useState<"demo" | "live" | null>(null);
   const [showHumanTutor, setShowHumanTutor] = useState(false);
+  const [syncWarning, setSyncWarning] = useState<string | null>(null);
   const [sessionStart] = useState(() => Date.now());
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -93,12 +97,20 @@ export function TutorChat({
     });
     saveProgress(progress);
     if (user) {
-      await fetch("/api/progress/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(progress),
-      });
-      await syncProgress();
+      try {
+        const res = await fetch("/api/progress/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(progress),
+        });
+        if (!res.ok) {
+          setSyncWarning("Progress saved locally; cloud sync failed.");
+        } else {
+          await syncProgress();
+        }
+      } catch {
+        setSyncWarning("Progress saved locally; cloud sync failed.");
+      }
     }
   }, [messages, sessionStart, subject, user, syncProgress]);
 
@@ -237,7 +249,7 @@ export function TutorChat({
             {sub.emoji} {sub.label} tutor
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
           {mode === "demo" && (
             <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-200">
               Demo
@@ -272,8 +284,13 @@ export function TutorChat({
             <button
               type="button"
               onClick={endSession}
-              disabled={userMsgCount < 1}
+              disabled={!allowEndWithoutChat && userMsgCount < 1}
               aria-label="End session and start post-quiz"
+              title={
+                !allowEndWithoutChat && userMsgCount < 1
+                  ? "Send at least one message first"
+                  : "Continue to post-quiz"
+              }
               className="flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/15 disabled:opacity-40"
             >
               <LogOut className="h-3 w-3" />
@@ -283,8 +300,14 @@ export function TutorChat({
         </div>
       </div>
 
+      {syncWarning && (
+        <p className="px-4 py-2 text-xs text-amber-300 border-b border-white/5" role="status">
+          {syncWarning}
+        </p>
+      )}
+
       {cardsMsg && (
-        <p className="px-4 py-2 text-xs text-brand-300 border-b border-white/5">
+        <p className="px-4 py-2 text-xs text-brand-300 border-b border-white/5" role="status">
           {cardsMsg}{" "}
           <Link href="/flashcards" className="underline">
             Open deck
@@ -292,7 +315,13 @@ export function TutorChat({
         </p>
       )}
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-label="Tutor conversation"
+      >
         {messages.map((m) => (
           <div
             key={m.id}
