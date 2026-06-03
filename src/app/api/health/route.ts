@@ -2,6 +2,7 @@ import { discordBotConfigured } from "@/lib/discord-bot";
 import { founderWebhookConfigured } from "@/lib/founder-notify";
 import { isLemonSqueezyConfigured } from "@/lib/lemonsqueezy";
 import { paymentConfig } from "@/lib/payments";
+import { isResendConfigured } from "@/lib/resend";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -21,6 +22,7 @@ export async function GET() {
     discordBot: discordBotConfigured(),
     ai: hasAiKey,
     aiMode,
+    resend: isResendConfigured(),
   };
 
   return NextResponse.json({

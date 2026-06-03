@@ -34,15 +34,39 @@ function LoginForm() {
 
   async function sendMagicLink(e: React.FormEvent) {
     e.preventDefault();
-    const supabase = createClient();
-    if (!supabase) return;
-
     setStatus("loading");
+    setMessage("");
     const trimmed = email.trim().toLowerCase();
     const next =
       trimmed === "hello@sch00l.ai" || trimmed.endsWith("@sch00l.ai")
         ? "/teacher"
         : "/study";
+
+    const res = await fetch("/api/auth/magic-link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: trimmed }),
+    });
+    const data = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      hint?: string;
+      mode?: string;
+    };
+
+    if (res.ok && data.mode === "resend") {
+      setStatus("sent");
+      setMessage(
+        "Check your inbox for the sign-in link from hello@sch00l.ai (spam too)."
+      );
+      return;
+    }
+
+    const supabase = createClient();
+    if (!supabase) {
+      setStatus("error");
+      setMessage(data.error ?? "Sign-in unavailable.");
+      return;
+    }
 
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmed,
@@ -53,13 +77,14 @@ function LoginForm() {
 
     if (error) {
       setStatus("error");
-      setMessage(error.message);
+      setMessage(
+        data.error
+          ? `${data.error}${data.hint ? ` — ${data.hint}` : ""}`
+          : error.message
+      );
     } else {
       setStatus("sent");
-      setMessage(
-        "If you don’t see it in 2–3 minutes, check spam and Promotions. " +
-          "Still nothing? Set up custom SMTP in Supabase (see SUPABASE_AUTH.md in the repo)."
-      );
+      setMessage("Check your email for the magic link.");
     }
   }
 
