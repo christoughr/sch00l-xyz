@@ -2,13 +2,12 @@
 
 import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
 function ConfirmSignIn() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") ?? "magiclink";
   const next = searchParams.get("next") ?? "/study";
@@ -43,8 +42,7 @@ function ConfirmSignIn() {
     const dest =
       data.redirect ??
       (next.startsWith("/") ? next : "/study");
-    router.replace(dest);
-    router.refresh();
+    window.location.assign(dest);
   }
 
   if (!tokenHash) {

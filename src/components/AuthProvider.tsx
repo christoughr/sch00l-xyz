@@ -51,15 +51,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      setLoading(false);
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        setUser(data.user);
+      })
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
+      setLoading(false);
       if (event === "SIGNED_IN" && session?.user) {
         await mergeLocalProgressToCloud(supabase, session.user.id);
       }
