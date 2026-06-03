@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { demoQuiz } from "@/lib/demo-generators";
 import { chatCompletion, parseJsonArray } from "@/lib/llm";
 import type { QuizQuestion, SubjectId } from "@/lib/types";

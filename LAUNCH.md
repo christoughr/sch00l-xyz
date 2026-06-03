@@ -1,53 +1,61 @@
-# Launch checklist — sch00l.ai
+# Launch checklist — sch00l.ai (no Supabase beta)
 
-Use this the day you go live.
+Public beta **without** accounts. Supabase is **last**.
 
-## Before deploy
+## ✅ Done (by agent)
 
-- [ ] Run all 3 SQL migrations in Supabase (`001`, `002`, `003`)
-- [ ] Supabase Auth: Site URL = `https://sch00l.ai`
-- [ ] Supabase Auth: Redirect = `https://sch00l.ai/auth/callback`
-- [ ] Vercel env vars set (see `.env.example`)
-- [ ] `TEACHER_EMAILS` = your email
-- [ ] `npm run build` passes locally
+- [x] Deployed on Vercel → https://sch00l.ai
+- [x] Groq AI on production
+- [x] Redirect loop fix
+- [x] Terms / Privacy links
+- [x] Age gate (COPPA)
+- [x] Local-only progress, quizzes, flashcards
 
-## Deploy
+## 👤 You — now
 
-```bash
-git push origin main
-# Vercel auto-deploys, or: vercel --prod
-```
+- [ ] Open **https://sch00l.ai** (must be `https://`)
+- [ ] Complete age gate → **Continue**
+- [ ] Test **/study** (full flow)
+- [ ] **Rotate Groq API key** (was exposed in chat) → Vercel → Redeploy
+- [ ] Share link with 3 friends for feedback
 
-## DNS (sch00l.ai)
+## 👤 You — DNS (if site won’t load)
 
-- [ ] Domain added in Vercel → Settings → Domains
-- [ ] A record `@` → `76.76.21.21` OR Vercel nameservers
-- [ ] CNAME `www` → `cname.vercel-dns.com`
-- [ ] HTTPS certificate issued (automatic)
+| Type | Host | Value |
+|------|------|--------|
+| A | `@` | `76.76.21.21` |
+| A | `www` | `76.76.21.21` |
 
-## Smoke test (production)
+Backup URL: **https://sch00l-plum.vercel.app**
 
-- [ ] `/` loads, waitlist submits
-- [ ] Age gate → Terms/Privacy links work
-- [ ] Magic link login → `/onboarding` → `/study`
-- [ ] Full session: pre-quiz → tutor → post-quiz → flashcards
-- [ ] `/teacher` create class → student `/join`
-- [ ] `/settings` export JSON works
-- [ ] `/privacy` and `/terms` accessible
+## 👤 You — public beta marketing
 
-## Growth (week 1)
+- [ ] Post: “free AI study tutor that won’t do your homework”
+- [ ] Link: https://sch00l.ai/study
+- [ ] Collect waitlist on landing page
 
-- [ ] Post in 1 student Discord / subreddit
-- [ ] 1 teacher pilot with real join code
-- [ ] Track waitlist `.edu` count in `/teacher`
-- [ ] Screenshot learning lift for pitch deck
+---
 
-## Acquirer-ready metrics to track
+## 🔜 LAST — Supabase (when signup works)
 
-| Metric | Target |
-|--------|--------|
-| WAU | 500+ |
-| Avg session | 15+ min |
-| Pre→post lift | +15% avg |
-| Waitlist | 200+ |
-| Classroom pilots | 3+ |
+- [ ] Create project (Gmail if hello@sch00l.ai blocked)
+- [ ] Run SQL `001` → `002` → `003`
+- [ ] Vercel env: `NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY`
+- [ ] Auth redirect: `https://sch00l.ai/auth/callback`
+- [ ] `TEACHER_EMAILS=your@email.com`
+- [ ] Test login + teacher dashboard
+
+---
+
+## What works without Supabase
+
+| Feature | Works? |
+|---------|--------|
+| AI tutor (Groq) | ✅ |
+| Pre/post quiz | ✅ (browser) |
+| Flashcards | ✅ (browser) |
+| Progress/streaks | ✅ (browser) |
+| Waitlist form | ✅ (local fallback) |
+| Sign in | ⏸ last |
+| Teacher portal | ⏸ last |
+| Join class | ⏸ last |

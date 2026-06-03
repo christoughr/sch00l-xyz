@@ -6,11 +6,10 @@ import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { useAuth } from "./AuthProvider";
 
-const links = [
+const coreLinks = [
   { href: "/study", label: "Study" },
   { href: "/flashcards", label: "Cards" },
   { href: "/progress", label: "Progress" },
-  { href: "/join", label: "Join" },
 ];
 
 export function Nav() {
@@ -18,7 +17,7 @@ export function Nav() {
   const [isTeacher, setIsTeacher] = useState(false);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !supabaseReady) {
       setIsTeacher(false);
       return;
     }
@@ -26,7 +25,11 @@ export function Nav() {
       .then((r) => r.json())
       .then((d) => setIsTeacher(!!d.isTeacher))
       .catch(() => setIsTeacher(false));
-  }, [user]);
+  }, [user, supabaseReady]);
+
+  const links = supabaseReady
+    ? [...coreLinks, { href: "/join", label: "Join" }]
+    : coreLinks;
 
   return (
     <header className="border-b border-white/10 bg-surface-900/80 backdrop-blur-md sticky top-0 z-50">
@@ -51,7 +54,7 @@ export function Nav() {
             </Link>
           )}
 
-          {!loading && (
+          {!loading && supabaseReady && (
             <>
               {user ? (
                 <button
@@ -68,7 +71,7 @@ export function Nav() {
                   href="/login"
                   className="rounded-lg px-2 py-2 text-sm text-zinc-300 hover:text-white sm:px-3"
                 >
-                  {supabaseReady ? "Sign in" : "Login"}
+                  Sign in
                 </Link>
               )}
             </>

@@ -9,7 +9,7 @@ import {
 } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
-import { loadProgress, saveProgress } from "@/lib/progress";
+import { loadProgress } from "@/lib/progress";
 import { mergeLocalProgressToCloud, syncProgressToDb } from "@/lib/progress-db";
 
 type AuthContextValue = {

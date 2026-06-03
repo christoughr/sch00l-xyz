@@ -5,24 +5,18 @@ import Link from "next/link";
 import { Loader2, Mail } from "lucide-react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Logo } from "@/components/Logo";
+import { ComingSoonBanner } from "@/components/ComingSoonBanner";
 
 export default function LoginPage() {
+  const configured = isSupabaseConfigured();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">(
     "idle"
   );
   const [message, setMessage] = useState("");
 
-  const configured = isSupabaseConfigured();
-
   async function sendMagicLink(e: React.FormEvent) {
     e.preventDefault();
-    if (!configured) {
-      setStatus("error");
-      setMessage("Add Supabase keys to .env.local first (see README).");
-      return;
-    }
-
     const supabase = createClient();
     if (!supabase) return;
 
@@ -41,6 +35,31 @@ export default function LoginPage() {
       setStatus("sent");
       setMessage("Check your email for the magic link.");
     }
+  }
+
+  if (!configured) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16">
+        <Logo />
+        <h1 className="mt-8 text-2xl font-bold text-white">Accounts coming soon</h1>
+        <ComingSoonBanner feature="Sign in with email" />
+        <p className="text-sm text-zinc-400 leading-relaxed">
+          Cloud accounts launch after Supabase setup. You can use everything
+          below right now:
+        </p>
+        <ul className="mt-4 space-y-2 text-sm text-zinc-300 list-disc pl-5">
+          <li>AI tutor (Groq)</li>
+          <li>Pre/post quizzes & flashcards</li>
+          <li>Progress & streaks in your browser</li>
+        </ul>
+        <Link
+          href="/study"
+          className="mt-8 inline-block w-full text-center rounded-xl bg-brand-500 py-3 font-medium text-white hover:bg-brand-400"
+        >
+          Start studying →
+        </Link>
+      </div>
+    );
   }
 
   return (

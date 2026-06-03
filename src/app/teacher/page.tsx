@@ -1,6 +1,11 @@
+import Link from "next/link";
 import { TeacherPortal } from "@/components/TeacherPortal";
+import { ComingSoonBanner } from "@/components/ComingSoonBanner";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
 
 export default function TeacherPage() {
+  const configured = isSupabaseConfigured();
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <div className="mb-8">
@@ -10,7 +15,23 @@ export default function TeacherPage() {
           school pilots and acquirer demos.
         </p>
       </div>
-      <TeacherPortal />
+      {!configured ? (
+        <>
+          <ComingSoonBanner feature="Teacher dashboard" />
+          <p className="text-sm text-zinc-400">
+            Launching with student study first. Teacher tools activate when cloud
+            accounts go live.
+          </p>
+          <Link
+            href="/study"
+            className="mt-4 inline-block text-brand-400 hover:underline text-sm"
+          >
+            Preview student experience →
+          </Link>
+        </>
+      ) : (
+        <TeacherPortal />
+      )}
     </div>
   );
 }

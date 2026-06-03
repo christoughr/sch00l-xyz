@@ -71,8 +71,8 @@ export default function HomePage() {
         </div>
 
         <p className="mt-8 text-sm text-zinc-500">
-          Works in demo mode today. Add an API key for full AI — Groq has a free
-          tier.
+          Free to use — AI tutor, quizzes, and flashcards. No account required
+          (sign-in coming soon).
         </p>
 
         <div className="mt-16 rounded-2xl border border-white/10 bg-white/5 p-8">

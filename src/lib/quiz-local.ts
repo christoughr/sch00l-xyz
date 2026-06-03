@@ -1,4 +1,4 @@
-import type { QuizResult, SubjectId } from "./types";
+import type { QuizResult } from "./types";
 
 const KEY = "sch00l_quiz_results_v1";
 
