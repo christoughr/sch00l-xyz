@@ -36,6 +36,7 @@ export const studentContextSchema = z
       )
       .max(8)
       .optional(),
+    recentSessionSummaries: z.array(z.string().max(400)).max(6).optional(),
   })
   .optional();
 

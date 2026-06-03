@@ -29,6 +29,12 @@ export function StudyPersonalizationBanner({
   if (ctx.weakTopics[0]) {
     hints.push(`Building: ${ctx.weakTopics[0].topic}`);
   }
+  if (ctx.recentSessionSummaries[0]) {
+    const short = ctx.recentSessionSummaries[0].slice(0, 72);
+    hints.push(
+      short.length < ctx.recentSessionSummaries[0].length ? `${short}…` : short
+    );
+  }
 
   return (
     <div className="rounded-xl border border-brand-400/25 bg-brand-500/10 px-4 py-3 flex items-start gap-3 text-sm">

@@ -4,20 +4,13 @@ import { notifyFounder } from "@/lib/founder-notify";
 import { buildSessionHandoffSummary } from "@/lib/tutor-handoff";
 import { chatCompletion } from "@/lib/llm";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { zSubjectId } from "@/lib/subject-schema";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const schema = z.object({
   email: z.string().email(),
-  subject: z.enum([
-    "math",
-    "science",
-    "english",
-    "history",
-    "cs",
-    "languages",
-    "other",
-  ]),
+  subject: zSubjectId,
   topic: z.string().max(120).optional(),
   transcript: z.string().max(12000).optional(),
   sessionSummary: z.string().max(4000).optional(),

@@ -4,7 +4,8 @@ import {
   mergeCloudFlashcards,
 } from "./flashcards-local";
 import { bumpMastery, loadProgress, saveProgress } from "./progress";
-import type { SubjectId } from "./types";
+import { saveSessionMemory } from "./session-memory";
+import type { SubjectId } from "./subject-ids";
 
 export function transcriptToMessages(transcript: string) {
   return transcript
@@ -20,18 +21,84 @@ export function transcriptToMessages(transcript: string) {
     .filter((x): x is { role: "user" | "assistant"; content: string } => !!x);
 }
 
-/** After a full session: bump topic mastery and generate flashcards from chat. */
+function liftLabel(
+  preScore: number | null | undefined,
+  postScore: number | null | undefined,
+  preSkipped?: boolean
+): string | undefined {
+  if (preSkipped || preScore == null || postScore == null) return undefined;
+  const delta = postScore - preScore;
+  return `${preScore}% → ${postScore}% (${delta >= 0 ? "+" : ""}${delta} lift)`;
+}
+
+async function persistSessionMemory(opts: {
+  subject: SubjectId;
+  topic?: string;
+  transcript: string;
+  preScore?: number | null;
+  postScore?: number | null;
+  preSkipped?: boolean;
+}) {
+  const label = liftLabel(opts.preScore, opts.postScore, opts.preSkipped);
+  try {
+    const res = await fetch("/api/session/summarize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subject: opts.subject,
+        topic: opts.topic,
+        transcript: opts.transcript,
+        preScore: opts.preScore ?? undefined,
+        postScore: opts.postScore ?? undefined,
+        liftLabel: label,
+      }),
+    });
+    const data = await res.json();
+    const summary =
+      res.ok && typeof data.summary === "string"
+        ? data.summary
+        : `Session on ${opts.topic || opts.subject}.`;
+
+    saveSessionMemory({
+      subject: opts.subject,
+      topic: opts.topic?.trim() || opts.subject,
+      summary,
+      liftLabel: label,
+    });
+  } catch {
+    saveSessionMemory({
+      subject: opts.subject,
+      topic: opts.topic?.trim() || opts.subject,
+      summary: `Studied ${opts.topic || opts.subject}.`,
+      liftLabel: label,
+    });
+  }
+}
+
+/** After a full session: bump topic mastery, flashcards, and session memory. */
 export async function onSessionComplete(opts: {
   subject: SubjectId;
   topic?: string;
   transcript: string;
+  preScore?: number | null;
+  postScore?: number | null;
+  preSkipped?: boolean;
 }): Promise<{ cardsCreated: number; error?: string }> {
-  const { subject, topic, transcript } = opts;
+  const { subject, topic, transcript, preScore, postScore, preSkipped } = opts;
 
   if (topic?.trim()) {
     const progress = bumpMastery(loadProgress(), subject, topic.trim());
     saveProgress(progress);
   }
+
+  void persistSessionMemory({
+    subject,
+    topic,
+    transcript,
+    preScore,
+    postScore,
+    preSkipped,
+  });
 
   const messages = transcriptToMessages(transcript);
   const userCount = messages.filter((m) => m.role === "user").length;

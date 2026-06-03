@@ -12,6 +12,7 @@ export const STORAGE_KEYS = {
   pendingCheckout: "sch00l_pending_checkout",
   analyticsSession: "sch00l_analytics_session",
   studySessionId: "sch00l_study_session_id",
+  sessionMemory: "sch00l_session_memory_v1",
 } as const;
 
 export const ALL_LOCAL_STORAGE_KEYS = Object.values(STORAGE_KEYS);

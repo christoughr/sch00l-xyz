@@ -76,7 +76,14 @@ export default function StudyPage() {
     });
     setCardsLoading(true);
     setCardsError(null);
-    onSessionComplete({ subject, topic, transcript }).then(
+    onSessionComplete({
+      subject,
+      topic,
+      transcript,
+      preScore,
+      postScore,
+      preSkipped,
+    }).then(
       ({ cardsCreated: n, error }) => {
         setCardsCreated(n);
         setCardsError(error ?? null);

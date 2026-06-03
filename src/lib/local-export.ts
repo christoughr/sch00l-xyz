@@ -40,6 +40,7 @@ export function exportLocalDataJson(): string {
       freeTier: readRaw(STORAGE_KEYS.dailySessions),
       proLocal: readRaw(STORAGE_KEYS.proBeta),
       analyticsSession: readRaw(STORAGE_KEYS.analyticsSession),
+      sessionMemory: readRaw(STORAGE_KEYS.sessionMemory),
     },
     null,
     2

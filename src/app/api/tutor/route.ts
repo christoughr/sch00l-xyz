@@ -6,7 +6,8 @@ import {
   formatStudentContextForPrompt,
   type StudentLearningContext,
 } from "@/lib/student-profile";
-import type { SubjectId } from "@/lib/types";
+import type { SubjectId } from "@/lib/subject-ids";
+import { zSubjectId } from "@/lib/subject-schema";
 import { z } from "zod";
 import { NextResponse } from "next/server";
 
@@ -17,15 +18,7 @@ const requestSchema = z.object({
       content: z.string().min(1).max(8000),
     })
   ),
-  subject: z.enum([
-    "math",
-    "science",
-    "english",
-    "history",
-    "cs",
-    "languages",
-    "other",
-  ]),
+  subject: zSubjectId,
   gradeLevel: z.string().max(80).optional(),
   topic: z.string().max(120).optional(),
   trackContext: z.string().max(500).optional(),
@@ -73,6 +66,7 @@ export async function POST(req: Request) {
         weakTopics: (studentContext.weakTopics ?? []) as StudentLearningContext["weakTopics"],
         strongTopics: (studentContext.strongTopics ?? []) as StudentLearningContext["strongTopics"],
         recentTopics: (studentContext.recentTopics ?? []) as StudentLearningContext["recentTopics"],
+        recentSessionSummaries: studentContext.recentSessionSummaries ?? [],
       })
     : "";
 

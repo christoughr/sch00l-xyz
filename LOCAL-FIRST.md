@@ -7,7 +7,10 @@ sch00l.ai runs in production **without** Supabase, Lemon Squeezy, or Discord. St
 | Feature | Storage |
 |---------|---------|
 | Study flow (pre → tutor → post → lift) | Browser |
-| **Adaptive tutor & quizzes** | Uses mastery, lift, pre-quiz % on this device |
+| **40+ study tracks** (AP, SAT/ACT, college, K–12, languages) | Picker on `/study` |
+| **18 subjects** (math → social studies) | Picker + all APIs |
+| **Session memory** (last 12 summaries) | Browser — feeds next tutor/quiz |
+| **Adaptive tutor & quizzes** | Mastery, lift, pre-quiz %, session memory |
 | Progress & learning lift | Browser |
 | Flashcards (SM-2 review) | Browser |
 | Pro waitlist / tutor requests | Browser (+ optional founder webhook) |
@@ -24,7 +27,7 @@ Check status: `GET https://sch00l.ai/api/health` — `aiMode: "demo"` or `"live"
 
 **Settings → Export local data (JSON)** includes:
 
-- Progress, quizzes, flashcards  
+- Progress, quizzes, flashcards, session memory  
 - Waitlist emails, tutor requests/applications  
 - Age consent, free-tier counter, Pro flag  
 

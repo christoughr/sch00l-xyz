@@ -2,20 +2,13 @@ import { createClient } from "@/lib/supabase/server";
 import { demoFlashcardsFromChat } from "@/lib/demo-generators";
 import { chatCompletion, parseJsonArray } from "@/lib/llm";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
-import type { SubjectId } from "@/lib/types";
+import { zSubjectId } from "@/lib/subject-schema";
+import type { SubjectId } from "@/lib/subject-ids";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const schema = z.object({
-  subject: z.enum([
-    "math",
-    "science",
-    "english",
-    "history",
-    "cs",
-    "languages",
-    "other",
-  ]),
+  subject: zSubjectId,
   messages: z.array(
     z.object({
       role: z.enum(["user", "assistant"]),

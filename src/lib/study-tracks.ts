@@ -1,9 +1,18 @@
-import type { SubjectId } from "./types";
+import type { SubjectId } from "./subject-ids";
 
-export type StudyTrackId = "ap-calc-ab" | "sat-math" | "ap-bio" | "custom";
+export type StudyTrackCategory =
+  | "ap"
+  | "sat_act"
+  | "college"
+  | "k12"
+  | "languages"
+  | "custom";
+
+export type StudyTrackId = string;
 
 export type StudyTrack = {
   id: StudyTrackId;
+  category: StudyTrackCategory;
   label: string;
   description: string;
   subject: SubjectId;
@@ -12,8 +21,26 @@ export type StudyTrack = {
   tutorContext: string;
 };
 
+export const TRACK_CATEGORIES: {
+  id: StudyTrackCategory | "all";
+  label: string;
+}[] = [
+  { id: "all", label: "All" },
+  { id: "ap", label: "AP" },
+  { id: "sat_act", label: "SAT / ACT" },
+  { id: "college", label: "College" },
+  { id: "k12", label: "High school" },
+  { id: "languages", label: "Languages" },
+  { id: "custom", label: "Custom" },
+];
+
+const AP = (t: Omit<StudyTrack, "category">): StudyTrack => ({
+  ...t,
+  category: "ap",
+});
+
 export const STUDY_TRACKS: StudyTrack[] = [
-  {
+  AP({
     id: "ap-calc-ab",
     label: "AP Calculus AB",
     description: "Limits, derivatives, integrals, FTC",
@@ -21,19 +48,59 @@ export const STUDY_TRACKS: StudyTrack[] = [
     topic: "AP Calculus AB — derivatives and integrals",
     gradeLevel: "AP Calculus AB",
     tutorContext:
-      "Align with AP Calc AB: limits, continuity, derivative rules, applications, integrals, FTC. Use AP-style notation. Never give full FRQ solutions on first ask.",
-  },
-  {
-    id: "sat-math",
-    label: "SAT Math",
-    description: "Algebra, problem-solving, data analysis",
+      "AP Calc AB: limits, continuity, derivative rules, applications, integrals, FTC. AP notation. No full FRQ solutions on first ask.",
+  }),
+  AP({
+    id: "ap-calc-bc",
+    label: "AP Calculus BC",
+    description: "Series, parametric, polar, advanced integration",
     subject: "math",
-    topic: "SAT Math — algebra and problem solving",
-    gradeLevel: "SAT / high school",
+    topic: "AP Calculus BC — series and advanced integration",
+    gradeLevel: "AP Calculus BC",
     tutorContext:
-      "SAT Math focus: linear equations, systems, quadratics, ratios, percentages, data tables. Teach test-taking strategy and efficient methods, not answer keys.",
-  },
-  {
+      "AP Calc BC: series, Taylor, parametric/polar, integration techniques. Compare AB vs BC depth.",
+  }),
+  AP({
+    id: "ap-stats",
+    label: "AP Statistics",
+    description: "Data, inference, probability models",
+    subject: "statistics",
+    topic: "AP Statistics — inference and probability",
+    gradeLevel: "AP Statistics",
+    tutorContext:
+      "AP Stats: distributions, sampling, confidence intervals, tests, bivariate data. Interpret context.",
+  }),
+  AP({
+    id: "ap-physics-1",
+    label: "AP Physics 1",
+    description: "Algebra-based mechanics, waves",
+    subject: "science",
+    topic: "AP Physics 1 — kinematics and forces",
+    gradeLevel: "AP Physics 1",
+    tutorContext:
+      "AP Physics 1: algebra-based mechanics, energy, momentum, rotation intro, waves. Units and free-body diagrams.",
+  }),
+  AP({
+    id: "ap-physics-c",
+    label: "AP Physics C: Mechanics",
+    description: "Calculus-based mechanics",
+    subject: "science",
+    topic: "AP Physics C — calculus-based mechanics",
+    gradeLevel: "AP Physics C",
+    tutorContext:
+      "AP Physics C Mechanics: calculus-based kinematics, Newton's laws, work-energy, rotation.",
+  }),
+  AP({
+    id: "ap-chem",
+    label: "AP Chemistry",
+    description: "Stoichiometry, equilibrium, kinetics",
+    subject: "science",
+    topic: "AP Chemistry — stoichiometry and equilibrium",
+    gradeLevel: "AP Chemistry",
+    tutorContext:
+      "AP Chem: stoichiometry, bonding, thermo, equilibrium, kinetics, acids/bases. Show setups before answers.",
+  }),
+  AP({
     id: "ap-bio",
     label: "AP Biology",
     description: "Cells, genetics, evolution, ecology",
@@ -41,13 +108,410 @@ export const STUDY_TRACKS: StudyTrack[] = [
     topic: "AP Biology — cell division and genetics",
     gradeLevel: "AP Biology",
     tutorContext:
-      "AP Bio framing: use claim-evidence-reasoning. Connect to College Board science practices. Diagrams in words when helpful.",
+      "AP Bio: claim-evidence-reasoning, College Board science practices, diagrams in words.",
+  }),
+  AP({
+    id: "ap-env-sci",
+    label: "AP Environmental Science",
+    description: "Ecosystems, human impact, sustainability",
+    subject: "science",
+    topic: "AP Environmental Science — ecosystems and human impact",
+    gradeLevel: "AP Environmental Science",
+    tutorContext:
+      "APES: systems thinking, human populations, pollution, energy, sustainability tradeoffs.",
+  }),
+  AP({
+    id: "ap-psych",
+    label: "AP Psychology",
+    description: "Cognition, development, clinical basics",
+    subject: "psychology",
+    topic: "AP Psychology — memory and cognition",
+    gradeLevel: "AP Psychology",
+    tutorContext:
+      "AP Psych: research methods, brain/behavior, learning, memory, development, clinical. Use key term precision.",
+  }),
+  AP({
+    id: "ap-us-history",
+    label: "AP US History",
+    description: "Colonial era through modern America",
+    subject: "history",
+    topic: "AP US History — periodization and historical argument",
+    gradeLevel: "AP US History",
+    tutorContext:
+      "APUSH: thesis, contextualization, evidence, analysis. Primary sources over memorized lists.",
+  }),
+  AP({
+    id: "ap-world",
+    label: "AP World History",
+    description: "Global patterns, comparison, causation",
+    subject: "history",
+    topic: "AP World History — comparison and causation",
+    gradeLevel: "AP World History",
+    tutorContext:
+      "AP World: CCOT, comparison, causation. Themes across regions and time.",
+  }),
+  AP({
+    id: "ap-euro",
+    label: "AP European History",
+    description: "Renaissance to modern Europe",
+    subject: "history",
+    topic: "AP European History — historical argument",
+    gradeLevel: "AP European History",
+    tutorContext:
+      "AP Euro: thesis-driven essays, causation, continuity/change in European history.",
+  }),
+  AP({
+    id: "ap-lang",
+    label: "AP English Language",
+    description: "Rhetoric, argument, synthesis",
+    subject: "english",
+    topic: "AP Lang — rhetorical analysis and argument",
+    gradeLevel: "AP English Language",
+    tutorContext:
+      "AP Lang: rhetoric (ethos/pathos/logos), argument, synthesis. Outline before prose.",
+  }),
+  AP({
+    id: "ap-lit",
+    label: "AP English Literature",
+    description: "Poetry, prose, literary analysis",
+    subject: "english",
+    topic: "AP Lit — literary analysis and poetry",
+    gradeLevel: "AP English Literature",
+    tutorContext:
+      "AP Lit: close reading, theme, structure, figurative language. Evidence from the text.",
+  }),
+  AP({
+    id: "ap-macro",
+    label: "AP Macroeconomics",
+    description: "GDP, fiscal/monetary policy, trade",
+    subject: "economics",
+    topic: "AP Macro — GDP and policy",
+    gradeLevel: "AP Macroeconomics",
+    tutorContext:
+      "AP Macro: AD-AS, fiscal/monetary policy, inflation, unemployment, trade. Graph intuition.",
+  }),
+  AP({
+    id: "ap-micro",
+    label: "AP Microeconomics",
+    description: "Supply, demand, market structures",
+    subject: "economics",
+    topic: "AP Micro — supply, demand, and elasticity",
+    gradeLevel: "AP Microeconomics",
+    tutorContext:
+      "AP Micro: supply/demand, elasticity, consumer/producer surplus, market structures.",
+  }),
+  AP({
+    id: "ap-human-geo",
+    label: "AP Human Geography",
+    description: "Population, culture, urban patterns",
+    subject: "geography",
+    topic: "AP Human Geography — population and migration",
+    gradeLevel: "AP Human Geography",
+    tutorContext:
+      "AP HuG: models, spatial patterns, culture, political geography, development.",
+  }),
+  AP({
+    id: "ap-cs-a",
+    label: "AP Computer Science A",
+    description: "Java, OOP, algorithms",
+    subject: "cs",
+    topic: "AP CSA — Java methods and classes",
+    gradeLevel: "AP Computer Science A",
+    tutorContext:
+      "AP CSA: Java syntax, OOP, arrays, ArrayList, basic algorithms. Debug reasoning, not full code dumps.",
+  }),
+  {
+    id: "sat-math",
+    category: "sat_act",
+    label: "SAT Math",
+    description: "Algebra, problem-solving, data",
+    subject: "math",
+    topic: "SAT Math — algebra and problem solving",
+    gradeLevel: "SAT / high school",
+    tutorContext:
+      "SAT Math: linear equations, systems, quadratics, ratios, data. Strategy and efficient methods.",
+  },
+  {
+    id: "sat-reading",
+    category: "sat_act",
+    label: "SAT Reading & Writing",
+    description: "Evidence, grammar, rhetoric",
+    subject: "english",
+    topic: "SAT Reading & Writing — evidence and rhetoric",
+    gradeLevel: "SAT",
+    tutorContext:
+      "Digital SAT RW: evidence-based answers, concision, grammar rules with reasoning.",
+  },
+  {
+    id: "act-math",
+    category: "sat_act",
+    label: "ACT Math",
+    description: "Pre-algebra through precalculus",
+    subject: "math",
+    topic: "ACT Math — pre-algebra through trig",
+    gradeLevel: "ACT",
+    tutorContext:
+      "ACT Math: pacing, pre-algebra, geometry, trig. Calculator strategy when allowed.",
+  },
+  {
+    id: "act-science",
+    category: "sat_act",
+    label: "ACT Science",
+    description: "Data interpretation, experiments",
+    subject: "science",
+    topic: "ACT Science — data interpretation",
+    gradeLevel: "ACT",
+    tutorContext:
+      "ACT Science: graphs, experiments, conflicting viewpoints. Reading speed + pattern recognition.",
+  },
+  {
+    id: "college-calc-2",
+    category: "college",
+    label: "Calculus II",
+    description: "Integration techniques, series",
+    subject: "math",
+    topic: "Calculus II — integration techniques and series",
+    gradeLevel: "College",
+    tutorContext:
+      "Calc II: integration techniques, applications, sequences/series. Step-by-step justification.",
+  },
+  {
+    id: "college-linear-algebra",
+    category: "college",
+    label: "Linear Algebra",
+    description: "Matrices, vectors, eigenvalues",
+    subject: "math",
+    topic: "Linear algebra — matrices and vector spaces",
+    gradeLevel: "College",
+    tutorContext:
+      "Linear algebra: row reduction, determinants, eigenvalues, linear transformations.",
+  },
+  {
+    id: "college-org-chem",
+    category: "college",
+    label: "Organic Chemistry",
+    description: "Mechanisms, synthesis, spectroscopy",
+    subject: "science",
+    topic: "Organic chemistry — reaction mechanisms",
+    gradeLevel: "College",
+    tutorContext:
+      "Orgo: curved-arrow mechanisms, functional groups, synthesis planning. Mechanism over memorization.",
+  },
+  {
+    id: "college-psych",
+    category: "college",
+    label: "Intro Psychology",
+    description: "Research methods, brain, learning",
+    subject: "psychology",
+    topic: "Intro psychology — research methods and cognition",
+    gradeLevel: "College",
+    tutorContext:
+      "Intro psych: experiments, brain/behavior, learning, memory. Connect studies to concepts.",
+  },
+  {
+    id: "college-microecon",
+    category: "college",
+    label: "Microeconomics",
+    description: "Supply, demand, welfare",
+    subject: "economics",
+    topic: "Microeconomics — markets and welfare",
+    gradeLevel: "College",
+    tutorContext:
+      "College micro: optimization, equilibrium, welfare, market failure. Graph + intuition.",
+  },
+  {
+    id: "k12-algebra-2",
+    category: "k12",
+    label: "Algebra II",
+    description: "Functions, quadratics, exponentials",
+    subject: "math",
+    topic: "Algebra II — functions and quadratics",
+    gradeLevel: "High school",
+    tutorContext:
+      "Algebra II: functions, quadratics, exponentials, logs. Connect representations.",
+  },
+  {
+    id: "k12-geometry",
+    category: "k12",
+    label: "Geometry",
+    description: "Proofs, similarity, coordinate geo",
+    subject: "math",
+    topic: "Geometry — proofs and similarity",
+    gradeLevel: "High school",
+    tutorContext:
+      "Geometry: two-column proofs, triangles, circles, coordinate geometry.",
+  },
+  {
+    id: "k12-biology",
+    category: "k12",
+    label: "High School Biology",
+    description: "Cells, genetics, body systems",
+    subject: "science",
+    topic: "Biology — cells and genetics",
+    gradeLevel: "High school",
+    tutorContext:
+      "HS Biology: cell structure, genetics, evolution basics, body systems.",
+  },
+  {
+    id: "k12-chemistry",
+    category: "k12",
+    label: "High School Chemistry",
+    description: "Atoms, bonding, reactions",
+    subject: "science",
+    topic: "Chemistry — atoms and chemical reactions",
+    gradeLevel: "High school",
+    tutorContext:
+      "HS Chem: periodic trends, bonding, balancing equations, stoichiometry intro.",
+  },
+  {
+    id: "k12-physics",
+    category: "k12",
+    label: "High School Physics",
+    description: "Motion, forces, energy",
+    subject: "science",
+    topic: "Physics — motion and forces",
+    gradeLevel: "High school",
+    tutorContext:
+      "HS Physics: kinematics, forces, energy, waves. Units and diagrams first.",
+  },
+  {
+    id: "k12-us-history",
+    category: "k12",
+    label: "US History (HS)",
+    description: "Themes across American history",
+    subject: "history",
+    topic: "US History — causes and consequences",
+    gradeLevel: "High school",
+    tutorContext:
+      "HS US History: cause/effect, primary sources, essay outlines.",
+  },
+  {
+    id: "lang-spanish",
+    category: "languages",
+    label: "Spanish",
+    description: "Grammar, conversation, writing",
+    subject: "languages",
+    topic: "Spanish — grammar and conversation practice",
+    gradeLevel: "High school / college",
+    tutorContext:
+      "Spanish: grammar in context, conversation prompts, error correction with retry. Mix English explanations when needed.",
+  },
+  {
+    id: "lang-french",
+    category: "languages",
+    label: "French",
+    description: "Grammar, reading, speaking",
+    subject: "languages",
+    topic: "French — grammar and reading",
+    gradeLevel: "High school / college",
+    tutorContext:
+      "French: grammar, reading comprehension, spoken practice prompts.",
+  },
+  {
+    id: "lang-english-learner",
+    category: "languages",
+    label: "English (ESL/ELL)",
+    description: "Academic writing, vocabulary",
+    subject: "languages",
+    topic: "Academic English — writing and vocabulary",
+    gradeLevel: "ELL",
+    tutorContext:
+      "ELL: clear academic English, vocabulary in context, essay structure, gentle correction.",
+  },
+  {
+    id: "cs-python",
+    category: "k12",
+    label: "Python Programming",
+    description: "Basics, loops, functions, data",
+    subject: "cs",
+    topic: "Python — loops, functions, and debugging",
+    gradeLevel: "High school / college",
+    tutorContext:
+      "Python: syntax, loops, functions, lists, debugging. Pseudocode before code.",
+  },
+  {
+    id: "cs-ap-csp",
+    category: "ap",
+    label: "AP CS Principles",
+    description: "Big ideas, data, internet",
+    subject: "cs",
+    topic: "AP CSP — data and the internet",
+    gradeLevel: "AP CSP",
+    tutorContext:
+      "AP CSP: abstractions, data, internet, impact. Conceptual over heavy coding.",
+  },
+  {
+    id: "health-anatomy",
+    category: "college",
+    label: "Anatomy & Physiology",
+    description: "Body systems, terminology",
+    subject: "health",
+    topic: "Anatomy — muscular and skeletal systems",
+    gradeLevel: "College / nursing",
+    tutorContext:
+      "A&P: terminology, systems, clinical connections. Memory with spatial reasoning.",
+  },
+  {
+    id: "business-accounting",
+    category: "college",
+    label: "Accounting I",
+    description: "Debits, credits, financial statements",
+    subject: "business",
+    topic: "Accounting — journal entries and statements",
+    gradeLevel: "College",
+    tutorContext:
+      "Accounting: T-accounts, journal entries, financial statements. Process before answers.",
+  },
+  {
+    id: "engineering-statics",
+    category: "college",
+    label: "Engineering Statics",
+    description: "Equilibrium, free-body diagrams",
+    subject: "engineering",
+    topic: "Statics — free-body diagrams and equilibrium",
+    gradeLevel: "Engineering",
+    tutorContext:
+      "Statics: FBDs, moments, equilibrium equations. Diagram discipline.",
+  },
+  {
+    id: "philosophy-logic",
+    category: "college",
+    label: "Logic & Critical Thinking",
+    description: "Arguments, validity, fallacies",
+    subject: "philosophy",
+    topic: "Logic — arguments and validity",
+    gradeLevel: "College",
+    tutorContext:
+      "Logic: premises/conclusions, validity, common fallacies. Symbolic logic gently.",
+  },
+  {
+    id: "art-history",
+    category: "college",
+    label: "Art History",
+    description: "Movements, analysis, context",
+    subject: "art",
+    topic: "Art history — formal analysis",
+    gradeLevel: "College",
+    tutorContext:
+      "Art history: formal analysis, context, comparison. Visual description before interpretation.",
+  },
+  {
+    id: "music-theory",
+    category: "k12",
+    label: "Music Theory",
+    description: "Scales, harmony, rhythm",
+    subject: "music",
+    topic: "Music theory — harmony and rhythm",
+    gradeLevel: "High school / college",
+    tutorContext:
+      "Music theory: notation, scales, chords, rhythm. Ear training suggestions when relevant.",
   },
   {
     id: "custom",
+    category: "custom",
     label: "Custom topic",
     description: "Pick your own subject and topic",
-    subject: "math",
+    subject: "other",
     topic: "",
     gradeLevel: "",
     tutorContext: "",
@@ -55,5 +519,17 @@ export const STUDY_TRACKS: StudyTrack[] = [
 ];
 
 export function getStudyTrack(id: StudyTrackId): StudyTrack {
-  return STUDY_TRACKS.find((t) => t.id === id) ?? STUDY_TRACKS[STUDY_TRACKS.length - 1];
+  return (
+    STUDY_TRACKS.find((t) => t.id === id) ??
+    STUDY_TRACKS[STUDY_TRACKS.length - 1]
+  );
+}
+
+export function tracksInCategory(
+  category: StudyTrackCategory | "all"
+): StudyTrack[] {
+  if (category === "all") {
+    return STUDY_TRACKS.filter((t) => t.id !== "custom");
+  }
+  return STUDY_TRACKS.filter((t) => t.category === category);
 }

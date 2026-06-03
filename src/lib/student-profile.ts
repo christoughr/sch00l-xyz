@@ -1,6 +1,8 @@
 import { latestQuizLiftLocal } from "./quiz-local";
 import { loadProgress } from "./progress";
-import type { StudentProgress, SubjectId } from "./types";
+import { recentMemorySummaries } from "./session-memory";
+import type { StudentProgress } from "./types";
+import type { SubjectId } from "./subject-ids";
 
 /** Serializable learning graph sent to tutor/quiz APIs */
 export type StudentLearningContext = {
@@ -11,6 +13,7 @@ export type StudentLearningContext = {
   weakTopics: { subject: SubjectId; topic: string; confidence: number }[];
   strongTopics: { subject: SubjectId; topic: string; confidence: number }[];
   recentTopics: { subject: SubjectId; topic: string; confidence: number }[];
+  recentSessionSummaries: string[];
 };
 
 export function buildStudentLearningContext(
@@ -60,6 +63,11 @@ export function buildStudentLearningContext(
       confidence: m.confidence,
     }));
 
+  const memories =
+    typeof window !== "undefined"
+      ? recentMemorySummaries({ subject, limit: 4 })
+      : [];
+
   return {
     streakDays: progress.streakDays,
     totalSessions: progress.totalSessions,
@@ -68,6 +76,7 @@ export function buildStudentLearningContext(
     weakTopics,
     strongTopics,
     recentTopics,
+    recentSessionSummaries: memories,
   };
 }
 
@@ -119,6 +128,13 @@ export function formatStudentContextForPrompt(
     );
   }
 
+  if (ctx.recentSessionSummaries.length) {
+    lines.push(
+      "- Prior sessions (continue the arc — don't repeat full explanations):\n  " +
+        ctx.recentSessionSummaries.map((s) => `• ${s}`).join("\n  ")
+    );
+  }
+
   if (lines.length === 1) {
     return "";
   }
@@ -148,6 +164,7 @@ export function hasPersonalizationData(ctx: StudentLearningContext): boolean {
     ctx.latestLift !== null ||
     ctx.preScoreToday != null ||
     ctx.weakTopics.length > 0 ||
-    ctx.strongTopics.length > 0
+    ctx.strongTopics.length > 0 ||
+    ctx.recentSessionSummaries.length > 0
   );
 }

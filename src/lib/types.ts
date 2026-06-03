@@ -1,14 +1,7 @@
-export type SubjectId =
-  | "math"
-  | "science"
-  | "english"
-  | "history"
-  | "cs"
-  | "languages"
-  | "other";
+export type { SubjectId } from "./subject-ids";
 
 export interface Subject {
-  id: SubjectId;
+  id: import("./subject-ids").SubjectId;
   label: string;
   emoji: string;
   description: string;
@@ -23,7 +16,7 @@ export interface ChatMessage {
 
 export interface StudySession {
   id: string;
-  subject: SubjectId;
+  subject: import("./subject-ids").SubjectId;
   startedAt: string;
   endedAt?: string;
   messageCount: number;
@@ -31,9 +24,9 @@ export interface StudySession {
 }
 
 export interface MasteryTopic {
-  subject: SubjectId;
+  subject: import("./subject-ids").SubjectId;
   topic: string;
-  confidence: number; // 0–100, acquisition-valuable signal
+  confidence: number;
   lastPracticed: string;
 }
 
@@ -48,7 +41,7 @@ export interface StudentProgress {
 
 export interface Flashcard {
   id: string;
-  subject: SubjectId;
+  subject: import("./subject-ids").SubjectId;
   front: string;
   back: string;
   easeFactor: number;
@@ -68,7 +61,7 @@ export interface QuizQuestion {
 
 export interface QuizResult {
   id: string;
-  subject: SubjectId;
+  subject: import("./subject-ids").SubjectId;
   topic?: string;
   phase: "pre" | "post";
   score: number;
