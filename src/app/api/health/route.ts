@@ -1,3 +1,4 @@
+import { discordBotConfigured } from "@/lib/discord-bot";
 import { founderWebhookConfigured } from "@/lib/founder-notify";
 import { isStripeConfigured } from "@/lib/stripe";
 import { NextResponse } from "next/server";
@@ -13,6 +14,7 @@ export async function GET() {
     ),
     stripe: isStripeConfigured(),
     founderWebhook: founderWebhookConfigured(),
+    discordBot: discordBotConfigured(),
     ai: !!process.env.OPENAI_API_KEY,
   });
 }
