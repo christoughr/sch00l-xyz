@@ -1,27 +1,34 @@
-# NOW — Discord + code only
+# NOW — code only (no Discord server yet)
 
-**Skipped:** X pin post, public sharing  
-**Starred:** [STARRED.md](./STARRED.md) — Supabase, Lemon Squeezy
+**⭐ Starred (do later):** [STARRED.md](./STARRED.md)  
+- Supabase · Lemon Squeezy · **Discord** · marketing (X pin, sharing)
 
----
-
-## Your focus
-
-| # | Task | Guide |
-|---|------|--------|
-| **A** | Discord **webhook** alerts | [DISCORD.md](./DISCORD.md) Part A |
-| **B** | Discord **bot** slash commands | [DISCORD.md](./DISCORD.md) Part B (after A) |
+**Site works without all of these:** https://sch00l.ai/study
 
 ---
 
-## Code shipped (agent)
+## What works today (no setup)
 
-- Webhook → rich embeds (waitlist, tutor request, tutor apply)
-- Bot API → `/api/discord/interactions` (`/study`, `/progress`, `/tutors`, `/help`)
-- Register commands → `npm run discord:register`
+| Feature | URL |
+|---------|-----|
+| Study + lift | /study |
+| Progress | /progress |
+| Flashcards | /flashcards |
+| Tutor request | /tutors (saved on user's device) |
+| Pro interest | /#waitlist (local until cloud) |
 
 ---
 
-## After Discord works
+## Next code tasks (pick one — tell the agent)
 
-Reply `A 끝` or `B 끝` — we pick the next code task (e.g. Lemon Squeezy scaffold).
+1. **Lemon Squeezy** checkout scaffold (when you have LS account)
+2. **Product polish** — bugs, UX, mobile
+3. **Outcomes page** — show demo lift stats for landing
+
+Reply with what you want, e.g. `코드 2` or `Lemon Squeezy 준비`.
+
+---
+
+## When you create a Discord server
+
+Open [DISCORD.md](./DISCORD.md) — Part A takes ~5 min. No code changes needed.

@@ -51,7 +51,23 @@ Skip these until you're ready. Everything else runs **local-first** without them
 
 ---
 
+## ⭐ Discord (webhook + bot)
+
+**Why later:** no server/channel yet. Code is already deployed — you only add env when ready.
+
+**When ready:** follow [DISCORD.md](./DISCORD.md)
+
+1. Create a Discord server + channel (e.g. `#sch00l-alerts`)
+2. **Webhook:** copy URL → Vercel `FOUNDER_WEBHOOK_URL` → redeploy
+3. **Bot (optional):** Developer Portal → `DISCORD_APPLICATION_ID`, `DISCORD_PUBLIC_KEY`, `DISCORD_BOT_TOKEN` → Interactions URL `https://sch00l.ai/api/discord/interactions` → `npm run discord:register`
+
+**Until then:** waitlist/tutor data stays in each user's browser; you can export via **Settings → Export local data** on your machine.
+
+---
+
 ## Also starred (your choice)
+
+- X pin post, public sharing (marketing)
 
 - Groq API key rotation
 - Stripe (replaced by Lemon Squeezy for Korea)

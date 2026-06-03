@@ -1,36 +1,26 @@
 # YOU-DO — human tasks only
 
-**Deferred (starred):** [STARRED.md](./STARRED.md) — Supabase + Lemon Squeezy  
-**Launch now:** [NOW.md](./NOW.md)
+**⭐ All deferred for now:** [STARRED.md](./STARRED.md)  
+(Supabase · Lemon Squeezy · Discord · X pin · public sharing)
+
+**Code path:** [NOW.md](./NOW.md)
 
 ---
 
-## This week (no backend needed)
+## Nothing required to keep sch00l.ai running
 
-1. Twitter/X profile + pinned post ([MARKETING.md](./MARKETING.md))
-2. Share https://sch00l.ai/study — 10–20 people ([SHARE.md](./SHARE.md))
-3. Recruit 3 tutors → https://sch00l.ai/tutors
-4. Match tutor requests by email (check Discord if webhook set)
-5. Collect lift screenshots for social proof
+The app works local-first. Students can study at https://sch00l.ai/study
 
 ---
 
-## Optional 2-min setup (recommended)
+## When you're ready (any order)
 
-**Discord webhook** → Vercel `FOUNDER_WEBHOOK_URL` → redeploy  
-→ waitlist + tutor pings without Supabase. Steps in [NOW.md](./NOW.md).
-
----
-
-## ⭐ Later — Supabase
-
-See [STARRED.md](./STARRED.md). Not blocking beta.
-
----
-
-## ⭐ Later — Lemon Squeezy
-
-See [STARRED.md](./STARRED.md). Pro waitlist + manual tutor matching until then.
+| Later | Trigger |
+|-------|---------|
+| Discord | You create a server → [DISCORD.md](./DISCORD.md) |
+| Lemon Squeezy | LS account + variant IDs → tell agent |
+| Supabase | Support replies → SQL 001–007 + Vercel env |
+| Marketing | X pin, share link — [SHARE.md](./SHARE.md) |
 
 ---
 
@@ -38,4 +28,4 @@ See [STARRED.md](./STARRED.md). Pro waitlist + manual tutor matching until then.
 
 - Groq key rotation
 - DNS (working)
-- Stripe (use Lemon Squeezy instead)
+- Stripe (use Lemon Squeezy)
