@@ -1,15 +1,16 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
 const MIGRATION = "010_epics_b_through_h.sql";
 
+/** Public exam catalog — readable without auth. */
 export async function GET() {
-  const supabase = await createClient();
-  if (!supabase) {
+  const admin = createAdminClient();
+  if (!admin) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await admin
     .from("practice_tests")
     .select("id, label, exam_family, region, duration_minutes, section_count")
     .order("label", { ascending: true });
