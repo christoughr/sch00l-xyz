@@ -10,6 +10,7 @@ export function OnboardingForm() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
+  const [ferpaOk, setFerpaOk] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -30,6 +31,13 @@ export function OnboardingForm() {
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
         throw new Error(d.error ?? "Could not save profile");
+      }
+      if (ferpaOk) {
+        await fetch("/api/compliance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ferpaOk: true }),
+        });
       }
       router.push("/study");
       router.refresh();
@@ -58,6 +66,15 @@ export function OnboardingForm() {
         placeholder="Grade / level (optional)"
         className="w-full rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-white focus:border-brand-400 focus:outline-none"
       />
+      <label className="flex items-start gap-2 text-sm text-zinc-400">
+        <input
+          type="checkbox"
+          checked={ferpaOk}
+          onChange={(e) => setFerpaOk(e.target.checked)}
+          className="mt-1 rounded border-white/20"
+        />
+        I agree to educational data use under school/FERPA-style privacy (required for classroom features).
+      </label>
       <button
         type="submit"
         disabled={loading}

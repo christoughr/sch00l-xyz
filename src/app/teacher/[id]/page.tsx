@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ClassroomStats } from "@/components/TeacherPortal";
+import { TeacherClassroomPage } from "@/components/TeacherClassroomPage";
 
 export default async function ClassroomPage({
   params,
@@ -10,13 +9,7 @@ export default async function ClassroomPage({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <Link
-        href="/teacher"
-        className="text-sm text-zinc-500 hover:text-zinc-300 mb-6 inline-block"
-      >
-        ← All classrooms
-      </Link>
-      <ClassroomStats classroomId={id} />
+      <TeacherClassroomPage classroomId={id} />
     </div>
   );
 }

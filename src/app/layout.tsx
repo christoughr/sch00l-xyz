@@ -28,11 +28,15 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
   },
-  manifest: "/manifest.webmanifest",
+  manifest: "/manifest.json",
+  applicationName: "sch00l",
   appleWebApp: {
     capable: true,
     title: "sch00l",
     statusBarStyle: "black-translucent",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
   },
   openGraph: {
     title: "sch00l.ai — Socratic AI tutor + learning lift",

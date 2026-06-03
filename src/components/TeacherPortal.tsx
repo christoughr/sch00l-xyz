@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { SITE_DOMAIN } from "@/lib/site";
-import { ClassroomAssignments } from "./ClassroomAssignments";
 
 type Classroom = {
   id: string;
@@ -442,10 +441,6 @@ export function ClassroomStats({ classroomId }: { classroomId: string }) {
         )}
       </section>
 
-      <ClassroomAssignments
-        classroomId={classroomId}
-        students={students.map((s) => ({ id: s.id, email: s.email }))}
-      />
     </div>
   );
 }

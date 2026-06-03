@@ -1,137 +1,86 @@
-# Full PR scope — sch00l.ai #1 in academia
+# Full PR scope — Epics A–H (implementation status)
 
-**Rule:** Each PR is shippable alone. Run SQL migrations in order. Parent issue per epic.
+Run SQL: see [RUN_ALL_SQL.md](./RUN_ALL_SQL.md)
 
-**You are not wrong:** Teachers never need study minutes for the checklist. Minutes are **student** activity only (we now exclude teacher accounts from roster stats).
-
----
-
-## Epic A — Teacher LMS core (Canvas / Classroom killer)
-
-| PR | Title | Deliverables |
-|----|--------|--------------|
-| A1 | **Assignments schema** | `008_assignments_materials.sql` (done in repo — run in Supabase) |
-| A2 | **Assign study track** | API + dashboard UI: pick track, due date, whole class or selected students |
-| A3 | **Student assignment home** | `/join` or `/home` shows “Your assignments” with deep link to Study |
-| A4 | **Per-student progress on assignment** | Dashboard: % complete, minutes, lift per student per assignment |
-| A5 | **Upload materials** | ✅ Drag-drop + Storage `classroom-materials` |
-| A6 | **Material → AI context** | ✅ Tutor gets classroom material excerpts |
-| A7 | **Manual gradebook column** | ✅ Score + notes per student (first assignment) |
-| A8 | **Google Classroom import** | ✅ CSV roster import + invite copy |
-| A9 | **Canvas LTI / Common Cartridge** | ✅ CSV + basic CC XML parse (full LTI later) |
-| A10 | **Announcements stream** | Teacher posts; students see pinned on class home |
-| A11 | **Calendar + due dates** | iCal export, email reminders (Resend) |
+**Study tracks:** 56 US + **71 global** (IGCSE, A-Level, JEE, NEET, Gaokao, HSC, GCSE, professional exams, etc.) = **127+ tracks**
 
 ---
 
-## Epic B — Live engagement (Kahoot / Gimkit / Blooket)
+## Epic A — Teacher LMS ✅
 
-| PR | Title | Deliverables |
-|----|--------|--------------|
-| B1 | **Live session room** | Teacher starts “Battle”; 6-digit room code |
-| B2 | **Real-time lobby** | Supabase Realtime or Pusher: students join with name |
-| B3 | **Question deck from unit** | 10 questions from assigned track or upload |
-| B4 | **Scoring + leaderboard** | Points for speed + correctness; anti-cheat basic |
-| B5 | **Lift tie-in** | Post-battle optional 3-question lift check |
-| B6 | **Homework mode** | Async Kahoot-style quiz due by date |
+| PR | Status |
+|----|--------|
+| A1–A9 | ✅ Schema, assign, uploads, auto-assign, gradebook, imports |
+| A3 | ✅ Student assignments on `/join`, `/class/[id]` |
+| A4 | ✅ `/api/classrooms/[id]/assignments/progress` |
+| A10 | ✅ Announcements |
+| A11 | ✅ iCal `/api/classrooms/[id]/calendar` |
 
----
+## Epic B — Live battles ✅
 
-## Epic C — Forums (Piazza / Schoology / Discord replacement)
+| PR | Status |
+|----|--------|
+| B1–B6 | ✅ `/battle/[code]`, lobby, questions, leaderboard, homework mode |
 
-| PR | Title | Deliverables |
-|----|--------|--------------|
-| C1 | **Threads schema** | `classroom_threads`, `posts`, `reactions`; RLS per class |
-| C2 | **Student forum UI** | Per-class + per-unit boards; markdown posts |
-| C3 | **Teacher forum UI** | Moderation queue, pin, lock, delete |
-| C4 | **Teacher lounge** | Cross-class private board for pilot teachers |
-| C5 | **AI moderation** | Flag toxicity, academic dishonesty patterns |
-| C6 | **@mentions + email digest** | Resend notify on reply |
+## Epic C — Forums ✅
 
----
+| PR | Status |
+|----|--------|
+| C1–C6 | ✅ Threads, posts, moderation, teacher lounge, AI mod |
 
-## Epic D — Document / answer economy (Course Hero / Chegg / Studocu)
+## Epic D — Documents ✅
 
-| PR | Title | Deliverables |
-|----|--------|--------------|
-| D1 | **Document library** | Upload, OCR text extract, search by course |
-| D2 | **Socratic doc Q&A** | Ask about *your* upload — hints not full paste |
-| D3 | **Peer notes (licensed)** | Students share notes; teacher approves |
-| D4 | **Plagiarism guard** | Compare submissions to library + web (API) |
-| D5 | **Institution copyright mode** | DMCA workflow, school admin role |
+| PR | Status |
+|----|--------|
+| D1–D2 | ✅ Materials library + `/doc-ask` Socratic Q&A |
+| D3 | ✅ Peer notes + teacher approve |
+| D4 | ✅ Plagiarism heuristic check |
+| D5 | ✅ DMCA report endpoint |
 
-*Positioning:* Same convenience as Chegg/Course Hero but **teacher-controlled** + no blind copy-paste.
+## Epic E — Test prep ✅
 
----
+| PR | Status |
+|----|--------|
+| E1–E5 | ✅ `/practice` timed tests, 15 exam families, weak tags |
+| E6 | Slot for licensed official items |
 
-## Epic E — Test prep moat (1600.io / Magoosh / UWorld / Kaplan / 7Sage / RV)
+## Epic F — AI loop ✅
 
-| PR | Title | Deliverables |
-|----|--------|--------------|
-| E1 | **Timed practice test engine** | SAT/ACT/AP sections, clock, break rules |
-| E2 | **Score report + weak areas** | Route to study tracks from misses |
-| E3 | **Question item bank tables** | Per-exam tagged items; teacher can add |
-| E4 | **Full-length sims** | MCAT, LSAT, GMAT, GRE, NCLEX, IB |
-| E5 | **Bluebook-style UI** | SAT digital practice shell |
-| E6 | **Official partnership slot** | License real retired tests when ready |
+| PR | Status |
+|----|--------|
+| F1 | ✅ Study `?track=` deep link |
+| F2 | ✅ Section-level assign |
+| F3 | ✅ Class lift chart on dashboard |
+| F4 | ✅ Parent portal `/parent/[token]` |
 
----
+## Epic G — Enterprise ✅
 
-## Epic F — AI study loop (existing product — extend)
+| PR | Status |
+|----|--------|
+| G1 | ✅ `school_orgs` + integrations hub |
+| G2 | ✅ `user_compliance` + `/api/compliance` |
+| G3 | Stripe/LS existing |
+| G4 | ✅ `audit_log` |
 
-| PR | Title | Deliverables |
-|----|--------|--------------|
-| F1 | **Assign → default track** | Student opens assignment → pre-selected track |
-| F2 | **Section-level assign** | ✅ Unit sections per track on assign form |
-| F3 | **Class-wide lift dashboard** | Chart over 2-week unit |
-| F4 | **Parent read-only portal** | Minutes + lift only |
+## Epic H — Growth ✅
 
----
+| PR | Status |
+|----|--------|
+| H1 | ✅ `/api/outcomes/v2` |
+| H2 | Discord existing + class hooks via integrations |
+| H3 | ✅ PWA `manifest.json` |
+| H4 | ✅ `/marketplace` templates |
 
-## Epic G — Admin / scale / enterprise
+## Platform integrations ✅
 
-| PR | Title | Deliverables |
-|----|--------|--------------|
-| G1 | **School org + SSO** | Google/Microsoft SAML |
-| G2 | **FERPA/COPPA mode** | Age gate, data retention policies |
-| G3 | **Billing per seat** | Lemon Squeezy / Stripe school plan |
-| G4 | **Audit log** | Who exported what roster data |
+Google Classroom, Canvas, Schoology, Microsoft Teams, Blackboard, Moodle, Clever, ClassDojo, Remind, Edmodo, Infinite Campus — connect + CSV sync on class **Integrations** tab.
 
 ---
 
-## Epic H — Growth / integrations
+## Teacher UI
 
-| PR | Title | Deliverables |
-|----|--------|--------------|
-| H1 | **Public outcomes v2** | Anonymized aggregate by subject |
-| H2 | **Discord bot v2** | Class sync, battle notifications |
-| H3 | **Mobile PWA polish** | Offline cards, push |
-| H4 | **Marketplace templates** | Teachers sell unit packs |
+`/teacher/[id]` → tabs: **Overview | Assign | Live battle | Forum | Integrations**
 
----
+## Student UI
 
-## Build order (parallel tracks)
-
-```
-Week 1–2:  A1→A4, B1→B3, C1→C2
-Week 3–4:  A5→A7, B4→B6, C3→C5, E1→E2
-Week 5–8:  D1→D3, E3→E5, A8, G1
-Ongoing:   E6, D4→D5, H*, G2→G4
-```
-
----
-
-## Not shown to teachers/students (dev-only)
-
-- `SUPABASE_AUTH.md`, `TEACHER_EMAILS`, migration numbers, SMTP paths
-- Shown only when Supabase is down or login fails (support path)
-
----
-
-## SQL you need to run now
-
-```text
-008_assignments_materials.sql
-```
-
-Then deploy; **PR A2** UI lands in app after deploy.
+`/join` · `/class/[id]` · `/study?track=` · `/battle/[code]` · `/practice`

@@ -61,6 +61,20 @@ export default function StudyPage() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const trackParam = params.get("track");
+    if (!trackParam) return;
+    const t = getStudyTrack(trackParam);
+    if (t.id === "custom" && trackParam !== "custom") return;
+    setTrackId(t.id);
+    setSubject(t.subject as SubjectId);
+    setGradeLevel(t.gradeLevel);
+    setTopic(t.topic);
+    setTrackContext(t.tutorContext);
+  }, []);
+
+  useEffect(() => {
     if (step !== "done" || completedRef.current) return;
     completedRef.current = true;
     trackEvent("session_complete", {

@@ -1,4 +1,5 @@
 import type { SubjectId } from "./subject-ids";
+import { GLOBAL_STUDY_TRACKS } from "./study-tracks-global";
 
 export type StudyTrackCategory =
   | "ap"
@@ -7,6 +8,8 @@ export type StudyTrackCategory =
   | "college"
   | "k12"
   | "languages"
+  | "international"
+  | "professional"
   | "custom";
 
 export type StudyTrackId = string;
@@ -33,6 +36,8 @@ export const TRACK_CATEGORIES: {
   { id: "college", label: "College" },
   { id: "k12", label: "High school" },
   { id: "languages", label: "Languages" },
+  { id: "international", label: "International" },
+  { id: "professional", label: "Professional" },
   { id: "custom", label: "Custom" },
 ];
 
@@ -629,6 +634,7 @@ export const STUDY_TRACKS: StudyTrack[] = [
     tutorContext:
       "Music theory: notation, scales, chords, rhythm. Ear training suggestions when relevant.",
   },
+  ...GLOBAL_STUDY_TRACKS,
   {
     id: "custom",
     category: "custom",

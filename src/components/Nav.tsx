@@ -13,6 +13,7 @@ type NavLink = { href: string; label: string; showDue?: boolean };
 
 const primaryLinks: NavLink[] = [
   { href: "/study", label: "Study" },
+  { href: "/practice", label: "Practice" },
   { href: "/flashcards", label: "Cards", showDue: true },
   { href: "/progress", label: "Progress" },
 ];
