@@ -67,8 +67,13 @@ export function TutorRequestForm({
 
       trackEvent("tutor_request", { subject, urgency });
       setStatus("ok");
-      setMessage(data.message);
+      setMessage(
+        urgency === "before_test"
+          ? `${data.message} (Marked urgent — exam within 48h.)`
+          : data.message
+      );
       setEmail("");
+      setUrgency("normal");
     } catch (err) {
       setStatus("error");
       setMessage(err instanceof Error ? err.message : "Something went wrong");

@@ -19,6 +19,7 @@ import {
 } from "@/lib/free-tier";
 import {
   rotateStudySessionId,
+  clearStudySessionId,
 } from "@/lib/study-session-id";
 import { SITE_URL } from "@/lib/site";
 import type { StudyTrackId } from "@/lib/study-tracks";
@@ -333,7 +334,14 @@ export default function StudyPage() {
             >
               Review flashcards
             </Link>
-            <CopyShareLink url={SHARE_URL} />
+            <CopyShareLink
+              url={SHARE_URL}
+              message={
+                delta !== null && preScore !== null && postScore !== null
+                  ? `I studied on sch00l.ai — pre-quiz ${preScore}% → post-quiz ${postScore}% (${delta >= 0 ? "+" : ""}${delta} lift). Socratic AI tutor + flashcards. Try it: ${SHARE_URL}`
+                  : `Try sch00l.ai — Socratic AI tutor that measures learning lift (pre/post quiz): ${SHARE_URL}`
+              }
+            />
             <button
               type="button"
               onClick={() => {
@@ -345,6 +353,7 @@ export default function StudyPage() {
                 setPreScore(null);
                 setPostScore(null);
                 setTranscript("");
+                clearStudySessionId();
                 setSessionId("");
               }}
               className="rounded-xl border border-white/15 px-5 py-2 text-sm text-zinc-300 hover:bg-white/5"

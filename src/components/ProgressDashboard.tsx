@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Flame, Clock, BookOpen, TrendingUp, BarChart2 } from "lucide-react";
 import { loadProgress, saveProgress } from "@/lib/progress";
+import { latestQuizLiftLocal } from "@/lib/quiz-local";
 import { getSubject } from "@/lib/subjects";
 import type { StudentProgress } from "@/lib/types";
 import { useAuth } from "./AuthProvider";
@@ -33,6 +34,10 @@ export function ProgressDashboard() {
   const [progress, setProgress] = useState<StudentProgress | null>(null);
   const [quizLift, setQuizLift] = useState<string | null>(null);
 
+  const refreshLift = useCallback(() => {
+    setQuizLift(latestQuizLiftLocal());
+  }, []);
+
   const load = useCallback(async () => {
     if (user) {
       const res = await fetch("/api/progress/sync");
@@ -41,32 +46,58 @@ export function ProgressDashboard() {
         if (data.progress) {
           saveProgress(data.progress);
           setProgress(data.progress);
+          refreshLift();
           return;
         }
       }
     }
     setProgress(loadProgress());
-  }, [user]);
+    refreshLift();
+  }, [user, refreshLift]);
 
   useEffect(() => {
     load();
   }, [load]);
 
   useEffect(() => {
-    async function loadQuizzes() {
-      if (!user) {
-        const { latestQuizLiftLocal } = await import("@/lib/quiz-local");
-        setQuizLift(latestQuizLiftLocal());
+    refreshLift();
+
+    function onQuizSaved() {
+      refreshLift();
+    }
+    function onFocus() {
+      refreshLift();
+    }
+
+    window.addEventListener("sch00l-quiz-saved", onQuizSaved);
+    window.addEventListener("focus", onFocus);
+    return () => {
+      window.removeEventListener("sch00l-quiz-saved", onQuizSaved);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [refreshLift]);
+
+  useEffect(() => {
+    if (!user) return;
+    const userId = user.id;
+
+    async function loadCloudLift() {
+      const localLift = latestQuizLiftLocal();
+      if (localLift) {
+        setQuizLift(localLift);
         return;
       }
+
       const supabase = (await import("@/lib/supabase/client")).createClient();
       if (!supabase) return;
+
       const { data } = await supabase
         .from("quiz_results")
         .select("phase, score, total, session_id, created_at")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(40);
+
       if (!data?.length) return;
       const sessionIds = [
         ...new Set(data.filter((q) => q.session_id).map((q) => q.session_id as string)),
@@ -84,7 +115,7 @@ export function ProgressDashboard() {
         }
       }
     }
-    loadQuizzes();
+    loadCloudLift();
   }, [user]);
 
   if (!progress) {
@@ -95,13 +126,22 @@ export function ProgressDashboard() {
 
   return (
     <div className="space-y-8">
-      {quizLift && (
+      {quizLift ? (
         <div className="rounded-2xl border border-brand-400/30 bg-brand-500/10 p-4 flex items-center gap-3">
           <BarChart2 className="h-5 w-5 text-brand-400" />
           <div>
             <p className="text-sm font-medium text-white">Latest learning lift</p>
             <p className="text-sm text-brand-300">{quizLift}</p>
           </div>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-zinc-400">
+          Complete a session with{" "}
+          <strong className="text-zinc-300">pre-quiz + post-quiz</strong> (don&apos;t skip
+          pre) to see your learning lift here.{" "}
+          <a href="/study" className="text-brand-400 hover:underline">
+            Start a session
+          </a>
         </div>
       )}
 
