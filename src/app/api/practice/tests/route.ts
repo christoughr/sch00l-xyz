@@ -16,7 +16,11 @@ export async function GET() {
     .order("label", { ascending: true });
 
   if (error) {
-    if (error.code === "42P01") {
+    const missing =
+      error.code === "42P01" ||
+      error.message?.includes("practice_tests") ||
+      error.message?.includes("schema cache");
+    if (missing) {
       return NextResponse.json({ tests: [], migrationRequired: MIGRATION });
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
