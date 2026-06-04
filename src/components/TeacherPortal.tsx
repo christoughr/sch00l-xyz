@@ -183,17 +183,17 @@ export function TeacherPortal() {
       </p>
       <section>
         <h2 className="text-lg font-semibold text-white mb-4">Your classrooms</h2>
-        <form onSubmit={createClass} className="flex gap-2 mb-6">
+        <form onSubmit={createClass} className="flex flex-col sm:flex-row gap-2 mb-6">
           <input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="e.g. AP Biology Period 2"
-            className="flex-1 rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-white focus:border-brand-400 focus:outline-none"
+            className="flex-1 min-w-0 rounded-xl border border-white/10 bg-surface-900 px-4 py-3 text-base sm:text-sm text-white focus:border-brand-400 focus:outline-none"
           />
           <button
             type="submit"
             disabled={creating}
-            className="flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-3 text-white hover:bg-brand-400 disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-3 text-white hover:bg-brand-400 disabled:opacity-50 touch-target shrink-0"
           >
             {creating ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -218,7 +218,7 @@ export function TeacherPortal() {
             {classrooms.map((c) => (
               <li
                 key={c.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 p-4"
+                className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 rounded-xl border border-white/10 bg-white/5 p-4"
               >
                 <div>
                   <Link
@@ -232,7 +232,7 @@ export function TeacherPortal() {
                     <span className="font-mono text-brand-300">{c.join_code}</span>
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={() => copyCode(c.join_code)}

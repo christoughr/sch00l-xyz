@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -56,6 +56,14 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#07070c",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -66,7 +74,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full min-h-[100dvh] flex flex-col bg-background text-foreground overflow-x-clip supports-[padding:max(0px)]:pb-[max(0px,env(safe-area-inset-bottom))]">
         <AuthProvider>
           <AgeGate>
             <a
@@ -76,7 +84,7 @@ export default function RootLayout({
               Skip to main content
             </a>
             <Nav />
-            <main id="main-content" className="flex-1">
+            <main id="main-content" className="flex-1 min-w-0 w-full">
               {children}
             </main>
             <Footer />

@@ -24,14 +24,39 @@ Skip these until you're ready. Everything else runs **local-first** without them
 
 ---
 
-## ⭐ Lemon Squeezy (payments — Korea-friendly)
+## ⭐ Google Classroom OAuth — public launch (all teachers)
 
-**Why later:** need LS account + variant IDs. **Code is ready** — paste env vars when account exists.
+**Why later:** Pilot works in **Testing** mode with up to 100 test users (`hello@sch00l.ai` + pilot emails). Any Google account requires publish + verification.
 
 **When ready:**
 
-1. [lemonsqueezy.com](https://lemonsqueezy.com) → Store
-2. Products: **Pro** $14.99/mo · **Human tutor** $49 (optional)
+1. **Branding** — add live URLs:
+   - Application home page: `https://sch00l.ai`
+   - Privacy policy: `https://sch00l.ai/privacy`
+   - Terms of service: `https://sch00l.ai/terms`
+2. **Data Access** — scopes already set:
+   - `classroom.courses.readonly`
+   - `classroom.rosters.readonly`
+3. **Clients** — redirect URI (must match exactly):
+   - `https://sch00l.ai/api/integrations/google/callback`
+4. **Verification Center** — submit OAuth verification:
+   - Justify why sch00l needs Classroom roster read access
+   - **Demo video** (YouTube, unlisted OK): show teacher Connect → consent → Sync flow
+   - Explain data use: import course/roster counts for class sync (no selling data)
+5. After Google approves → **Publish app** (In production)
+
+**Until then:** **Audience → Testing** + add each pilot teacher email as **Test user**. They will see an “unverified app” warning — OK to continue.
+
+---
+
+## ⭐ Lemon Squeezy (payments — Korea-friendly)
+
+**Why later:** need LS store **approved/activated**. **Code is ready** — paste env vars when store is live.
+
+**When ready:**
+
+1. [lemonsqueezy.com](https://lemonsqueezy.com) → Store (complete activation)
+2. Products: **Pro** **$149.99/mo** · **Human tutor** hourly variant (optional)
 3. Vercel env:
 
 | Variable | Example |

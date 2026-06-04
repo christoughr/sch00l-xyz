@@ -193,8 +193,9 @@ export default function PricingPage() {
         </summary>
         <ul className="mt-4 space-y-3 text-sm text-zinc-400 max-w-2xl">
           <li>
-            <strong className="text-zinc-200">AI study:</strong> Free (3 sessions/day)
-            or Pro ({formatUsd(PRICING.pro.priceMonthly)}/mo unlimited).
+            <strong className="text-zinc-200">AI study:</strong> Free (
+            {PRICING.free.aiSessionsPerDay} session
+            {PRICING.free.aiSessionsPerDay === 1 ? "" : "s"}/day) or Pro ({formatUsd(PRICING.pro.priceMonthly)}/mo unlimited).
           </li>
           <li>
             <strong className="text-zinc-200">Human tutor:</strong> Market ranges{" "}

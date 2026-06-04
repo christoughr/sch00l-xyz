@@ -124,14 +124,14 @@ export function TeacherLmsOAuth() {
               type="button"
               onClick={syncNow}
               disabled={syncing}
-              className="rounded-lg bg-brand-500 px-4 py-2 text-sm text-white hover:bg-brand-400 disabled:opacity-50"
+              className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm text-white hover:bg-brand-400 disabled:opacity-50 touch-target w-full sm:w-auto"
             >
               {syncing ? "Syncing…" : "Sync now"}
             </button>
             <button
               type="button"
               onClick={disconnect}
-              className="rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-300 hover:bg-white/5"
+              className="rounded-lg border border-white/10 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5 touch-target w-full sm:w-auto"
             >
               Disconnect
             </button>
@@ -145,7 +145,7 @@ export function TeacherLmsOAuth() {
           <button
             type="button"
             onClick={connectGoogle}
-            className="mt-3 rounded-lg bg-brand-500 px-4 py-2 text-sm text-white hover:bg-brand-400"
+            className="mt-3 rounded-lg bg-brand-500 px-4 py-2.5 text-sm text-white hover:bg-brand-400 touch-target w-full sm:w-auto"
           >
             Connect Google Classroom
           </button>

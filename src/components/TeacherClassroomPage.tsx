@@ -64,7 +64,7 @@ function TeacherClassroomInner({ classroomId }: { classroomId: string }) {
         ← All classrooms
       </Link>
       {classroomName && (
-        <h1 className="text-2xl font-bold text-white mb-6">{classroomName}</h1>
+        <h1 className="text-2xl font-bold text-white sm:text-3xl mb-6">{classroomName}</h1>
       )}
       <ClassroomHub
         classroomId={classroomId}

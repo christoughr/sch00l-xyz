@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TeacherPortal } from "@/components/TeacherPortal";
 import { TeacherPilotGuide } from "@/components/TeacherPilotGuide";
+import { TeacherGoogleConnectedNotice } from "@/components/TeacherGoogleConnectedNotice";
 import { ComingSoonBanner } from "@/components/ComingSoonBanner";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 
@@ -35,6 +36,7 @@ export default function TeacherPage() {
         </>
       ) : (
         <>
+          <TeacherGoogleConnectedNotice />
           <TeacherPilotGuide />
           <div className="mt-8">
             <TeacherPortal />

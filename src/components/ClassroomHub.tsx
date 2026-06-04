@@ -33,21 +33,28 @@ export function ClassroomHub({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-2 border-b border-white/10 pb-3">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-              tab === t.id
-                ? "bg-brand-500 text-white"
-                : "text-zinc-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="-mx-4 px-4 sm:mx-0 sm:px-0">
+        <div
+          className="flex gap-2 border-b border-white/10 pb-3 overflow-x-auto scrollbar-thin snap-x snap-mandatory"
+          role="tablist"
+        >
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.id}
+              onClick={() => setTab(t.id)}
+              className={`shrink-0 snap-start rounded-lg px-3 py-2.5 text-sm font-medium transition touch-target ${
+                tab === t.id
+                  ? "bg-brand-500 text-white"
+                  : "text-zinc-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {tab === "overview" && (

@@ -101,7 +101,7 @@ export function Nav() {
       <Link
         href={l.href}
         onClick={onNavigate}
-        className="relative rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white"
+        className="relative block rounded-lg px-3 py-2.5 sm:py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white min-h-[44px] sm:min-h-0 flex items-center"
       >
         {l.label}
         {l.showDue && cardsDue > 0 && (
