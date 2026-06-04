@@ -13,6 +13,7 @@ import { StudyPersonalizationBanner } from "@/components/StudyPersonalizationBan
 import { ClassDiscussionBanner } from "@/components/ClassDiscussionBanner";
 import { StudyFeatureStrip } from "@/components/StudyFeatureStrip";
 import { StudyUnitPicker } from "@/components/StudyUnitPicker";
+import { StudyCourseOutline } from "@/components/StudyCourseOutline";
 import { useAuth } from "@/components/AuthProvider";
 import { onSessionComplete } from "@/lib/session-complete";
 import { buildSectionTopic } from "@/lib/track-sections";
@@ -363,6 +364,13 @@ export default function StudyPage() {
               trackId={trackId}
               value={sectionId}
               onChange={(id) => applySection(id)}
+            />
+          )}
+          {trackId === "ap-bio" && (
+            <StudyCourseOutline
+              trackId={trackId}
+              sectionId={sectionId}
+              onPickLesson={(title, _body) => setTopic(title)}
             />
           )}
           <div>

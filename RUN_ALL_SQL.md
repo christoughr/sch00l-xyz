@@ -13,5 +13,6 @@ SQL Editor → paste each file → **Run** → then next.
 9. `015_study_content.sql` — assignment completions + practice question seeds
 10. `016_daily_ai_usage.sql` — server-side free-tier AI session counter (logged-in users)
 11. `017_course_lessons.sql` — structured units/lessons per track (Khan-style; fill via PDF ingestion)
+12. `018_seed_ap_bio_course.sql` — 15 published AP Biology lessons (original content; run after 017)
 
 After step 4 you get: assignments, uploads, battles, forums, practice tests, integrations, gradebook, parent links, marketplace, announcements.
