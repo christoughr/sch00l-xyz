@@ -24,6 +24,7 @@ export function StudyTrackPicker({
               key={c.id}
               type="button"
               role="button"
+              data-testid={`track-category-${c.id}`}
               aria-pressed={category === c.id}
               onClick={() => setCategory(c.id)}
               className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition ${

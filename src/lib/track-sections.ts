@@ -22,7 +22,7 @@ const AP_MATH = [
   { id: "derivatives", name: "Derivatives", desc: "Rules, chain/product/quotient, implicit" },
   { id: "apps-deriv", name: "Derivative applications", desc: "Related rates, optimization, motion" },
   { id: "integrals", name: "Integrals & FTC", desc: "Antiderivatives, area, accumulation" },
-  { id: "exam-prep", name: "Exam prep", desc: "FRQ strategies, mixed review, calculator skills" },
+  { id: "exam-prep", name: "Exam review", desc: "FRQ strategies, mixed review, calculator skills" },
 ];
 
 const AP_SCIENCE = [
@@ -30,7 +30,7 @@ const AP_SCIENCE = [
   { id: "mechanisms", name: "Processes & mechanisms", desc: "Pathways, systems, cause-and-effect" },
   { id: "data-lab", name: "Data & lab skills", desc: "Graphs, error analysis, claim-evidence-reasoning" },
   { id: "applications", name: "Real-world applications", desc: "Case studies, interdisciplinary links" },
-  { id: "exam-prep", name: "Exam prep", desc: "MCQ/FRQ practice, timing, rubric alignment" },
+  { id: "exam-prep", name: "Exam review", desc: "MCQ/FRQ practice, timing, rubric alignment" },
 ];
 
 const AP_HISTORY = [
@@ -38,7 +38,7 @@ const AP_HISTORY = [
   { id: "themes", name: "Themes & comparisons", desc: "Causation, comparison, continuity/change" },
   { id: "sources", name: "Primary sources", desc: "Document analysis, sourcing, contextualization" },
   { id: "writing", name: "Historical argument", desc: "Thesis, evidence, complexity" },
-  { id: "exam-prep", name: "Exam prep", desc: "DBQ/LEQ/SAQ strategies and rubrics" },
+  { id: "exam-prep", name: "Exam review", desc: "DBQ/LEQ/SAQ strategies and rubrics" },
 ];
 
 const AP_ENGLISH = [
@@ -46,7 +46,7 @@ const AP_ENGLISH = [
   { id: "analysis", name: "Close reading", desc: "Diction, syntax, figurative language" },
   { id: "composition", name: "Writing craft", desc: "Thesis, organization, style, revision" },
   { id: "genres", name: "Genres & texts", desc: "Poetry, prose, argument, synthesis sources" },
-  { id: "exam-prep", name: "Exam prep", desc: "Timed essays, MCQ strategies, scoring" },
+  { id: "exam-prep", name: "Exam review", desc: "Timed essays, MCQ strategies, scoring" },
 ];
 
 const AP_CS = [
@@ -54,7 +54,7 @@ const AP_CS = [
   { id: "oop", name: "OOP & design", desc: "Inheritance, polymorphism, encapsulation" },
   { id: "data-structs", name: "Data structures", desc: "Arrays, ArrayList, 2D arrays, recursion" },
   { id: "algorithms", name: "Algorithms", desc: "Searching, sorting, complexity intuition" },
-  { id: "exam-prep", name: "Exam prep", desc: "FRQ patterns, tracing, test-day strategy" },
+  { id: "exam-prep", name: "Exam review", desc: "FRQ patterns, tracing, test-day strategy" },
 ];
 
 const SAT_ACT = [
@@ -94,7 +94,7 @@ const LANGUAGES = [
   { id: "grammar", name: "Grammar", desc: "Structures, conjugation, agreement" },
   { id: "reading", name: "Reading", desc: "Comprehension and inference" },
   { id: "writing", name: "Writing & speaking", desc: "Production, feedback, revision" },
-  { id: "exam", name: "Exam prep", desc: "Listening/speaking/writing rubrics" },
+  { id: "exam", name: "Exam review", desc: "Listening/speaking/writing rubrics" },
 ];
 
 const INTERNATIONAL = [

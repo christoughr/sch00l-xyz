@@ -8,10 +8,12 @@ const productionRequired = [
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
   "SUPABASE_SERVICE_ROLE_KEY",
   "NEXT_PUBLIC_APP_URL",
+  "INTEGRATION_TOKEN_KEY",
 ];
 
 const recommended = [
   "OPENAI_API_KEY",
+  "GROQ_API_KEY",
   "OPENAI_BASE_URL",
   "OPENAI_MODEL",
   "TEACHER_EMAILS",
@@ -43,6 +45,9 @@ if (localMode) {
 for (const key of productionRequired) {
   if (!process.env[key]) {
     console.log(`  ✗ ${key} (required for full cloud production)`);
+    ok = false;
+  } else if (key === "INTEGRATION_TOKEN_KEY" && process.env[key].length < 32) {
+    console.log(`  ✗ ${key} (must be at least 32 characters)`);
     ok = false;
   } else {
     console.log(`  ✓ ${key}`);

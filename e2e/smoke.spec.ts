@@ -34,9 +34,7 @@ test.describe("sch00l smoke", () => {
 
   test("study tracks: exam prep category", async ({ page }) => {
     await gotoApp(page, "/study");
-    await page
-      .getByRole("button", { name: "Exam prep", exact: true })
-      .click();
+    await page.getByTestId("track-category-exam_prep").click();
     await expect(page.getByText(/MCAT/i).first()).toBeVisible({
       timeout: 15_000,
     });

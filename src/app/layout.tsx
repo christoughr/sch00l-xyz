@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { AgeGate } from "@/components/AgeGate";
 import { Footer } from "@/components/Footer";
 import { SITE_DOMAIN, SITE_URL } from "@/lib/site";
+import { freeSessionsMarketingLabel } from "@/lib/pricing";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,7 +21,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: `${SITE_DOMAIN} — AI tutor with measurable learning lift`,
   description:
-    "Socratic AI tutor for students. Pre-quiz → tutor → post-quiz → flashcards. See your learning lift %. Free at sch00l.ai/study",
+    `Socratic AI tutor for students. Pre-quiz → tutor → post-quiz → flashcards. Free: ${freeSessionsMarketingLabel()}.`,
   metadataBase: new URL(SITE_URL),
   icons: {
     icon: [

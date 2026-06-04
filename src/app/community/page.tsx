@@ -59,8 +59,8 @@ const FEATURES = [
   {
     icon: Sparkles,
     title: "Lift Battles™",
-    desc: "Exclusive: live game + verified learning lift in one flow (coming soon on all tracks).",
-    href: "/exclusive",
+    desc: "Live class quiz battles with optional post-battle lift check — start from your class dashboard.",
+    href: "/my-classes",
     exclusive: true,
   },
 ];

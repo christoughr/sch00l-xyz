@@ -1,5 +1,8 @@
 /** Revenue model — sch00l keeps maximum platform share where possible */
 
+/** Single source of truth for free-tier session cap (all UI + enforcement). */
+export const FREE_AI_SESSIONS_PER_DAY = 3;
+
 export const PLATFORM_FEE = {
   /** Human tutor: student pays hourly; sch00l keeps this % */
   humanTutorPercent: 55,
@@ -13,9 +16,9 @@ export const PRICING = {
   free: {
     name: "Free",
     price: 0,
-    aiSessionsPerDay: 1,
+    aiSessionsPerDay: FREE_AI_SESSIONS_PER_DAY,
     features: [
-      "1 AI study session per day",
+      `${FREE_AI_SESSIONS_PER_DAY} AI study sessions per day`,
       "Pre/post quizzes & learning lift",
       "Flashcards (SM-2 spaced repetition)",
       "Browser-only progress",
@@ -63,4 +66,15 @@ export const PRICING = {
 
 export function formatUsd(n: number): string {
   return n % 1 === 0 ? `$${n}` : `$${n.toFixed(2)}`;
+}
+
+/** Marketing copy — use everywhere instead of hardcoding session counts. */
+export function freeSessionsMarketingLabel(): string {
+  const n: number = PRICING.free.aiSessionsPerDay;
+  return `${n} AI session${n === 1 ? "" : "s"}/day`;
+}
+
+export function freeSessionsShortLabel(): string {
+  const n: number = PRICING.free.aiSessionsPerDay;
+  return `${n} session${n === 1 ? "" : "s"}/day`;
 }

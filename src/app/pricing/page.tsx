@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
-import { PLATFORM_FEE, PRICING, formatUsd } from "@/lib/pricing";
+import { PLATFORM_FEE, PRICING, formatUsd, freeSessionsShortLabel } from "@/lib/pricing";
 import { trackEvent } from "@/lib/analytics";
 import { useEffect, useState } from "react";
 import { PaymentButton } from "@/components/PaymentButton";
@@ -89,7 +89,7 @@ export default function PricingPage() {
         </p>
         <h1 className="text-3xl font-bold text-white sm:text-4xl">Pricing</h1>
         <p className="mt-3 text-zinc-400 max-w-xl mx-auto">
-          Start free with Socratic AI (1 session/day). Pro checkout opens when our
+          Start free with Socratic AI ({freeSessionsShortLabel()}). Pro checkout opens when our
           payment store is live — join the waitlist meanwhile, or request a human tutor.
         </p>
         {configLoaded && !proReady && !tutorReady && (
@@ -194,8 +194,7 @@ export default function PricingPage() {
         <ul className="mt-4 space-y-3 text-sm text-zinc-400 max-w-2xl">
           <li>
             <strong className="text-zinc-200">AI study:</strong> Free (
-            {PRICING.free.aiSessionsPerDay} session
-            {PRICING.free.aiSessionsPerDay === 1 ? "" : "s"}/day) or Pro ({formatUsd(PRICING.pro.priceMonthly)}/mo unlimited).
+            {freeSessionsShortLabel()}) or Pro ({formatUsd(PRICING.pro.priceMonthly)}/mo unlimited).
           </li>
           <li>
             <strong className="text-zinc-200">Human tutor:</strong> Market ranges{" "}

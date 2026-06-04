@@ -1,4 +1,5 @@
 import { isLiveAiConfigured } from "@/lib/ai-config";
+import { integrationTokenKeyConfigured } from "@/lib/token-crypto";
 import { discordBotConfigured } from "@/lib/discord-bot";
 import { founderWebhookConfigured } from "@/lib/founder-notify";
 import { isLemonSqueezyConfigured } from "@/lib/lemonsqueezy";
@@ -27,6 +28,11 @@ export async function GET() {
       : process.env.GROQ_API_KEY
         ? "GROQ_API_KEY"
         : "none",
+    integrationTokenEncryption: integrationTokenKeyConfigured()
+      ? "dedicated_key"
+      : process.env.NODE_ENV === "production"
+        ? "missing_production_key"
+        : "dev_fallback",
     resend: isResendConfigured(),
   };
 

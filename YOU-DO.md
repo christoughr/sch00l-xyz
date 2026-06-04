@@ -51,7 +51,7 @@ Use **Run without RLS** in SQL Editor for large scripts if prompted.
 5. Vercel env:
    - `GOOGLE_CLIENT_ID`
    - `GOOGLE_CLIENT_SECRET`
-   - `INTEGRATION_TOKEN_KEY` (32+ char secret for AES token encryption; optional — falls back to service role hash)
+   - `INTEGRATION_TOKEN_KEY` (32+ char secret for AES-256-GCM OAuth token encryption; **required in production** — do not rely on service role fallback)
 
 ### Canvas (per institution)
 

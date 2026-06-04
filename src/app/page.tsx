@@ -11,6 +11,7 @@ import { CopyShareLink } from "@/components/CopyShareLink";
 import { DailyReviewBanner } from "@/components/DailyReviewBanner";
 import { OutcomesTeaser } from "@/components/OutcomesTeaser";
 import { LEGACY_DOMAIN, SITE_DOMAIN, SITE_URL } from "@/lib/site";
+import { freeSessionsMarketingLabel } from "@/lib/pricing";
 
 const features = [
   {
@@ -77,7 +78,7 @@ export default function HomePage() {
         <OutcomesTeaser />
 
         <p className="mt-8 text-sm text-zinc-500">
-          Free: 3 AI sessions/day · Pro & human tutors on{" "}
+          Free: {freeSessionsMarketingLabel()} · Pro & human tutors on{" "}
           <Link href="/pricing" className="text-brand-400 underline">
             pricing
           </Link>
