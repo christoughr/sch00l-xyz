@@ -1,15 +1,15 @@
+import { getAiApiKey, getAiBaseUrl, getAiModel } from "./ai-config";
+
 export async function chatCompletion(
   system: string,
   userContent: string,
   opts?: { maxTokens?: number; temperature?: number }
 ): Promise<string | null> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = getAiApiKey();
   if (!apiKey) return null;
 
-  const baseUrl =
-    process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1";
-  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
-
+  const baseUrl = getAiBaseUrl();
+  const model = getAiModel();
   const res = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
     headers: {

@@ -11,6 +11,7 @@ export type BattleQuestion = {
   prompt: string;
   choices: string[];
   correctIndex: number;
+  skillTag?: string;
 };
 
 export async function generateBattleQuestions(

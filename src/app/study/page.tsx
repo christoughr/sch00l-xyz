@@ -12,7 +12,9 @@ import { TutorRequestForm } from "@/components/TutorRequestForm";
 import { StudyPersonalizationBanner } from "@/components/StudyPersonalizationBanner";
 import { ClassDiscussionBanner } from "@/components/ClassDiscussionBanner";
 import { StudyFeatureStrip } from "@/components/StudyFeatureStrip";
+import { StudyUnitPicker } from "@/components/StudyUnitPicker";
 import { onSessionComplete } from "@/lib/session-complete";
+import { buildSectionTopic } from "@/lib/track-sections";
 import { trackEvent } from "@/lib/analytics";
 import {
   canStartSession,
@@ -57,6 +59,10 @@ export default function StudyPage() {
   const [cardsLoading, setCardsLoading] = useState(false);
   const [cardsError, setCardsError] = useState<string | null>(null);
   const [trackHint, setTrackHint] = useState<string | null>(null);
+  const [sectionId, setSectionId] = useState<string | null>(null);
+  const [assignmentId, setAssignmentId] = useState<string | null>(null);
+  const [assignmentTitle, setAssignmentTitle] = useState<string | null>(null);
+  const [assignmentLoaded, setAssignmentLoaded] = useState(false);
   const completedRef = useRef(false);
   const remaining = sessionsRemainingToday();
 
@@ -68,15 +74,58 @@ export default function StudyPage() {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const trackParam = params.get("track");
-    if (!trackParam) return;
-    const t = getStudyTrack(trackParam);
-    if (t.id === "custom" && trackParam !== "custom") return;
-    setTrackId(t.id);
-    setSubject(t.subject as SubjectId);
-    setGradeLevel(t.gradeLevel);
-    setTopic(t.topic);
-    setTrackContext(t.tutorContext);
+    const sectionParam = params.get("section");
+    const topicParam = params.get("topic");
+    const assignmentParam = params.get("assignment");
+
+    if (trackParam) {
+      const t = getStudyTrack(trackParam);
+      if (t.id !== "custom" || trackParam === "custom") {
+        setTrackId(t.id);
+        setSubject(t.subject as SubjectId);
+        setGradeLevel(t.gradeLevel);
+        setTopic(t.topic);
+        setTrackContext(t.tutorContext);
+      }
+    }
+
+    if (sectionParam) {
+      setSectionId(sectionParam);
+      if (trackParam) {
+        setTopic(buildSectionTopic(trackParam, sectionParam));
+      }
+    }
+
+    if (topicParam) {
+      setTopic(decodeURIComponent(topicParam));
+    }
+
+    if (assignmentParam) {
+      setAssignmentId(assignmentParam);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!assignmentId || assignmentLoaded) return;
+    fetch(`/api/student/assignments/${assignmentId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data?.assignment) return;
+        const a = data.assignment;
+        setAssignmentTitle(a.title);
+        setAssignmentLoaded(true);
+        if (a.studyTrackId) {
+          const t = getStudyTrack(a.studyTrackId);
+          setTrackId(t.id);
+          setSubject(t.subject as SubjectId);
+          setGradeLevel(t.gradeLevel);
+          setTrackContext(t.tutorContext);
+        }
+        if (a.sectionId) setSectionId(a.sectionId);
+        if (a.topic) setTopic(a.topic);
+      })
+      .catch(() => undefined);
+  }, [assignmentId, assignmentLoaded]);
 
   useEffect(() => {
     if (step !== "done" || completedRef.current) return;
@@ -108,6 +157,14 @@ export default function StudyPage() {
         setCardsLoading(false);
       }
     );
+
+    if (assignmentId) {
+      fetch(`/api/student/assignments/${assignmentId}/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preScore, postScore }),
+      }).catch(() => undefined);
+    }
   }, [
     step,
     subject,
@@ -117,11 +174,13 @@ export default function StudyPage() {
     preScore,
     postScore,
     preSkipped,
+    assignmentId,
   ]);
 
   function applyTrack(id: StudyTrackId) {
     const track = getStudyTrack(id);
     setTrackId(id);
+    setSectionId(null);
     trackEvent("track_selected", { track: id });
     if (id !== "custom") {
       setSubject(track.subject);
@@ -135,6 +194,15 @@ export default function StudyPage() {
       setTrackContext("");
       setTrackHint("Subject reset for custom track — enter your topic below.");
       window.setTimeout(() => setTrackHint(null), 2500);
+    }
+  }
+
+  function applySection(nextSectionId: string | null) {
+    setSectionId(nextSectionId);
+    if (nextSectionId) {
+      setTopic(buildSectionTopic(trackId, nextSectionId));
+    } else {
+      setTopic(getStudyTrack(trackId).topic);
     }
   }
 
@@ -225,6 +293,11 @@ export default function StudyPage() {
 
       {step === "setup" && (
         <div className="space-y-6">
+          {assignmentTitle && (
+            <div className="rounded-xl border border-brand-400/30 bg-brand-500/10 px-4 py-3 text-sm text-brand-100">
+              Class assignment: <span className="font-medium text-white">{assignmentTitle}</span>
+            </div>
+          )}
           <div>
             <p className="text-sm font-medium text-zinc-300 mb-3">Study track</p>
             {trackHint && (
@@ -234,6 +307,13 @@ export default function StudyPage() {
             )}
             <StudyTrackPicker value={trackId} onChange={(t) => applyTrack(t.id)} />
           </div>
+          {trackId !== "custom" && (
+            <StudyUnitPicker
+              trackId={trackId}
+              value={sectionId}
+              onChange={(id) => applySection(id)}
+            />
+          )}
           <div>
             <label htmlFor="study-topic" className="block text-sm font-medium text-zinc-300 mb-2">
               Topic (for quizzes)

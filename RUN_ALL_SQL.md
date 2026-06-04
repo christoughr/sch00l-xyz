@@ -10,5 +10,6 @@ SQL Editor → paste each file → **Run** → then next.
 6. `012_budget_tier.sql` (optional — tutor request budget tier columns)
 7. `013_pro_subscription.sql` — Lemon Squeezy columns on `profiles` (run before LS webhook live)
 8. `014_teacher_oauth.sql` — `teacher_integrations` for Google/Canvas OAuth tokens
+9. `015_study_content.sql` — assignment completions + practice question seeds
 
 After step 4 you get: assignments, uploads, battles, forums, practice tests, integrations, gradebook, parent links, marketplace, announcements.

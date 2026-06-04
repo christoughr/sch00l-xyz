@@ -1,3 +1,4 @@
+import { isLiveAiConfigured } from "@/lib/ai-config";
 import { discordBotConfigured } from "@/lib/discord-bot";
 import { founderWebhookConfigured } from "@/lib/founder-notify";
 import { isLemonSqueezyConfigured } from "@/lib/lemonsqueezy";
@@ -7,8 +8,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const payments = paymentConfig();
-  const hasAiKey = !!process.env.OPENAI_API_KEY;
-  const aiMode = hasAiKey ? "live" : "demo";
+  const aiMode = isLiveAiConfigured() ? "live" : "demo";
 
   const checks = {
     supabase: !!(
@@ -20,8 +20,13 @@ export async function GET() {
     proCheckout: payments.proReady,
     founderWebhook: founderWebhookConfigured(),
     discordBot: discordBotConfigured(),
-    ai: hasAiKey,
+    ai: isLiveAiConfigured(),
     aiMode,
+    aiKeySource: process.env.OPENAI_API_KEY
+      ? "OPENAI_API_KEY"
+      : process.env.GROQ_API_KEY
+        ? "GROQ_API_KEY"
+        : "none",
     resend: isResendConfigured(),
   };
 

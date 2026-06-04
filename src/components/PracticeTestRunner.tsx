@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { CheckCircle2, Clock, Loader2, XCircle } from "lucide-react";
+import {
+  PRACTICE_TO_TRACK,
+  savePracticeWeakTags,
+} from "@/lib/practice-weak-tags";
+import { weakTagsFromMisses } from "@/lib/practice-engine";
 
 type Question = {
   id: string;
@@ -25,6 +31,7 @@ type StartPayload = {
   test: TestMeta;
   questions: Question[];
   answerKey: number[];
+  guestMode?: boolean;
 };
 
 export function PracticeTestRunner({
@@ -82,6 +89,28 @@ export function PracticeTestRunner({
         skillTag: q.skillTag,
       }));
 
+      if (payload.guestMode || payload.attemptId.startsWith("guest-")) {
+        let score = 0;
+        const misses: { skillTag?: string; correct: boolean }[] = [];
+        for (const a of answerList) {
+          const correct = a.choiceIndex === a.correctIndex;
+          if (correct) score++;
+          misses.push({ skillTag: a.skillTag, correct });
+        }
+        const weakTags = weakTagsFromMisses(misses);
+        const total = answerList.length;
+        const percent = total > 0 ? Math.round((score / total) * 100) : 0;
+        savePracticeWeakTags(
+          payload.test.id,
+          payload.test.label,
+          weakTags,
+          PRACTICE_TO_TRACK[payload.test.id]
+        );
+        setResult({ score, total, percent, weakTags });
+        setPhase("done");
+        return;
+      }
+
       const res = await fetch(
         `/api/practice/attempts/${payload.attemptId}/finish`,
         {
@@ -92,6 +121,12 @@ export function PracticeTestRunner({
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not submit");
+      savePracticeWeakTags(
+        payload.test.id,
+        payload.test.label,
+        data.weakTags ?? [],
+        PRACTICE_TO_TRACK[payload.test.id]
+      );
       setResult(data);
       setPhase("done");
     } catch (e) {
@@ -158,6 +193,15 @@ export function PracticeTestRunner({
   }
 
   if (phase === "done" && result) {
+    const studyTrack = payload ? PRACTICE_TO_TRACK[payload.test.id] : null;
+    const weakTopic =
+      result.weakTags.length > 0 && payload
+        ? `${payload.test.label} — review ${result.weakTags[0]}`
+        : null;
+    const studyHref = studyTrack
+      ? `/study?track=${encodeURIComponent(studyTrack)}${weakTopic ? `&topic=${encodeURIComponent(weakTopic)}` : ""}`
+      : "/study";
+
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center space-y-4">
         <CheckCircle2 className="h-12 w-12 text-brand-400 mx-auto" />
@@ -171,15 +215,25 @@ export function PracticeTestRunner({
             Review: {result.weakTags.join(", ")}
           </p>
         )}
-        {onExit && (
-          <button
-            type="button"
-            onClick={onExit}
-            className="rounded-lg bg-brand-500 px-5 py-2 text-sm text-white hover:bg-brand-400"
-          >
-            Back to tests
-          </button>
-        )}
+        <div className="flex flex-wrap justify-center gap-3">
+          {result.weakTags.length > 0 && (
+            <Link
+              href={studyHref}
+              className="rounded-lg bg-brand-500 px-5 py-2 text-sm text-white hover:bg-brand-400"
+            >
+              Study weak areas →
+            </Link>
+          )}
+          {onExit && (
+            <button
+              type="button"
+              onClick={onExit}
+              className="rounded-lg border border-white/15 px-5 py-2 text-sm text-zinc-300 hover:bg-white/5"
+            >
+              Back to tests
+            </button>
+          )}
+        </div>
       </div>
     );
   }
@@ -198,6 +252,7 @@ export function PracticeTestRunner({
           <h2 className="text-lg font-semibold text-white">{payload.test.label}</h2>
           <p className="text-xs text-zinc-500">
             Question {index + 1} of {payload.questions.length}
+            {payload.guestMode && " · guest mode"}
           </p>
         </div>
         <div

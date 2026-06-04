@@ -69,7 +69,7 @@ export async function GET() {
         sectionLabel: getSectionLabel(a.study_track_id ?? "", a.section_id),
         topic: a.topic,
         dueAt: a.due_at,
-        studyUrl: `/study?track=${encodeURIComponent(a.study_track_id ?? "")}&assignment=${a.id}`,
+        studyUrl: `/study?track=${encodeURIComponent(a.study_track_id ?? "")}&assignment=${a.id}${a.section_id ? `&section=${encodeURIComponent(a.section_id)}` : ""}`,
       };
     }),
   });

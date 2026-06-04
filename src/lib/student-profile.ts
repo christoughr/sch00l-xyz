@@ -1,6 +1,7 @@
 import { latestQuizLiftLocal } from "./quiz-local";
 import { loadProgress } from "./progress";
 import { recentMemorySummaries } from "./session-memory";
+import { latestPracticeWeakTopic } from "./practice-weak-tags";
 import type { StudentProgress } from "./types";
 import type { SubjectId } from "./subject-ids";
 
@@ -31,7 +32,7 @@ export function buildStudentLearningContext(
   }
 
   const sorted = [...mastery].sort((a, b) => a.confidence - b.confidence);
-  const weakTopics = sorted
+  let weakTopics = sorted
     .filter((m) => m.confidence < 55)
     .slice(0, 5)
     .map((m) => ({
@@ -39,6 +40,23 @@ export function buildStudentLearningContext(
       topic: m.topic,
       confidence: m.confidence,
     }));
+
+  if (typeof window !== "undefined" && weakTopics.length < 5) {
+    const practiceWeak = latestPracticeWeakTopic();
+    if (
+      practiceWeak &&
+      !weakTopics.some((w) => w.topic.includes(practiceWeak.topic.slice(0, 40)))
+    ) {
+      weakTopics = [
+        {
+          subject: subject ?? "science",
+          topic: practiceWeak.topic,
+          confidence: 35,
+        },
+        ...weakTopics,
+      ].slice(0, 5);
+    }
+  }
 
   const strongTopics = [...mastery]
     .sort((a, b) => b.confidence - a.confidence)

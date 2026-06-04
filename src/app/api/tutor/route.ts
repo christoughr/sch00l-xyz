@@ -1,6 +1,7 @@
 import { getClassroomMaterialContext } from "@/lib/classroom-material-context";
 import { buildSystemPrompt } from "@/lib/tutor-prompt";
 import { demoTutorReply } from "@/lib/demo-tutor";
+import { getAiApiKey, getAiBaseUrl, getAiModel } from "@/lib/ai-config";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { studentContextSchema } from "@/lib/student-context-schema";
 import {
@@ -80,10 +81,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No user message" }, { status: 400 });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  const baseUrl =
-    process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1";
-  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+  const apiKey = getAiApiKey();
+  const baseUrl = getAiBaseUrl();
+  const model = getAiModel();
 
   if (!apiKey) {
     const content = demoTutorReply(

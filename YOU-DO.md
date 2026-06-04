@@ -11,7 +11,8 @@
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client auth |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server/admin APIs |
-| `GROQ_API_KEY` | AI tutor |
+| `GROQ_API_KEY` | AI tutor (alias — also set as `OPENAI_API_KEY` or use GROQ alone) |
+| `OPENAI_API_KEY` | AI tutor/quiz (Groq key works here with `OPENAI_BASE_URL`) |
 | `RESEND_API_KEY` | Magic links |
 | `TEACHER_EMAILS` | e.g. `hello@sch00l.ai` |
 | `NEXT_PUBLIC_SITE_URL` | `https://sch00l.ai` |

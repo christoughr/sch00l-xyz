@@ -1,4 +1,5 @@
 import type { BattleQuestion } from "./battle";
+import { getBankItems } from "./practice-catalog";
 import { chatCompletion } from "./llm";
 
 export type PracticeTestMeta = {
@@ -14,6 +15,16 @@ export async function generatePracticeItems(
   test: PracticeTestMeta,
   count = 10
 ): Promise<BattleQuestion[]> {
+  const bank = getBankItems(test.id, count);
+  if (bank.length >= Math.min(5, count)) {
+    return bank.map((q) => ({
+      prompt: q.prompt,
+      choices: q.choices,
+      correctIndex: q.correctIndex,
+      skillTag: q.skillTag,
+    }));
+  }
+
   const raw = await chatCompletion(
     `Generate ${count} exam-style MCQs for ${test.label} (${test.examFamily}, ${test.region}).
 JSON array: [{"prompt":"...","choices":["..."],"correctIndex":0}]`,

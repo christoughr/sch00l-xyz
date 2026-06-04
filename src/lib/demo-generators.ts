@@ -1,4 +1,5 @@
 import type { QuizQuestion, SubjectId } from "./types";
+import { subjectDemoQuiz } from "./demo-quiz-banks";
 
 export function demoFlashcardsFromChat(
   subject: SubjectId,
@@ -36,43 +37,5 @@ export function demoQuiz(
   subject: SubjectId,
   topic?: string
 ): QuizQuestion[] {
-  const t = topic?.trim() || subject;
-  return [
-    {
-      id: "1",
-      question: `Best first step when stuck on ${t}?`,
-      options: [
-        "Ask AI for the full answer",
-        "Identify the exact step that confused you",
-        "Skip to the next problem",
-        "Memorize the final answer",
-      ],
-      correctIndex: 1,
-      explanation: "Pinpointing the stuck step enables targeted help (Socratic tutoring).",
-    },
-    {
-      id: "2",
-      question: "Which study method has the strongest evidence?",
-      options: [
-        "Rereading the textbook",
-        "Highlighting everything",
-        "Active recall / self-testing",
-        "Copying solutions",
-      ],
-      correctIndex: 2,
-      explanation: "Retrieval practice beats passive review for long-term retention.",
-    },
-    {
-      id: "3",
-      question: "After a study session, you should…",
-      options: [
-        "Immediately start a new topic",
-        "Do a 2-minute brain dump of what you learned",
-        "Close the book and forget it",
-        "Only review if there's a test tomorrow",
-      ],
-      correctIndex: 1,
-      explanation: "Brief recall consolidates memory and surfaces gaps.",
-    },
-  ];
+  return subjectDemoQuiz(subject, topic);
 }
