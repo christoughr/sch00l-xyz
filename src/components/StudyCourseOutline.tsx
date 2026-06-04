@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BookOpen, ChevronRight } from "lucide-react";
+import { resolveCourseTrackId } from "@/lib/course-tracks";
 
 type Lesson = {
   id: string;
@@ -33,7 +34,7 @@ export function StudyCourseOutline({
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/courses/${trackId}`)
+    fetch(`/api/courses/${resolveCourseTrackId(trackId)}`)
       .then((r) => r.json())
       .then((d) => {
         const list = (d.units ?? []) as Unit[];

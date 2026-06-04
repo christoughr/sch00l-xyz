@@ -93,6 +93,7 @@ function extractEpub(filePath) {
 const DOWNLOAD_PATTERNS = {
   "ap-bio": /biology|ap.?bio/i,
   "ap-chem": /chemistry|ap.?chem|5 steps to a 5.*chem/i,
+  "ap-calc-ab": /calculus|ap.?calc|5 steps to a 5.*calc/i,
   "sat-math": /digital sat|sat prep|college.?board|for dummies.*sat/i,
   sat: /digital sat|sat prep|college.?board/i,
   ssat: /ssat/i,

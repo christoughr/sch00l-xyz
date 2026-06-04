@@ -20,5 +20,12 @@ SQL Editor → paste each file → **Run** → then next.
 16. `021_seed_ap_chem_course.sql` — 15 published AP Chemistry lessons (run after 017; before chem ingest)
 17. `022_seed_sat_math_course.sql` — 15 published Digital SAT lessons (`track_id = sat-math`)
 18. **Polish AP Chem** — terminal only: `npx tsx scripts/polish-ap-chem-lessons.ts` (NOT in SQL Editor)
+19. `024_seed_ap_calc_ab_course.sql` — 15 published AP Calculus AB lessons (before calc PDF ingest)
+20. **Polish SAT Math** — `npx tsx scripts/polish-sat-math-lessons.ts`
+21. **Polish AP Calc AB** — `npx tsx scripts/polish-ap-calc-ab-lessons.ts` (after calc Paste 3)
+
+**Editorial audit (terminal):** `npx tsx scripts/audit-lesson-quality.ts`
 
 After step 4 you get: assignments, uploads, battles, forums, practice tests, integrations, gradebook, parent links, marketplace, announcements.
+
+See [CONTENT-PIPELINE.md](./CONTENT-PIPELINE.md) for per-subject status.

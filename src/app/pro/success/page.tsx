@@ -6,9 +6,11 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { activateProLocal, consumePendingCheckout } from "@/lib/free-tier";
 import { trackEvent } from "@/lib/analytics";
+import { useAuth } from "@/components/AuthProvider";
 
 function ProSuccessContent() {
   const params = useSearchParams();
+  const { refreshPro } = useAuth();
   const sessionId = params.get("session_id");
   const [state, setState] = useState<"loading" | "ok" | "pending">("loading");
 
@@ -23,6 +25,7 @@ function ProSuccessContent() {
         const data = await res.json();
         if (!cancelled && data.verified) {
           activateProLocal();
+          await refreshPro();
           trackEvent("pro_activated", { source: "stripe_verify" });
           setState("ok");
           return;
@@ -31,6 +34,7 @@ function ProSuccessContent() {
 
       if (!cancelled && consumePendingCheckout("pro")) {
         activateProLocal();
+        await refreshPro();
         trackEvent("pro_activated", { source: "checkout_return" });
         setState("ok");
         return;

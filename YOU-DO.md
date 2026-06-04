@@ -73,6 +73,18 @@ Webhook URL: `https://sch00l.ai/api/lemonsqueezy/webhook`
 
 ---
 
+## Content ops
+
+| Doc | Purpose |
+|-----|---------|
+| [CONTENT-PIPELINE.md](./CONTENT-PIPELINE.md) | Seed → ingest → publish → polish per track |
+| [CONTENT-EDITORIAL.md](./CONTENT-EDITORIAL.md) | Human rewrite workflow |
+| [GOOGLE_CLASSROOM_LAUNCH.md](./GOOGLE_CLASSROOM_LAUNCH.md) | OAuth verification checklist |
+
+**Audit lessons:** `npx tsx scripts/audit-lesson-quality.ts`
+
+**New track seed:** run `024_seed_ap_calc_ab_course.sql` in SQL Editor before calc PDF ingest.
+
 ## Auth
 
 - Supabase → Authentication → URL configuration: site URL `https://sch00l.ai`

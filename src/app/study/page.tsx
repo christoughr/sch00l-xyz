@@ -14,6 +14,7 @@ import { ClassDiscussionBanner } from "@/components/ClassDiscussionBanner";
 import { StudyFeatureStrip } from "@/components/StudyFeatureStrip";
 import { StudyUnitPicker } from "@/components/StudyUnitPicker";
 import { StudyCourseOutline } from "@/components/StudyCourseOutline";
+import { getCourseTrackHint } from "@/lib/course-tracks";
 import { useAuth } from "@/components/AuthProvider";
 import { onSessionComplete } from "@/lib/session-complete";
 import { buildSectionTopic } from "@/lib/track-sections";
@@ -219,6 +220,8 @@ export default function StudyPage() {
       setTopic(track.topic);
       setGradeLevel(track.gradeLevel);
       setTrackContext(track.tutorContext);
+      const hint = getCourseTrackHint(id);
+      setTrackHint(hint);
     } else {
       setSubject("other");
       setTopic("");

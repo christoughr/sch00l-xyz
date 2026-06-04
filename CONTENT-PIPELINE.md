@@ -1,43 +1,40 @@
 # Content pipeline — per subject
 
-
-
 Same steps for each track. **Paste 3 is per subject** (publish only that track's drafts).
 
+| Step | What |
+|------|------|
+| **0** | `017_course_lessons.sql` (once) |
+| **1** | Seed SQL — 15 original lessons (`018` ap-bio, `021` ap-chem, `022` sat-math, `024` ap-calc-ab) |
+| **2** | `node scripts/ingest-licensed-pdf.mjs --track <id>` → `drafts.sql` |
+| **3** | Paste 2 in Supabase SQL Editor |
+| **4** | Paste 3 — `update ... set review_status = 'published' where ord >= 100` for that `track_id` |
+| **5** | Polish — **terminal only**: `npx tsx scripts/polish-<track>-lessons.ts` |
+| **6** | Deploy — push `main`; Vercel auto-deploys |
 
+## Live courses (polished)
 
-| Step | AP Bio | AP Chem | SAT |
+| Track | Seed | Polish script | Lessons (approx.) |
+|-------|------|---------------|-------------------|
+| `ap-bio` | `018` | `polish-ap-bio-lessons.ts` | 111 |
+| `ap-chem` | `021` | `polish-ap-chem-lessons.ts` | 119 |
+| `sat-math` | `022` | `polish-sat-math-lessons.ts` | 47 (+ publisher) |
+| `sat-reading` | — | Uses `sat-math` course (unit 3 = R&W) | alias only |
 
-|------|--------|---------|-----|
+## Ready to ingest (seed only)
 
-| 1. Schema | `017` | `017` | `017` |
+| Track | Seed | Polish script |
+|-------|------|---------------|
+| `ap-calc-ab` | `024_seed_ap_calc_ab_course.sql` | `polish-ap-calc-ab-lessons.ts` |
 
-| 2. Original seed | `018` | `021` | TBD `022` |
+After you add licensed PDFs: ingest → Paste 3 → polish.
 
-| 3. Ingest PDFs | `ingest --track ap-bio` | `ingest --track ap-chem` | `ingest --track sat` |
+## Editorial (human)
 
-| 4. Paste 2 | `drafts.sql` | `drafts.sql` | `drafts.sql` |
+Polish does **not** replace full lesson writing. See [CONTENT-EDITORIAL.md](./CONTENT-EDITORIAL.md) and run:
 
-| 5. Paste 3 | publish `ord >= 100` for `ap-bio` | publish for `ap-chem` | publish for `sat` |
+`npx tsx scripts/audit-lesson-quality.ts`
 
-| 6. Polish | `polish-ap-bio-lessons.ts` | `polish-ap-chem-lessons.ts` | polish script (next) |
+## Study flow
 
-| 7. Deploy UI | `/study` course outline | same | same |
-
-
-
-**AP Bio status:** polished, 111 lessons live.
-
-
-
-**Next:** AP Chem — run `021` in Supabase, add books, ingest, publish, polish.
-
-
-
-**Then:** SAT.
-
-
-
-**Study flow:** Students and teachers open `/study` → pick track → expand **Course lessons** → read material → AI tutor + quizzes + practice MCQs. Not MCQ-only.
-
-
+`/study` → pick track → **Course lessons** → read → AI tutor + quizzes + practice.
