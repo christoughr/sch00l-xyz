@@ -9,11 +9,16 @@
 - **AP Bio** pilot with real unit sections and questions
 - Everything else: **AI-generated**, topic-specific session content
 
-**Not in this repo (content project)**
+## Khan-style courses (130 tracks × hundreds of lessons)
 
-- Hundreds of Khan Academy–style lessons per course
-- Official SAT/AP/A-Level past papers (licensed)
-- Scraping textbooks from Sci-Hub, LibGen, Z-Library, Anna's Archive, etc. — **we do not do this** (copyright + ToS + student safety)
+**Yes — this is the target.** It is done in **waves**, not one deploy:
+
+1. **Schema** — `017_course_lessons.sql` (units + lessons per `track_id`)
+2. **Your PDFs** — one per row in `PDF-SOURCES-CHECKLIST.md`
+3. **Ingestion** — extract → AI draft lesson + MCQ **from your source** → human review → `published`
+4. **UI** — lesson reader in `/study` (next sprint after first 20 PDFs land)
+
+Rough scale: 126 tracks × ~8 units × ~12 lessons ≈ **12,000 lessons**. AI can draft; **you** (or reviewers) approve. We start with AP Bio + your first 10 PDFs as the template pipeline.
 
 ## How we grow question banks (legitimate)
 
