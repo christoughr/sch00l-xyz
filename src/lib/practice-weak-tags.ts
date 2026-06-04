@@ -58,6 +58,8 @@ export function latestPracticeWeakTopic(): {
 /** Maps practice test IDs to default study track for deep links. */
 export const PRACTICE_TO_TRACK: Record<string, string> = {
   "sat-digital": "sat-math",
+  "ssat-middle-sample": "ssat-middle",
+  "ssat-upper-sample": "ssat-upper",
   act: "act-math",
   "ap-bio-mcq": "ap-bio",
   "ib-sl-math": "ib-math-aa-sl",

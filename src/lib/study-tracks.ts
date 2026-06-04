@@ -228,6 +228,28 @@ export const STUDY_TRACKS: StudyTrack[] = [
       "AP CSA: Java syntax, OOP, arrays, ArrayList, basic algorithms. Debug reasoning, not full code dumps.",
   }),
   {
+    id: "ssat-middle",
+    category: "sat_act",
+    label: "SSAT Middle Level",
+    description: "Grades 5–7 independent school exam",
+    subject: "math",
+    topic: "SSAT Middle — quantitative and verbal reasoning",
+    gradeLevel: "SSAT Middle",
+    tutorContext:
+      "SSAT Middle: analogies, quantitative comparison, reading comp. Age-appropriate pacing and vocabulary.",
+  },
+  {
+    id: "ssat-upper",
+    category: "sat_act",
+    label: "SSAT Upper Level",
+    description: "Grades 8–11 independent school exam",
+    subject: "math",
+    topic: "SSAT Upper — math, reading, writing sample",
+    gradeLevel: "SSAT Upper",
+    tutorContext:
+      "SSAT Upper: harder QC, synonyms, timed passages, and writing sample structure.",
+  },
+  {
     id: "sat-math",
     category: "sat_act",
     label: "SAT Math",

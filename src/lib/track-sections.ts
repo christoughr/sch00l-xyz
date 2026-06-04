@@ -169,6 +169,8 @@ const BY_TRACK: Record<string, TrackSection[]> = {
   "ap-lang": sections("AP English Language", AP_ENGLISH),
   "ap-lit": sections("AP English Literature", AP_ENGLISH),
   "ap-cs-a": sections("AP Computer Science A", AP_CS),
+  "ssat-middle": sections("SSAT Middle", SAT_ACT),
+  "ssat-upper": sections("SSAT Upper", SAT_ACT),
   "sat-math": sections("SAT Math", SAT_ACT),
   "sat-reading": sections("SAT Reading & Writing", SAT_ACT),
   "act-math": sections("ACT Math", SAT_ACT),

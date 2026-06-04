@@ -534,24 +534,24 @@ export const GLOBAL_STUDY_TRACKS: GlobalStudyTrack[] = [
       "GSAT Math: 學測 mixed topics, speed, and common 陷阱. Connect to 指考 when student is Grade 12.",
   }),
   EXAM({
-    id: "kr-csat-math",
-    label: "CSAT / Suneung Mathematics",
-    description: "Korean college scholastic ability math",
+    id: "ssat-middle",
+    label: "SSAT Middle Level",
+    description: "Independent school admission — grades 5–7",
     subject: "math",
-    topic: "CSAT Math — killer problem strategies",
-    gradeLevel: "CSAT",
+    topic: "SSAT Middle — math and verbal reasoning",
+    gradeLevel: "SSAT Middle",
     tutorContext:
-      "CSAT Math: 킬러 problems, choice elimination, and mock exam pacing. Build from 개념 to 실전.",
+      "SSAT Middle: quantitative comparison, analogies, reading comp. Build vocabulary and number sense without over-drilling tricks.",
   }),
   EXAM({
-    id: "kr-csat-english",
-    label: "CSAT English",
-    description: "Reading and grammar national exam",
-    subject: "english",
-    topic: "CSAT English — reading inference",
-    gradeLevel: "CSAT",
+    id: "ssat-upper",
+    label: "SSAT Upper Level",
+    description: "Independent school admission — grades 8–11",
+    subject: "math",
+    topic: "SSAT Upper — math, reading, and essay prep",
+    gradeLevel: "SSAT Upper",
     tutorContext:
-      "CSAT English: passage logic, blank inference, and vocabulary in context. Avoid over-translating idioms.",
+      "SSAT Upper: harder quantitative reasoning, synonyms/analogies, timed passages. Essay = clear thesis + examples.",
   }),
 
   // —— Middle East (IGCSE) ——

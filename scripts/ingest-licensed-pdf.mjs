@@ -92,8 +92,9 @@ function extractEpub(filePath) {
 
 const DOWNLOAD_PATTERNS = {
   "ap-bio": /biology|ap.?bio/i,
-  "ap-chem": /chemistry|ap.?chem/i,
+  "ap-chem": /chemistry|ap.?chem|5 steps to a 5.*chem/i,
   sat: /sat|college.?board/i,
+  ssat: /ssat/i,
 };
 
 function copyFromDownloads(targetDir, track) {
