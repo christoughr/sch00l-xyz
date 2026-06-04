@@ -50,10 +50,14 @@ export function Nav() {
   }
 
   useEffect(() => {
+    if (!user) {
+      setCardsDue(0);
+      return;
+    }
     refreshDue();
     window.addEventListener(FLASHCARDS_UPDATED, refreshDue);
     return () => window.removeEventListener(FLASHCARDS_UPDATED, refreshDue);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!user || !supabaseReady) {
@@ -100,7 +104,7 @@ export function Nav() {
         className="relative block rounded-lg px-3 py-2.5 sm:py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white min-h-[44px] sm:min-h-0 flex items-center"
       >
         {l.label}
-        {l.showDue && cardsDue > 0 && (
+        {l.showDue && user && cardsDue > 0 && (
           <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
             {cardsDue > 9 ? "9+" : cardsDue}
           </span>

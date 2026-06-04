@@ -90,13 +90,18 @@ function extractEpub(filePath) {
   return parts.join("\n\n");
 }
 
-function copyFromDownloads(targetDir) {
+const DOWNLOAD_PATTERNS = {
+  "ap-bio": /biology|ap.?bio/i,
+  "ap-chem": /chemistry|ap.?chem/i,
+  sat: /sat|college.?board/i,
+};
+
+function copyFromDownloads(targetDir, track) {
   fs.mkdirSync(targetDir, { recursive: true });
+  const pattern = DOWNLOAD_PATTERNS[track] ?? new RegExp(track.replace(/-/g, ".?"), "i");
   const names = fs.readdirSync(DOWNLOADS);
   const matches = names.filter(
-    (n) =>
-      /biology|ap.?bio/i.test(n) &&
-      /\.(pdf|epub)$/i.test(n)
+    (n) => pattern.test(n) && /\.(pdf|epub)$/i.test(n)
   );
   for (const name of matches) {
     const src = path.join(DOWNLOADS, name);
@@ -108,6 +113,23 @@ function copyFromDownloads(targetDir) {
   return matches.length;
 }
 
+function extractHtmlDir(dirPath) {
+  const parts = [];
+  function walk(d) {
+    for (const name of fs.readdirSync(d)) {
+      const full = path.join(d, name);
+      const st = fs.statSync(full);
+      if (st.isDirectory()) walk(full);
+      else if (/\.(xhtml|html|htm)$/i.test(name)) {
+        const t = stripHtml(fs.readFileSync(full, "utf8"));
+        if (t.length > 100) parts.push(t);
+      }
+    }
+  }
+  walk(dirPath);
+  return parts.join("\n\n");
+}
+
 async function extractFile(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   if (ext === ".pdf") return extractPdf(filePath);
@@ -117,7 +139,7 @@ async function extractFile(filePath) {
 
 async function main() {
   if (fromDownloads) {
-    const n = copyFromDownloads(inputDir);
+    const n = copyFromDownloads(inputDir, trackId);
     console.log(`Copied ${n} PDF/EPUB files from Downloads.`);
   }
 
@@ -132,6 +154,11 @@ async function main() {
     .filter((f) => /\.(pdf|epub)$/i.test(f))
     .map((f) => path.join(inputDir, f));
 
+  const mobiDirs = fs
+    .readdirSync(inputDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && d.name.startsWith("mobi-"))
+    .map((d) => path.join(inputDir, d.name));
+
   const skipped = fs
     .readdirSync(inputDir)
     .filter((f) => /\.mobi$/i.test(f));
@@ -143,7 +170,7 @@ async function main() {
     );
   }
 
-  if (!files.length) {
+  if (!files.length && !mobiDirs.length) {
     console.log(`No PDF/EPUB in ${inputDir}. Use --from-downloads or copy files.`);
     process.exit(0);
   }
@@ -183,6 +210,37 @@ async function main() {
           `**Publisher source:** ${path.basename(file)}\n\n` +
           `### Study notes (extract — rewrite for publish)\n\n${preview}…\n\n` +
           `---\n*Digital adaptation for sch00l. Align with your publisher agreement before setting published.*`
+      );
+      lines.push(`
+insert into public.course_lessons (unit_id, ord, title, objectives, body_markdown, review_status, source_pdf_name)
+select u.id, ${globalOrd}, '${title}',
+  '["Master concepts from licensed prep material","Practice AP-style reasoning"]'::jsonb,
+  E'${body}',
+  'draft', '${sourceName}'
+from public.course_units u where u.track_id = '${trackId}' and u.ord = 1;`);
+      globalOrd++;
+    }
+  }
+
+  for (const dir of mobiDirs) {
+    console.log("Processing MOBI extract", path.basename(dir));
+    const text = extractHtmlDir(dir);
+    const chunks = chunkText(text);
+    if (!chunks.length) {
+      console.warn("  no text from MOBI html");
+      continue;
+    }
+    const sourceName = escapeSql(path.basename(dir) + " (from .mobi)");
+
+    for (let i = 0; i < chunks.length; i++) {
+      const fakeName = path.basename(dir);
+      const title = escapeSql(`${fakeName} — part ${i + 1}`);
+      const preview = chunks[i].slice(0, 1800);
+      const body = escapeSql(
+        `# ${fakeName} — part ${i + 1}\n\n` +
+          `**Publisher source:** converted from MOBI\n\n` +
+          `### Study notes (extract — rewrite for publish)\n\n${preview}…\n\n` +
+          `---\n*Digital adaptation for sch00l.*`
       );
       lines.push(`
 insert into public.course_lessons (unit_id, ord, title, objectives, body_markdown, review_status, source_pdf_name)

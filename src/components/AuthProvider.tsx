@@ -12,6 +12,7 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { loadProgress } from "@/lib/progress";
 import { mergeLocalProgressToCloud, syncProgressToDb } from "@/lib/progress-db";
 import { syncProFromCloud, isProUser as isProLocal, deactivateProLocal } from "@/lib/free-tier";
+import { clearSessionLocalData } from "@/lib/session-local";
 
 type AuthContextValue = {
   user: User | null;
@@ -104,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         setIsPro(false);
         deactivateProLocal();
+        clearSessionLocalData();
         setLoading(false);
         return;
       }
@@ -126,6 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setIsPro(false);
     deactivateProLocal();
+    clearSessionLocalData();
 
     void fetch("/api/auth/signout", {
       method: "POST",
@@ -153,6 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setIsPro(false);
     deactivateProLocal();
+    clearSessionLocalData();
     const supabase = createClient();
     if (supabase) {
       void supabase.auth.signOut({ scope: "local" }).catch(() => undefined);

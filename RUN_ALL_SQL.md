@@ -14,5 +14,9 @@ SQL Editor → paste each file → **Run** → then next.
 10. `016_daily_ai_usage.sql` — server-side free-tier AI session counter (logged-in users)
 11. `017_course_lessons.sql` — structured units/lessons per track (Khan-style; fill via PDF ingestion)
 12. `018_seed_ap_bio_course.sql` — 15 published AP Biology lessons (original content; run after 017)
+13. **Publisher drafts** — `content/ingest/ap-bio/out/drafts.sql` (or Desktop `PASTE_2_drafts_ap_bio.sql`)
+14. **Publish drafts** — `update course_lessons set review_status = 'published' where track_id = 'ap-bio' and ord >= 100` (Paste 3; repeat per subject after that subject’s drafts)
+15. **Polish AP Bio** — `npx tsx scripts/polish-ap-bio-lessons.ts` (needs `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`) — redistributes 96 publisher lessons across 5 units, cleans titles, OpenStax footer on all 111 lessons
+16. `021_seed_ap_chem_course.sql` — 15 published AP Chemistry lessons (run after 017; before chem ingest)
 
 After step 4 you get: assignments, uploads, battles, forums, practice tests, integrations, gradebook, parent links, marketplace, announcements.

@@ -93,8 +93,10 @@ export function StudyCourseOutline({
               />
             </button>
             {expandedUnit === unit.id && unit.lessons.length > 0 && (
-              <ul className="border-t border-white/5 pb-2">
-                {unit.lessons.map((lesson) => (
+              <ul className="border-t border-white/5 pb-2 max-h-64 overflow-y-auto">
+                {[...unit.lessons]
+                  .sort((a, b) => a.ord - b.ord)
+                  .map((lesson, idx) => (
                   <li key={lesson.id}>
                     <button
                       type="button"
@@ -106,7 +108,7 @@ export function StudyCourseOutline({
                       }
                       className="w-full px-4 py-2 text-left text-xs text-zinc-400 hover:text-brand-300 hover:bg-white/5"
                     >
-                      {lesson.ord}. {lesson.title}
+                      {idx + 1}. {lesson.title}
                     </button>
                   </li>
                 ))}

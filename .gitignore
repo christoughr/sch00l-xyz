@@ -23,6 +23,13 @@
 # production
 /build
 
+# licensed publisher files (local only)
+/content/ingest/**/out/
+/content/ingest/**/*.pdf
+/content/ingest/**/*.epub
+/content/ingest/**/*.mobi
+/content/ingest/**/mobi-*/
+
 # misc
 .DS_Store
 *.pem

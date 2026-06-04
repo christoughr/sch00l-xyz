@@ -62,6 +62,7 @@ export default function StudyPage() {
   const [cardsLoading, setCardsLoading] = useState(false);
   const [cardsError, setCardsError] = useState<string | null>(null);
   const [trackHint, setTrackHint] = useState<string | null>(null);
+  const [lessonPreview, setLessonPreview] = useState<string | null>(null);
   const [sectionId, setSectionId] = useState<string | null>(null);
   const [assignmentId, setAssignmentId] = useState<string | null>(null);
   const [assignmentTitle, setAssignmentTitle] = useState<string | null>(null);
@@ -366,12 +367,27 @@ export default function StudyPage() {
               onChange={(id) => applySection(id)}
             />
           )}
-          {trackId === "ap-bio" && (
+          {trackId !== "custom" && (
             <StudyCourseOutline
               trackId={trackId}
               sectionId={sectionId}
-              onPickLesson={(title, _body) => setTopic(title)}
+              onPickLesson={(title, body) => {
+                setTopic(title);
+                setTrackContext(body.slice(0, 500));
+                setLessonPreview(body);
+              }}
             />
+          )}
+          {lessonPreview && (
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs font-medium text-brand-300 mb-2">
+                Course reading — use with the AI tutor below
+              </p>
+              <div className="max-h-56 overflow-y-auto text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">
+                {lessonPreview.slice(0, 6000)}
+                {lessonPreview.length > 6000 ? "\n\n…" : ""}
+              </div>
+            </div>
           )}
           <div>
             <label htmlFor="study-topic" className="block text-sm font-medium text-zinc-300 mb-2">
