@@ -20,7 +20,7 @@ const primaryLinks: NavLink[] = [
   { href: "/progress", label: "Progress" },
 ];
 
-const moreLinks: NavLink[] = [
+const secondaryLinks: NavLink[] = [
   { href: "/community", label: "Community" },
   { href: "/tutors", label: "Tutors" },
   { href: "/pricing", label: "Pricing" },
@@ -34,6 +34,7 @@ export function Nav() {
   const [cardsDue, setCardsDue] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pro, setPro] = useState(false);
+
   function handleSignOut() {
     void signOut();
   }
@@ -70,12 +71,11 @@ export function Nav() {
       .catch(() => setIsTeacher(false));
   }, [user, supabaseReady]);
 
-  const mobileLinks: NavLink[] = [
-    ...primaryLinks,
-    ...moreLinks,
-    { href: "/settings", label: "Settings" },
+  const extraLinks: NavLink[] = [
+    ...secondaryLinks,
     ...(supabaseReady ? [{ href: "/join", label: "Join" }] : []),
     ...(isTeacher ? [{ href: "/teacher", label: "Teach" }] : []),
+    { href: "/settings", label: "Settings" },
   ];
 
   useEffect(() => {
@@ -96,12 +96,24 @@ export function Nav() {
     };
   }, [menuOpen]);
 
-  function LinkItem({ l, onNavigate }: { l: NavLink; onNavigate?: () => void }) {
+  function LinkItem({
+    l,
+    onNavigate,
+    compact,
+  }: {
+    l: NavLink;
+    onNavigate?: () => void;
+    compact?: boolean;
+  }) {
     return (
       <Link
         href={l.href}
         onClick={onNavigate}
-        className="relative block rounded-lg px-3 py-2.5 sm:py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white min-h-[44px] sm:min-h-0 flex items-center"
+        className={`relative block rounded-lg text-zinc-300 transition hover:bg-white/5 hover:text-white min-h-[44px] flex items-center ${
+          compact
+            ? "px-2 py-1.5 text-xs lg:text-sm"
+            : "px-3 py-2.5 sm:py-2 text-sm"
+        }`}
       >
         {l.label}
         {l.showDue && user && cardsDue > 0 && (
@@ -115,83 +127,74 @@ export function Nav() {
 
   return (
     <header className="border-b border-white/10 bg-surface-900/80 backdrop-blur-md sticky top-0 z-50">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-        <Logo />
+      <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 sm:py-3">
+        <div className="flex items-center justify-between gap-3">
+          <Logo />
 
-        {/* Desktop */}
-        <nav className="hidden md:flex items-center gap-1">
-          {primaryLinks.map((l) => (
-            <LinkItem key={l.href} l={l} />
-          ))}
-          {pro && (
-            <span className="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-300">
-              Pro
-            </span>
-          )}
-          <details className="relative group">
-            <summary
-              className="list-none cursor-pointer rounded-lg px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
-              aria-haspopup="menu"
+          {/* Desktop: flat nav, no More dropdown */}
+          <nav className="hidden md:flex flex-1 flex-wrap items-center justify-end gap-0.5 lg:gap-1 min-w-0">
+            {primaryLinks.map((l) => (
+              <LinkItem key={l.href} l={l} compact />
+            ))}
+            <span className="mx-1 h-4 w-px bg-white/10 hidden lg:block" aria-hidden />
+            {secondaryLinks.map((l) => (
+              <LinkItem key={l.href} l={l} compact />
+            ))}
+            {supabaseReady && <LinkItem l={{ href: "/join", label: "Join" }} compact />}
+            {isTeacher && <LinkItem l={{ href: "/teacher", label: "Teach" }} compact />}
+            {pro && (
+              <span className="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-300 ml-1">
+                Pro
+              </span>
+            )}
+            {!loading && supabaseReady && (
+              <>
+                {user ? (
+                  <button
+                    type="button"
+                    data-testid="signout-btn"
+                    onClick={handleSignOut}
+                    className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs text-zinc-400 hover:text-white"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span className="hidden lg:inline">Sign out</span>
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="rounded-lg px-2 py-1.5 text-xs text-zinc-300 hover:text-white"
+                  >
+                    Sign in
+                  </Link>
+                )}
+              </>
+            )}
+            <Link
+              href="/study"
+              className="ml-1 rounded-lg bg-brand-500 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-brand-400 shrink-0"
             >
-              More
-            </summary>
-            <div className="absolute right-0 mt-1 min-w-[140px] rounded-xl border border-white/10 bg-surface-900 py-1 shadow-xl">
-              {moreLinks.map((l) => (
-                <LinkItem key={l.href} l={l} />
-              ))}
-              {supabaseReady && <LinkItem l={{ href: "/join", label: "Join" }} />}
-              {isTeacher && <LinkItem l={{ href: "/teacher", label: "Teach" }} />}
-            </div>
-          </details>
+              Study
+            </Link>
+          </nav>
 
-          {!loading && supabaseReady && (
-            <>
-              {user ? (
-                <button
-                  type="button"
-                  data-testid="signout-btn"
-                  onClick={handleSignOut}
-                  className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:text-white"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign out
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  className="rounded-lg px-3 py-2 text-sm text-zinc-300 hover:text-white"
-                >
-                  Sign in
-                </Link>
-              )}
-            </>
-          )}
-
-          <Link
-            href="/study"
-            className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-400"
-          >
-            Study
-          </Link>
-        </nav>
-
-        {/* Mobile */}
-        <div className="flex items-center gap-2 md:hidden">
-          <Link
-            href="/study"
-            className="rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white"
-          >
-            Study
-          </Link>
-          <button
-            type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((o) => !o)}
-            className="rounded-lg border border-white/10 p-2 text-zinc-300"
-          >
-            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Mobile */}
+          <div className="flex items-center gap-2 md:hidden shrink-0">
+            <Link
+              href="/study"
+              className="rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white"
+            >
+              Study
+            </Link>
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+              className="rounded-lg border border-white/10 p-2 text-zinc-300"
+            >
+              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -204,36 +207,45 @@ export function Nav() {
             onClick={() => setMenuOpen(false)}
           />
           <nav className="relative z-50 md:hidden border-t border-white/10 px-4 py-3 space-y-1 bg-surface-900 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
-          {mobileLinks.map((l) => (
-            <LinkItem key={l.href} l={l} onNavigate={() => setMenuOpen(false)} />
-          ))}
-          {!loading && supabaseReady && (
-            <>
-              {user ? (
-                <button
-                  type="button"
-                  data-testid="signout-btn"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    void handleSignOut();
-                  }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign out
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="block rounded-lg px-3 py-2 text-sm text-zinc-300"
-                >
-                  Sign in
-                </Link>
-              )}
-            </>
-          )}
-        </nav>
+            <p className="px-3 pt-1 pb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+              Learn
+            </p>
+            {primaryLinks.map((l) => (
+              <LinkItem key={l.href} l={l} onNavigate={() => setMenuOpen(false)} />
+            ))}
+            <p className="px-3 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+              Explore
+            </p>
+            {extraLinks.map((l) => (
+              <LinkItem key={l.href} l={l} onNavigate={() => setMenuOpen(false)} />
+            ))}
+            {!loading && supabaseReady && (
+              <div className="border-t border-white/10 pt-2 mt-2">
+                {user ? (
+                  <button
+                    type="button"
+                    data-testid="signout-btn"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      void handleSignOut();
+                    }}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign out
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="block rounded-lg px-3 py-2 text-sm text-zinc-300"
+                  >
+                    Sign in
+                  </Link>
+                )}
+              </div>
+            )}
+          </nav>
         </>
       )}
     </header>

@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  let response = NextResponse.json({ ok: true });
+  const response = NextResponse.json({ ok: true });
 
   const supabase = createServerClient(url, key, {
     cookies: {

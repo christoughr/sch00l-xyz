@@ -14,7 +14,7 @@ import { useAuth } from "./AuthProvider";
 import Link from "next/link";
 
 export function FlashcardReview() {
-  const { user } = useAuth();
+  const { user, loading: authLoading, supabaseReady } = useAuth();
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
@@ -25,23 +25,27 @@ export function FlashcardReview() {
   const load = useCallback(async () => {
     setLoading(true);
     setSyncWarning(null);
-    if (user) {
-      try {
-        const res = await fetch("/api/flashcards");
-        if (res.ok) {
-          const data = await res.json();
-          const rows = (data.cards ?? []) as Record<string, unknown>[];
-          mergeCloudFlashcards(rows);
-          const merged = loadFlashcards();
-          setCards(merged);
-          setDeck(dueFlashcards(merged));
-          setLoading(false);
-          return;
-        }
-        setSyncWarning("Using cards saved on this device — cloud sync unavailable.");
-      } catch {
-        setSyncWarning("Using cards saved on this device — cloud sync unavailable.");
+    if (!user) {
+      setCards([]);
+      setDeck([]);
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await fetch("/api/flashcards");
+      if (res.ok) {
+        const data = await res.json();
+        const rows = (data.cards ?? []) as Record<string, unknown>[];
+        mergeCloudFlashcards(rows);
+        const merged = loadFlashcards();
+        setCards(merged);
+        setDeck(dueFlashcards(merged));
+        setLoading(false);
+        return;
       }
+      setSyncWarning("Using cards saved on this device — cloud sync unavailable.");
+    } catch {
+      setSyncWarning("Using cards saved on this device — cloud sync unavailable.");
     }
     const local = loadFlashcards();
     setCards(local);
@@ -86,6 +90,42 @@ export function FlashcardReview() {
     setDeck(remaining);
     setIndex(0);
     setFlipped(false);
+  }
+
+  if (authLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-400" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center max-w-md mx-auto">
+        <Layers className="h-10 w-10 text-zinc-500 mx-auto" />
+        <p className="mt-4 text-white font-medium">Sign in to review flashcards</p>
+        <p className="text-sm text-zinc-400 mt-2">
+          Your cards are saved to your account after study sessions — not on this browser
+          while logged out.
+        </p>
+        {supabaseReady ? (
+          <Link
+            href="/login"
+            className="inline-block mt-4 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-400"
+          >
+            Sign in
+          </Link>
+        ) : (
+          <Link
+            href="/study"
+            className="inline-block mt-4 text-brand-400 hover:underline text-sm"
+          >
+            Go study →
+          </Link>
+        )}
+      </div>
+    );
   }
 
   if (loading) {
