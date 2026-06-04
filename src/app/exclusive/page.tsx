@@ -20,7 +20,7 @@ const EXCLUSIVE = [
   },
   {
     title: "Teacher-owned document Q&A",
-    body: "Course Hero/Chegg are student-upload free-for-alls. Your teacher's PDFs power class-scoped, moderated help.",
+    body: "Generic answer sites are student-upload free-for-alls. Your teacher's PDFs power class-scoped, moderated help.",
     icon: Sparkles,
   },
   {
@@ -30,7 +30,7 @@ const EXCLUSIVE = [
   },
   {
     title: "Lift Battles™ (beta)",
-    body: "Live Kahoot-style games that can end with a 3-question lift check — engagement plus proof.",
+    body: "Live quiz games that can end with a 3-question lift check — engagement plus proof.",
     icon: Sparkles,
   },
 ];

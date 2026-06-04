@@ -77,7 +77,7 @@ export function ClassDiscussionBanner() {
           <p className="mt-1 text-sm text-zinc-400">
             {hasClasses
               ? "Ask classmates and your teacher in class threads — AI moderation included."
-              : "Join with your teacher’s code to unlock Piazza-style threads and Kahoot-style battles."}
+              : "Join with your teacher’s code to unlock class threads and live quiz battles."}
           </p>
           {hasClasses && (
             <ul className="mt-3 flex flex-wrap gap-2">

@@ -87,7 +87,7 @@ export function ClassroomBattle({ classroomId }: { classroomId: string }) {
 
       <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-4">
         <p className="text-sm text-zinc-400">
-          Start a Kahoot-style quiz battle. Share the room link with students.
+          Start a live quiz battle. Share the room link with students.
         </p>
         <StudyTrackPicker value={trackId} onChange={handleTrackChange} />
         <label className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer">

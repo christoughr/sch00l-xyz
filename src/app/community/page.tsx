@@ -23,13 +23,13 @@ const FEATURES = [
   {
     icon: MessageSquare,
     title: "Class discussion",
-    desc: "Piazza-style threads per class + teacher lounge. AI moderation built in.",
+    desc: "Threaded Q&A per class + teacher lounge. AI moderation built in.",
     href: "/my-classes",
   },
   {
     icon: Zap,
     title: "Live quiz battles",
-    desc: "Kahoot-style rooms tied to your unit — optional lift check after.",
+    desc: "Live quiz rooms tied to your unit — optional lift check after.",
     href: "/my-classes",
   },
   {
