@@ -1,100 +1,71 @@
-/** Rules to sort, rename, and lightly polish AP Biology publisher lessons. */
-
-export const UNIT_ORDS = [1, 2, 3, 4, 5] as const;
-
-export const UNIT_SHORT = [
-  "Cells",
-  "Genetics",
-  "Evolution",
-  "Ecology",
-  "Exam prep",
-] as const;
-
-const UNIT_KEYWORDS: Record<number, string[]> = {
-  1: [
-    "cell",
-    "membrane",
-    "organelle",
-    "mitochondria",
-    "chloroplast",
-    "atp",
-    "enzyme",
-    "osmosis",
-    "hypertonic",
-    "hypotonic",
-    "transport",
-    "respiration",
-    "photosynthesis",
-  ],
-  2: [
-    "dna",
-    "rna",
-    "gene",
-    "replication",
-    "transcription",
-    "translation",
-    "inheritance",
-    "punnett",
-    "chromosome",
-    "genome",
-    "allele",
-    "mutation",
-    "meiosis",
-    "heredity",
-  ],
-  3: [
-    "evolution",
-    "selection",
-    "hardy",
-    "weinberg",
-    "phylogen",
-    "speciation",
-    "cladogram",
-    "population genetics",
-    "darwin",
-  ],
-  4: [
-    "ecology",
-    "ecosystem",
-    "population",
-    "trophic",
-    "food web",
-    "conservation",
-    "biome",
-    "community",
-    "carrying capacity",
-  ],
-  5: [
-    "practice test",
-    "mcq",
-    "frq",
-    "exam",
-    "strategy",
-    "rubric",
-    "claim",
-    "evidence",
-    "review",
-    "test day",
-    "grid",
-  ],
-};
+/** Sort and polish Digital SAT publisher lessons (sat-math track). */
 
 import {
   minimalLessonTitle,
   polishBodyMarkdown as polishBody,
 } from "./lesson-polish-shared";
 
-export function isPublisherLesson(sourcePdfName: string | null): boolean {
-  if (!sourcePdfName) return true;
-  return sourcePdfName !== "sch00l-original-oer-aligned";
-}
+export const UNIT_ORDS = [1, 2, 3, 4, 5] as const;
+
+const UNIT_KEYWORDS: Record<number, string[]> = {
+  1: [
+    "linear",
+    "algebra",
+    "equation",
+    "inequality",
+    "percent",
+    "ratio",
+    "system",
+    "word problem",
+  ],
+  2: [
+    "quadratic",
+    "polynomial",
+    "function",
+    "radical",
+    "rational",
+    "exponent",
+    "parabola",
+  ],
+  3: [
+    "passage",
+    "evidence",
+    "grammar",
+    "vocabulary",
+    "rhetoric",
+    "transition",
+    "reading",
+    "writing",
+  ],
+  4: [
+    "statistics",
+    "median",
+    "mean",
+    "scatter",
+    "geometry",
+    "triangle",
+    "circle",
+    "trigonometry",
+    "graph",
+    "data",
+  ],
+  5: [
+    "practice test",
+    "practice exam",
+    "timed",
+    "strategy",
+    "test day",
+    "error log",
+    "module",
+  ],
+};
 
 function scoreUnitFallback(text: string): number {
   const t = text.toLowerCase();
-  if (/practice|test|exam|mcq|frq/i.test(t)) return 5;
-  if (/dna|gene|inherit/i.test(t)) return 2;
-  if (/ecosystem|ecology|population/i.test(t)) return 4;
-  if (/evolution|selection/i.test(t)) return 3;
+  if (/practice|exam|test day|timed module/i.test(t)) return 5;
+  if (/passage|grammar|evidence|rhetoric/i.test(t)) return 3;
+  if (/quadratic|function|polynomial/i.test(t)) return 2;
+  if (/statistic|geometry|scatter/i.test(t)) return 4;
   return 1;
 }
 
@@ -109,17 +80,10 @@ export function unitMatchScore(text: string): { ord: number; score: number } {
       best = ord;
     }
   }
-  if (bestScore === 0) {
-    return { ord: scoreUnitFallback(text), score: 0 };
-  }
+  if (bestScore === 0) return { ord: scoreUnitFallback(text), score: 0 };
   return { ord: best, score: bestScore };
 }
 
-export function scoreUnit(text: string): number {
-  return unitMatchScore(text).ord;
-}
-
-/** Even publisher counts per unit (96 → 20/19/19/19/19). */
 export function publisherTargets(count: number): Record<number, number> {
   const base = Math.floor(count / UNIT_ORDS.length);
   const rem = count % UNIT_ORDS.length;
@@ -152,24 +116,9 @@ function assignBalancedUnit(
   return pick;
 }
 
-export function shortBookLabel(sourcePdfName: string, title: string): string {
-  const s = `${sourcePdfName} ${title}`.toLowerCase();
-  if (s.includes("mobi-princeton") || s.includes("premium prep, 2023"))
-    return "Princeton Review 2023";
-  if (s.includes("princeton") && s.includes("2024")) return "Princeton Review 2024";
-  if (s.includes("princeton") && s.includes("2025")) return "Princeton Review 2025";
-  if (s.includes("princeton")) return "Princeton Review";
-  if (s.includes("kaplan") || s.includes("2026")) return "Kaplan 2026";
-  if (s.includes("2025") && s.includes("wuerth")) return "Barron's 2025";
-  if (s.includes("2024") && s.includes("comprehensive")) return "Barron's 2024";
-  if (s.includes("2022-2023") || s.includes("2022")) return "Barron's 2022–23";
-  if (s.includes("barrons") || s.includes("barron")) return "Barron's AP Bio";
-  return "AP Bio study guide";
-}
-
-export function extractPartNumber(title: string): number {
-  const m = title.match(/part\s*(\d+)/i);
-  return m ? parseInt(m[1], 10) : 1;
+export function isPublisherLesson(sourcePdfName: string | null): boolean {
+  if (!sourcePdfName) return true;
+  return sourcePdfName !== "sch00l-original-oer-aligned";
 }
 
 export function polishBodyMarkdown(body: string): string {

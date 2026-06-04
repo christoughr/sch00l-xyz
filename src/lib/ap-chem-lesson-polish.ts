@@ -1,4 +1,9 @@
-/** Sort, rename, and lightly polish AP Chemistry publisher lessons. */
+/** Sort and polish AP Chemistry publisher lessons. */
+
+import {
+  minimalLessonTitle,
+  polishBodyMarkdown as polishBody,
+} from "./lesson-polish-shared";
 
 export const UNIT_ORDS = [1, 2, 3, 4, 5] as const;
 
@@ -77,9 +82,6 @@ const UNIT_KEYWORDS: Record<number, string[]> = {
     "500 questions",
   ],
 };
-
-const OPENSTAX_FOOTER =
-  "\n\n---\n**Free textbook:** [OpenStax Chemistry 2e](https://openstax.org/books/chemistry-2e/pages/1-introduction) (CC BY).";
 
 export function isPublisherLesson(sourcePdfName: string | null): boolean {
   if (!sourcePdfName) return true;
@@ -168,38 +170,8 @@ export function extractPartNumber(title: string): number {
   return m ? parseInt(m[1], 10) : 1;
 }
 
-export function cleanLessonTitle(unitOrd: number, book: string, part: number): string {
-  return `${UNIT_SHORT[unitOrd - 1]} — ${book} · Set ${part}`;
-}
-
-export function polishBodyMarkdown(
-  body: string,
-  cleanTitle: string,
-  addOpenStax: boolean
-): string {
-  let b = body;
-
-  b = b.replace(/^#\s*.+$/m, `# ${cleanTitle}`);
-  b = b.replace(/\*\*Publisher source:\*\*[^\n]+\n*/gi, "");
-  b = b.replace(
-    /### Study notes \(extract[^\)]*\)[^\n]*\n*/gi,
-    "### Key ideas\n\n"
-  );
-  b = b.replace(/\*Digital adaptation for sch00l[^\n]*\*/gi, "");
-  b = b.replace(/…/g, "...");
-  b = b.replace(/\n{3,}/g, "\n\n");
-
-  if (!b.includes("### Key ideas") && b.length > 80) {
-    const intro =
-      "### Key ideas\n\nWork through this section with the AI tutor — ask for practice problems, not answer keys.\n\n";
-    b = b.replace(/^#\s[^\n]+\n\n/, (m) => m + intro);
-  }
-
-  if (addOpenStax && !b.includes("openstax.org")) {
-    b += OPENSTAX_FOOTER;
-  }
-
-  return b.trim();
+export function polishBodyMarkdown(body: string): string {
+  return polishBody(body, true);
 }
 
 export type LessonRow = {
@@ -243,10 +215,8 @@ export function planPublisherLessonUpdates(
   const planned = ranked.map(({ lesson, preferred }) => {
     const unitOrd = assignBalancedUnit(preferred, assignedCounts, targets);
     lessonOrd[unitOrd] = (lessonOrd[unitOrd] ?? 3) + 1;
-    const book = shortBookLabel(lesson.source_pdf_name ?? "", lesson.title);
-    const part = extractPartNumber(lesson.title);
-    const title = cleanLessonTitle(unitOrd, book, part);
-    const body = polishBodyMarkdown(lesson.body_markdown, title, true);
+    const title = minimalLessonTitle(lessonOrd[unitOrd]);
+    const body = polishBodyMarkdown(lesson.body_markdown);
     return {
       lesson,
       unitOrd,
@@ -276,6 +246,6 @@ export function planOpenStaxPass(lessons: LessonRow[]): LessonUpdate[] {
       unit_ord: l.unit_ord,
       ord: l.ord,
       title: l.title,
-      body_markdown: polishBodyMarkdown(l.body_markdown, l.title, true),
+      body_markdown: polishBodyMarkdown(l.body_markdown),
     }));
 }

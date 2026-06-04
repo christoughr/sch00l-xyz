@@ -1,40 +1,28 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
-  cleanLessonTitle,
   scoreUnit,
-  shortBookLabel,
   polishBodyMarkdown,
   publisherTargets,
   planPublisherLessonUpdates,
 } from "../src/lib/ap-bio-lesson-polish.ts";
+import { minimalLessonTitle } from "../src/lib/lesson-polish-shared.ts";
 
 describe("ap-bio lesson polish", () => {
-  it("cleans publisher-style titles", () => {
-    const t = cleanLessonTitle(2, "Barron's 2025", 3);
-    assert.equal(t, "Genetics — Barron's 2025 · Set 3");
-    assert.ok(!t.includes("Mary Wuerth"));
+  it("uses minimal lesson titles", () => {
+    assert.equal(minimalLessonTitle(4), "Lesson 4");
+    assert.ok(!minimalLessonTitle(1).includes("Barron"));
   });
 
   it("scores genetics content to unit 2", () => {
     assert.equal(scoreUnit("DNA replication and Punnett squares"), 2);
   });
 
-  it("shortens book label from source", () => {
-    const b = shortBookLabel(
-      "Princeton Review AP Biology Premium Prep, 26th Edition.pdf",
-      "part 1"
-    );
-    assert.ok(b.includes("Princeton"));
-  });
-
-  it("polishes body and adds openstax", () => {
+  it("polishes body without openstax", () => {
     const out = polishBodyMarkdown(
-      "# ugly — part 1\n\n**Publisher source:** foo\n\n### Study notes (extract)\n\nHello",
-      "Cells — Barron's · Set 1",
-      true
+      "# ugly — part 1\n\n**Publisher source:** foo\n\n### Study notes (extract)\n\nHello\n\n---\n**Free textbook:** [OpenStax](https://openstax.org/books/biology-2e)"
     );
-    assert.ok(out.includes("OpenStax"));
+    assert.ok(!out.includes("openstax.org"));
     assert.ok(!out.includes("Publisher source"));
   });
 
