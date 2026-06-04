@@ -13,4 +13,11 @@ describe("global study tracks", () => {
     const pro = tracksInCategory("professional");
     assert.ok(pro.length >= 3);
   });
+
+  it("has 45+ college and university courses", () => {
+    const college = tracksInCategory("college");
+    assert.ok(college.length >= 45);
+    assert.ok(college.some((t) => t.id === "college-calc-1"));
+    assert.ok(college.some((t) => t.id === "college-data-structures"));
+  });
 });

@@ -1,4 +1,5 @@
 import type { SubjectId } from "./subject-ids";
+import { COLLEGE_STUDY_TRACKS } from "./study-tracks-college";
 import { GLOBAL_STUDY_TRACKS } from "./study-tracks-global";
 
 export type StudyTrackCategory =
@@ -33,7 +34,7 @@ export const TRACK_CATEGORIES: {
   { id: "ap", label: "AP" },
   { id: "sat_act", label: "SAT / ACT" },
   { id: "exam_prep", label: "Exam prep" },
-  { id: "college", label: "College" },
+  { id: "college", label: "College & university" },
   { id: "k12", label: "High school" },
   { id: "languages", label: "Languages" },
   { id: "international", label: "International" },
@@ -414,61 +415,7 @@ export const STUDY_TRACKS: StudyTrack[] = [
     tutorContext:
       "IB Bio: data-based questions, IA-style reasoning, syllabus connections across topics.",
   },
-  {
-    id: "college-calc-2",
-    category: "college",
-    label: "Calculus II",
-    description: "Integration techniques, series",
-    subject: "math",
-    topic: "Calculus II — integration techniques and series",
-    gradeLevel: "College",
-    tutorContext:
-      "Calc II: integration techniques, applications, sequences/series. Step-by-step justification.",
-  },
-  {
-    id: "college-linear-algebra",
-    category: "college",
-    label: "Linear Algebra",
-    description: "Matrices, vectors, eigenvalues",
-    subject: "math",
-    topic: "Linear algebra — matrices and vector spaces",
-    gradeLevel: "College",
-    tutorContext:
-      "Linear algebra: row reduction, determinants, eigenvalues, linear transformations.",
-  },
-  {
-    id: "college-org-chem",
-    category: "college",
-    label: "Organic Chemistry",
-    description: "Mechanisms, synthesis, spectroscopy",
-    subject: "science",
-    topic: "Organic chemistry — reaction mechanisms",
-    gradeLevel: "College",
-    tutorContext:
-      "Orgo: curved-arrow mechanisms, functional groups, synthesis planning. Mechanism over memorization.",
-  },
-  {
-    id: "college-psych",
-    category: "college",
-    label: "Intro Psychology",
-    description: "Research methods, brain, learning",
-    subject: "psychology",
-    topic: "Intro psychology — research methods and cognition",
-    gradeLevel: "College",
-    tutorContext:
-      "Intro psych: experiments, brain/behavior, learning, memory. Connect studies to concepts.",
-  },
-  {
-    id: "college-microecon",
-    category: "college",
-    label: "Microeconomics",
-    description: "Supply, demand, welfare",
-    subject: "economics",
-    topic: "Microeconomics — markets and welfare",
-    gradeLevel: "College",
-    tutorContext:
-      "College micro: optimization, equilibrium, welfare, market failure. Graph + intuition.",
-  },
+  ...COLLEGE_STUDY_TRACKS,
   {
     id: "k12-algebra-2",
     category: "k12",

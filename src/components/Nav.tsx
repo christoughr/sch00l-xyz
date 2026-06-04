@@ -20,8 +20,9 @@ const primaryLinks: NavLink[] = [
   { href: "/progress", label: "Progress" },
 ];
 
+/** Outlined CTA — clearly not a plain nav link; Study stays solid brand purple. */
 const signInBtnClass =
-  "inline-flex items-center justify-center gap-1.5 rounded-lg border border-white/25 bg-white/[0.07] px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:border-brand-400/60 hover:bg-brand-500/15 hover:text-white min-h-[44px] shrink-0";
+  "inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-white bg-transparent px-4 py-2 text-sm font-bold tracking-wide text-white shadow-[0_0_0_1px_rgba(255,255,255,0.35)] transition hover:bg-white hover:text-zinc-900 hover:shadow-md min-h-[44px] shrink-0";
 
 const secondaryLinks: NavLink[] = [
   { href: "/community", label: "Community" },
@@ -150,9 +151,9 @@ export function Nav() {
                 Pro
               </span>
             )}
-            {!loading && supabaseReady && (
+            {!loading && (
               <div className="flex items-center gap-1.5 ml-1 pl-1 border-l border-white/10">
-                {user ? (
+                {user && supabaseReady ? (
                   <button
                     type="button"
                     data-testid="signout-btn"
@@ -162,12 +163,12 @@ export function Nav() {
                     <LogOut className="h-3.5 w-3.5" />
                     <span className="hidden lg:inline">Sign out</span>
                   </button>
-                ) : (
-                  <Link href="/login" className={signInBtnClass}>
+                ) : !user ? (
+                  <Link href="/login" data-testid="signin-btn" className={signInBtnClass}>
                     <LogIn className="h-4 w-4 shrink-0" aria-hidden />
                     Sign in
                   </Link>
-                )}
+                ) : null}
               </div>
             )}
             <Link
@@ -180,8 +181,12 @@ export function Nav() {
 
           {/* Mobile */}
           <div className="flex items-center gap-2 md:hidden shrink-0">
-            {!loading && supabaseReady && !user && (
-              <Link href="/login" className={`${signInBtnClass} px-2.5 py-2 text-xs`}>
+            {!loading && !user && (
+              <Link
+                href="/login"
+                data-testid="signin-btn"
+                className={`${signInBtnClass} px-3 py-2 text-xs sm:text-sm`}
+              >
                 <LogIn className="h-3.5 w-3.5 shrink-0" aria-hidden />
                 Sign in
               </Link>
@@ -226,9 +231,9 @@ export function Nav() {
             {extraLinks.map((l) => (
               <LinkItem key={l.href} l={l} onNavigate={() => setMenuOpen(false)} />
             ))}
-            {!loading && supabaseReady && (
+            {!loading && (
               <div className="border-t border-white/10 pt-2 mt-2">
-                {user ? (
+                {user && supabaseReady ? (
                   <button
                     type="button"
                     data-testid="signout-btn"
@@ -241,16 +246,17 @@ export function Nav() {
                     <LogOut className="h-4 w-4" />
                     Sign out
                   </button>
-                ) : (
+                ) : !user ? (
                   <Link
                     href="/login"
+                    data-testid="signin-btn"
                     onClick={() => setMenuOpen(false)}
                     className={`${signInBtnClass} w-full`}
                   >
                     <LogIn className="h-4 w-4 shrink-0" aria-hidden />
                     Sign in
                   </Link>
-                )}
+                ) : null}
               </div>
             )}
           </nav>
