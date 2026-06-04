@@ -1,7 +1,7 @@
 /** Revenue model — sch00l keeps maximum platform share where possible */
 
 /** Single source of truth for free-tier session cap (all UI + enforcement). */
-export const FREE_AI_SESSIONS_PER_DAY = 3;
+export const FREE_AI_SESSIONS_PER_DAY = 1;
 
 export const PLATFORM_FEE = {
   /** Human tutor: student pays hourly; sch00l keeps this % */
@@ -18,7 +18,7 @@ export const PRICING = {
     price: 0,
     aiSessionsPerDay: FREE_AI_SESSIONS_PER_DAY,
     features: [
-      `${FREE_AI_SESSIONS_PER_DAY} AI study sessions per day`,
+      `${FREE_AI_SESSIONS_PER_DAY} AI study session per day`,
       "Pre/post quizzes & learning lift",
       "Flashcards (SM-2 spaced repetition)",
       "Browser-only progress",

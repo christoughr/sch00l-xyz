@@ -13,6 +13,7 @@ import { StudyPersonalizationBanner } from "@/components/StudyPersonalizationBan
 import { ClassDiscussionBanner } from "@/components/ClassDiscussionBanner";
 import { StudyFeatureStrip } from "@/components/StudyFeatureStrip";
 import { StudyUnitPicker } from "@/components/StudyUnitPicker";
+import { useAuth } from "@/components/AuthProvider";
 import { onSessionComplete } from "@/lib/session-complete";
 import { buildSectionTopic } from "@/lib/track-sections";
 import { trackEvent } from "@/lib/analytics";
@@ -39,6 +40,7 @@ const SHARE_URL = `${SITE_URL}/study`;
 type Step = "setup" | "pre" | "study" | "post" | "done";
 
 export default function StudyPage() {
+  const { user, isPro: isProAccount } = useAuth();
   const [trackId, setTrackId] = useState<StudyTrackId>("ap-calc-ab");
   const [subject, setSubject] = useState<SubjectId>("math");
   const [gradeLevel, setGradeLevel] = useState("AP Calculus AB");
@@ -63,8 +65,36 @@ export default function StudyPage() {
   const [assignmentId, setAssignmentId] = useState<string | null>(null);
   const [assignmentTitle, setAssignmentTitle] = useState<string | null>(null);
   const [assignmentLoaded, setAssignmentLoaded] = useState(false);
+  const [serverCanStart, setServerCanStart] = useState<boolean | null>(null);
+  const [serverRemaining, setServerRemaining] = useState<number | null>(null);
   const completedRef = useRef(false);
-  const remaining = sessionsRemainingToday();
+  const proActive = isProAccount || isProUser();
+  const remaining =
+    user && serverRemaining !== null && !proActive
+      ? serverRemaining
+      : sessionsRemainingToday();
+
+  useEffect(() => {
+    if (!user) {
+      setServerCanStart(null);
+      setServerRemaining(null);
+      return;
+    }
+    fetch("/api/session/start", { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data?.authenticated) return;
+        setServerCanStart(!!data.canStart);
+        setServerRemaining(
+          data.remaining === null ? Infinity : data.remaining
+        );
+      })
+      .catch(() => undefined);
+  }, [user, isProAccount]);
+
+  const canStart =
+    proActive ||
+    (user && serverCanStart !== null ? serverCanStart : canStartSession());
 
   useEffect(() => {
     trackEvent("page_view", { page: "study" });
@@ -212,7 +242,7 @@ export default function StudyPage() {
       setSetupError("Enter a topic so quizzes and the tutor stay focused.");
       return;
     }
-    if (!canStartSession()) {
+    if (!canStart) {
       setLimitHit(true);
       return;
     }
@@ -232,9 +262,30 @@ export default function StudyPage() {
 
   const delta = liftDelta();
 
-  function enterStudyPhase() {
+  async function enterStudyPhase() {
     if (!sessionCounted) {
-      recordSessionStart();
+      if (user && !proActive) {
+        const res = await fetch("/api/session/start", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          setSetupError(
+            (data as { error?: string }).error ?? freeTierLimitMessage()
+          );
+          setLimitHit(true);
+          setStep("setup");
+          return;
+        }
+        const data = await res.json();
+        setServerCanStart(true);
+        setServerRemaining(
+          data.remaining === null ? Infinity : data.remaining ?? 0
+        );
+      } else if (!user) {
+        recordSessionStart();
+      }
       setSessionCounted(true);
     }
     setStep("study");
@@ -350,10 +401,10 @@ export default function StudyPage() {
           <button
             type="button"
             onClick={startSession}
-            disabled={!canStartSession()}
+            disabled={!canStart}
             className="rounded-xl bg-brand-500 px-6 py-3 font-medium text-white hover:bg-brand-400 transition focus-visible:ring-2 focus-visible:ring-brand-400 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {canStartSession()
+            {canStart
               ? "Continue to pre-quiz"
               : "Daily limit reached — upgrade to Pro"}
           </button>

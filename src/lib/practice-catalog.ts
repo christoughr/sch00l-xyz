@@ -25,6 +25,11 @@ export const LOCAL_PRACTICE_TESTS: PracticeTestMeta[] = [
   { id: "gre-verbal", label: "GRE Verbal", examFamily: "GRE", region: "global", durationMinutes: 30, sectionCount: 1 },
   { id: "nclex-rn", label: "NCLEX-RN Sample", examFamily: "NCLEX", region: "US", durationMinutes: 60, sectionCount: 1 },
   { id: "hsc-nsw", label: "HSC NSW", examFamily: "HSC", region: "Australia", durationMinutes: 90, sectionCount: 1 },
+  { id: "kr-csat-math", label: "CSAT / Suneung Mathematics", examFamily: "CSAT", region: "Korea", durationMinutes: 100, sectionCount: 1 },
+  { id: "kr-csat-english", label: "CSAT English", examFamily: "CSAT", region: "Korea", durationMinutes: 70, sectionCount: 1 },
+  { id: "nz-ncea-l1", label: "NCEA Level 1 Math", examFamily: "NCEA", region: "New Zealand", durationMinutes: 60, sectionCount: 1 },
+  { id: "de-abitur-math", label: "Abitur Mathematics", examFamily: "Abitur", region: "Germany", durationMinutes: 90, sectionCount: 1 },
+  { id: "fr-bac-math", label: "Baccalauréat Math", examFamily: "Bac", region: "France", durationMinutes: 90, sectionCount: 1 },
 ];
 
 /** Curated MCQ banks — original exam-style items (not licensed official questions). */
@@ -176,6 +181,45 @@ const BANKS: Record<string, BankItem[]> = {
     { id: "hs-4", prompt: "Probability of heads on a fair coin twice in a row:", choices: ["1/4", "1/2", "3/4", "1"], correctIndex: 0, skillTag: "probability" },
     { id: "hs-5", prompt: "The discriminant b²-4ac < 0 means roots are:", choices: ["Real and distinct", "Real and equal", "Complex conjugates", "Always integers"], correctIndex: 2, skillTag: "quadratics" },
     { id: "hs-6", prompt: "∫₀² x dx =", choices: ["1", "2", "4", "8"], correctIndex: 1, skillTag: "calculus" },
+  ],
+  "kr-csat-math": [
+    { id: "kr-m1", prompt: "If log₂(8) = x, then x =", choices: ["2", "3", "4", "8"], correctIndex: 1, skillTag: "logarithms" },
+    { id: "kr-m2", prompt: "The derivative of f(x) = x² + 3x is:", choices: ["2x + 3", "x² + 3", "2x", "x + 3"], correctIndex: 0, skillTag: "calculus" },
+    { id: "kr-m3", prompt: "In an arithmetic sequence with a₁=5 and d=3, a₄ =", choices: ["11", "14", "17", "20"], correctIndex: 1, skillTag: "sequences" },
+    { id: "kr-m4", prompt: "A fair die is rolled once. P(even number) =", choices: ["1/6", "1/3", "1/2", "2/3"], correctIndex: 2, skillTag: "probability" },
+    { id: "kr-m5", prompt: "If vectors u=(1,2) and v=(3,-1), then u·v =", choices: ["1", "2", "3", "5"], correctIndex: 0, skillTag: "vectors" },
+    { id: "kr-m6", prompt: "The number of ways to choose 2 items from 5 (order does not matter) is:", choices: ["10", "20", "25", "60"], correctIndex: 0, skillTag: "combinatorics" },
+    { id: "kr-m7", prompt: "For f(x)=|x-3|, the minimum value is:", choices: ["-3", "0", "3", "undefined"], correctIndex: 1, skillTag: "functions" },
+    { id: "kr-m8", prompt: "If sinθ = 3/5 and θ is acute, cosθ =", choices: ["4/5", "3/4", "5/4", "5/3"], correctIndex: 0, skillTag: "trigonometry" },
+  ],
+  "kr-csat-english": [
+    { id: "kr-e1", prompt: "Choose the best word: The evidence was ___ enough to support the claim.", choices: ["scant", "sufficient", "hostile", "opaque"], correctIndex: 1, skillTag: "vocabulary" },
+    { id: "kr-e2", prompt: "Which transition signals contrast?", choices: ["Moreover", "Nevertheless", "Furthermore", "Similarly"], correctIndex: 1, skillTag: "grammar" },
+    { id: "kr-e3", prompt: "The author's tone in a skeptical editorial is most likely:", choices: ["Celebratory", "Questioning", "Indifferent", "Nostalgic"], correctIndex: 1, skillTag: "reading" },
+    { id: "kr-e4", prompt: "Correct sentence:", choices: ["Neither of the answers are correct.", "Neither of the answers is correct.", "Neither answers is correct.", "Neither of answer are correct."], correctIndex: 1, skillTag: "grammar" },
+    { id: "kr-e5", prompt: "'Ubiquitous' most nearly means:", choices: ["Rare", "Everywhere", "Ancient", "Fragile"], correctIndex: 1, skillTag: "vocabulary" },
+    { id: "kr-e6", prompt: "A blank inference question asks you to:", choices: ["Memorize dates", "Use context clues in the passage", "Ignore the paragraph", "Translate literally"], correctIndex: 1, skillTag: "reading" },
+  ],
+  "nz-ncea-l1": [
+    { id: "nz-1", prompt: "Simplify: 2(x + 3) - x", choices: ["x + 6", "x + 3", "3x + 6", "2x + 3"], correctIndex: 0, skillTag: "algebra" },
+    { id: "nz-2", prompt: "What is 20% of 150?", choices: ["20", "30", "40", "75"], correctIndex: 1, skillTag: "percent" },
+    { id: "nz-3", prompt: "Area of a rectangle 4 cm by 7 cm:", choices: ["11 cm²", "22 cm²", "28 cm²", "56 cm²"], correctIndex: 2, skillTag: "geometry" },
+    { id: "nz-4", prompt: "Mean of 2, 4, 6, 8:", choices: ["4", "5", "6", "7"], correctIndex: 1, skillTag: "statistics" },
+    { id: "nz-5", prompt: "If y = 3x - 2, when x = 4, y =", choices: ["10", "12", "14", "16"], correctIndex: 0, skillTag: "algebra" },
+  ],
+  "de-abitur-math": [
+    { id: "de-1", prompt: "Solve: 2x - 5 = 11", choices: ["3", "6", "8", "16"], correctIndex: 2, skillTag: "algebra" },
+    { id: "de-2", prompt: "∫ x dx =", choices: ["x²/2 + C", "x + C", "2x + C", "1 + C"], correctIndex: 0, skillTag: "calculus" },
+    { id: "de-3", prompt: "A triangle with sides 3, 4, 5 is:", choices: ["Obtuse", "Right", "Equilateral", "Isosceles only"], correctIndex: 1, skillTag: "geometry" },
+    { id: "de-4", prompt: "e^(ln 5) =", choices: ["1", "5", "ln 5", "e⁵"], correctIndex: 1, skillTag: "exponentials" },
+    { id: "de-5", prompt: "Derivative of cos(x):", choices: ["sin(x)", "-sin(x)", "cos(x)", "-cos(x)"], correctIndex: 1, skillTag: "calculus" },
+  ],
+  "fr-bac-math": [
+    { id: "fr-1", prompt: "Résoudre: x² - 9 = 0", choices: ["x=±3", "x=9", "x=3 only", "x=-3 only"], correctIndex: 0, skillTag: "algebra" },
+    { id: "fr-2", prompt: "Pente de y = -2x + 7:", choices: ["-2", "2", "7", "-7"], correctIndex: 0, skillTag: "algebra" },
+    { id: "fr-3", prompt: "sin(π/2) =", choices: ["0", "1", "-1", "√2/2"], correctIndex: 1, skillTag: "trigonometry" },
+    { id: "fr-4", prompt: "Probabilité d'un face sur un dé équitable:", choices: ["1/6", "1/3", "1/2", "1"], correctIndex: 0, skillTag: "probability" },
+    { id: "fr-5", prompt: "Suite géométrique: u₀=2, q=3, u₂ =", choices: ["6", "12", "18", "27"], correctIndex: 2, skillTag: "sequences" },
   ],
 };
 

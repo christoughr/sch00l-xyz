@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ClipboardList, Loader2 } from "lucide-react";
 import { PracticeTestRunner } from "@/components/PracticeTestRunner";
+import { useAuth } from "@/components/AuthProvider";
 
 type Test = {
   id: string;
@@ -15,16 +17,44 @@ type Test = {
 };
 
 export default function PracticePage() {
+  const { user, loading, supabaseReady } = useAuth();
+  const router = useRouter();
   const [tests, setTests] = useState<Test[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [catalogLoading, setCatalogLoading] = useState(true);
   const [activeTestId, setActiveTestId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!loading && supabaseReady && !user) {
+      router.replace("/login?next=/practice");
+    }
+  }, [user, loading, supabaseReady, router]);
+
+  useEffect(() => {
+    if (!user) return;
     fetch("/api/practice/tests")
       .then((r) => r.json())
       .then((d) => setTests(d.tests ?? []))
-      .finally(() => setLoading(false));
-  }, []);
+      .finally(() => setCatalogLoading(false));
+  }, [user]);
+
+  if (loading || (supabaseReady && !user)) {
+    return (
+      <div className="flex justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-400" />
+      </div>
+    );
+  }
+
+  if (!supabaseReady) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16 text-center">
+        <p className="text-zinc-400">Sign in is required for practice tests.</p>
+        <Link href="/login?next=/practice" className="mt-4 inline-block text-brand-400 underline">
+          Sign in
+        </Link>
+      </div>
+    );
+  }
 
   if (activeTestId) {
     return (
@@ -45,11 +75,11 @@ export default function PracticePage() {
           Practice tests
         </h1>
         <p className="mt-2 text-zinc-400">
-          Timed exam-style practice — SAT, ACT, AP, and more.
+          Timed exam-style practice — sign in required. SAT, ACT, AP, KSAT, and more.
         </p>
       </div>
 
-      {loading ? (
+      {catalogLoading ? (
         <div className="flex justify-center py-16">
           <Loader2 className="h-8 w-8 animate-spin text-brand-400" />
         </div>

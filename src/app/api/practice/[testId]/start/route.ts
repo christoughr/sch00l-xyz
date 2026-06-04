@@ -5,7 +5,6 @@ import {
 import { getBankItems, LOCAL_PRACTICE_TESTS } from "@/lib/practice-catalog";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { randomUUID } from "crypto";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -39,43 +38,44 @@ export async function POST(
   const questionCount = parsed.success ? parsed.data.questionCount ?? 10 : 10;
 
   const supabase = await createClient();
-  const guestMode = !supabase;
+  if (!supabase) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  }
 
-  let user: { id: string } | null = null;
-  if (supabase) {
-    const auth = await supabase.auth.getUser();
-    user = auth.data.user;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
   }
 
   let meta: PracticeTestMeta | null = null;
   let attemptId: string | null = null;
 
-  if (supabase && user) {
-    const { data: test, error: testErr } = await supabase
-      .from("practice_tests")
-      .select("id, label, exam_family, region, duration_minutes, section_count")
-      .eq("id", testId)
+  const { data: test, error: testErr } = await supabase
+    .from("practice_tests")
+    .select("id, label, exam_family, region, duration_minutes, section_count")
+    .eq("id", testId)
+    .single();
+
+  if (!testErr && test) {
+    meta = {
+      id: test.id,
+      label: test.label,
+      examFamily: test.exam_family,
+      region: test.region,
+      durationMinutes: test.duration_minutes,
+      sectionCount: test.section_count,
+    };
+
+    const { data: attempt, error: attemptErr } = await supabase
+      .from("practice_attempts")
+      .insert({ user_id: user.id, test_id: testId })
+      .select("id, started_at")
       .single();
 
-    if (!testErr && test) {
-      meta = {
-        id: test.id,
-        label: test.label,
-        examFamily: test.exam_family,
-        region: test.region,
-        durationMinutes: test.duration_minutes,
-        sectionCount: test.section_count,
-      };
-
-      const { data: attempt, error: attemptErr } = await supabase
-        .from("practice_attempts")
-        .insert({ user_id: user.id, test_id: testId })
-        .select("id, started_at")
-        .single();
-
-      if (!attemptErr && attempt) {
-        attemptId = attempt.id;
-      }
+    if (!attemptErr && attempt) {
+      attemptId = attempt.id;
     }
   }
 
@@ -84,7 +84,6 @@ export async function POST(
     if (!meta) {
       return NextResponse.json({ error: "Test not found" }, { status: 404 });
     }
-    attemptId = guestMode || !user ? `guest-${randomUUID()}` : attemptId;
   }
 
   let questions: {
@@ -95,7 +94,7 @@ export async function POST(
     skillTag?: string;
   }[] = questionsFromBank(testId, questionCount);
 
-  if (questions.length < Math.min(5, questionCount) && supabase && user) {
+  if (questions.length < Math.min(5, questionCount)) {
     const { data: bankItems } = await supabase
       .from("practice_items")
       .select("id, prompt, choices, correct_index, skill_tag, section_ord")
@@ -138,11 +137,11 @@ export async function POST(
   }));
 
   return NextResponse.json({
-    attemptId: attemptId ?? `guest-${randomUUID()}`,
+    attemptId: attemptId ?? `local-${testId}-${Date.now()}`,
     startedAt: new Date().toISOString(),
     test: meta,
     questions: clientQuestions,
     answerKey: questions.map((q) => q.correctIndex),
-    guestMode: !user || attemptId?.startsWith("guest-"),
+    guestMode: false,
   });
 }

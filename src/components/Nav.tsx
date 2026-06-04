@@ -34,11 +34,7 @@ export function Nav() {
   const [cardsDue, setCardsDue] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pro, setPro] = useState(false);
-  const [signingOut, setSigningOut] = useState(false);
-
   function handleSignOut() {
-    if (signingOut) return;
-    setSigningOut(true);
     void signOut();
   }
 
@@ -151,11 +147,10 @@ export function Nav() {
                   type="button"
                   data-testid="signout-btn"
                   onClick={handleSignOut}
-                  disabled={signingOut}
-                  className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:text-white disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:text-white"
                 >
                   <LogOut className="h-4 w-4" />
-                  {signingOut ? "Signing out…" : "Sign out"}
+                  Sign out
                 </button>
               ) : (
                 <Link
@@ -218,11 +213,10 @@ export function Nav() {
                     setMenuOpen(false);
                     void handleSignOut();
                   }}
-                  disabled={signingOut}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400 disabled:opacity-50"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400"
                 >
                   <LogOut className="h-4 w-4" />
-                  {signingOut ? "Signing out…" : "Sign out"}
+                  Sign out
                 </button>
               ) : (
                 <Link

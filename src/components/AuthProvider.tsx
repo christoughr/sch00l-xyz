@@ -11,7 +11,7 @@ import type { User } from "@supabase/supabase-js";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { loadProgress } from "@/lib/progress";
 import { mergeLocalProgressToCloud, syncProgressToDb } from "@/lib/progress-db";
-import { syncProFromCloud, isProUser as isProLocal } from "@/lib/free-tier";
+import { syncProFromCloud, isProUser as isProLocal, deactivateProLocal } from "@/lib/free-tier";
 
 type AuthContextValue = {
   user: User | null;
@@ -100,13 +100,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
       if (event === "SIGNED_OUT") {
         setUser(null);
         setIsPro(false);
+        deactivateProLocal();
+        setLoading(false);
         return;
       }
+      setUser(session?.user ?? null);
+      setLoading(false);
       if (session?.user) {
         const pro = await fetchIsPro(supabase, session.user.id);
         syncProFromCloud(pro);
@@ -122,28 +124,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signOut() {
     setUser(null);
+    setIsPro(false);
+    deactivateProLocal();
+
+    void fetch("/api/auth/signout", {
+      method: "POST",
+      credentials: "include",
+      cache: "no-store",
+    }).catch(() => undefined);
 
     const supabase = createClient();
-    const cleanup = async () => {
-      if (supabase) {
-        await supabase.auth.signOut({ scope: "local" });
-      }
-      await fetch("/api/auth/signout", {
-        method: "POST",
-        credentials: "include",
-      });
-    };
-
-    const timeoutMs = 3000;
-    await Promise.race([
-      cleanup(),
-      new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
-    ]).catch(() => {});
+    if (supabase) {
+      void Promise.race([
+        supabase.auth.signOut({ scope: "local" }),
+        new Promise((resolve) => setTimeout(resolve, 2000)),
+      ]).catch(() => undefined);
+    }
 
     if (typeof window !== "undefined") {
-      window.location.replace("/");
+      window.location.replace("/?signed_out=1");
     }
   }
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("signed_out") !== "1") return;
+    setUser(null);
+    setIsPro(false);
+    deactivateProLocal();
+    const supabase = createClient();
+    if (supabase) {
+      void supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+    }
+    window.history.replaceState({}, "", window.location.pathname || "/");
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

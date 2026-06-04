@@ -104,5 +104,6 @@ export function consumePendingCheckout(
 }
 
 export function freeTierLimitMessage(): string {
-  return `Free plan: ${PRICING.free.aiSessionsPerDay} AI sessions per day. Upgrade to Pro for unlimited.`;
+  const n = PRICING.free.aiSessionsPerDay;
+  return `Free plan: ${n} AI study session${n === 1 ? "" : "s"} per day. Upgrade to Pro for unlimited.`;
 }

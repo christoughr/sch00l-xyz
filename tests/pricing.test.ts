@@ -10,12 +10,12 @@ import {
 describe("pricing consistency", () => {
   it("free tier uses single source of truth", () => {
     assert.equal(PRICING.free.aiSessionsPerDay, FREE_AI_SESSIONS_PER_DAY);
-    assert.equal(FREE_AI_SESSIONS_PER_DAY, 3);
+    assert.equal(FREE_AI_SESSIONS_PER_DAY, 1);
   });
 
   it("marketing labels match session count", () => {
-    assert.equal(freeSessionsMarketingLabel(), "3 AI sessions/day");
-    assert.equal(freeSessionsShortLabel(), "3 sessions/day");
+    assert.equal(freeSessionsMarketingLabel(), "1 AI session/day");
+    assert.equal(freeSessionsShortLabel(), "1 session/day");
   });
 
   it("free plan features mention session count", () => {

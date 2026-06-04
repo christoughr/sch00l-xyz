@@ -41,6 +41,29 @@ export async function POST(req: Request) {
     );
   }
 
+  const { createClient } = await import("@/lib/supabase/server");
+  const { checkAiSessionAllowed, fetchIsPro } = await import("@/lib/session-quota");
+  const supabase = await createClient();
+  if (supabase) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const isPro = await fetchIsPro(supabase, user.id);
+      const check = await checkAiSessionAllowed(supabase, user.id, isPro);
+      if (!check.allowed) {
+        return NextResponse.json(
+          {
+            error: `Free plan allows ${check.limit} AI session${check.limit === 1 ? "" : "s"} per day. Upgrade to Pro for unlimited.`,
+            used: check.used,
+            limit: check.limit,
+          },
+          { status: 429 }
+        );
+      }
+    }
+  }
+
   let body: unknown;
   try {
     body = await req.json();

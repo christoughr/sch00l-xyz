@@ -11,5 +11,6 @@ SQL Editor → paste each file → **Run** → then next.
 7. `013_pro_subscription.sql` — Lemon Squeezy columns on `profiles` (run before LS webhook live)
 8. `014_teacher_oauth.sql` — `teacher_integrations` for Google/Canvas OAuth tokens
 9. `015_study_content.sql` — assignment completions + practice question seeds
+10. `016_daily_ai_usage.sql` — server-side free-tier AI session counter (logged-in users)
 
 After step 4 you get: assignments, uploads, battles, forums, practice tests, integrations, gradebook, parent links, marketplace, announcements.
