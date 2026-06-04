@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, LogIn } from "lucide-react";
 import { Logo } from "./Logo";
 import { useAuth } from "./AuthProvider";
 import { dueFlashcards, loadFlashcards } from "@/lib/flashcards-local";
@@ -19,6 +19,9 @@ const primaryLinks: NavLink[] = [
   { href: "/flashcards", label: "Cards", showDue: true },
   { href: "/progress", label: "Progress" },
 ];
+
+const signInBtnClass =
+  "inline-flex items-center justify-center gap-1.5 rounded-lg border border-white/25 bg-white/[0.07] px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:border-brand-400/60 hover:bg-brand-500/15 hover:text-white min-h-[44px] shrink-0";
 
 const secondaryLinks: NavLink[] = [
   { href: "/community", label: "Community" },
@@ -148,7 +151,7 @@ export function Nav() {
               </span>
             )}
             {!loading && supabaseReady && (
-              <>
+              <div className="flex items-center gap-1.5 ml-1 pl-1 border-l border-white/10">
                 {user ? (
                   <button
                     type="button"
@@ -160,18 +163,16 @@ export function Nav() {
                     <span className="hidden lg:inline">Sign out</span>
                   </button>
                 ) : (
-                  <Link
-                    href="/login"
-                    className="rounded-lg px-2 py-1.5 text-xs text-zinc-300 hover:text-white"
-                  >
+                  <Link href="/login" className={signInBtnClass}>
+                    <LogIn className="h-4 w-4 shrink-0" aria-hidden />
                     Sign in
                   </Link>
                 )}
-              </>
+              </div>
             )}
             <Link
               href="/study"
-              className="ml-1 rounded-lg bg-brand-500 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-brand-400 shrink-0"
+              className="ml-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-brand-400 shrink-0"
             >
               Study
             </Link>
@@ -179,9 +180,15 @@ export function Nav() {
 
           {/* Mobile */}
           <div className="flex items-center gap-2 md:hidden shrink-0">
+            {!loading && supabaseReady && !user && (
+              <Link href="/login" className={`${signInBtnClass} px-2.5 py-2 text-xs`}>
+                <LogIn className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                Sign in
+              </Link>
+            )}
             <Link
               href="/study"
-              className="rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white"
+              className="rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white shrink-0"
             >
               Study
             </Link>
@@ -238,8 +245,9 @@ export function Nav() {
                   <Link
                     href="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="block rounded-lg px-3 py-2 text-sm text-zinc-300"
+                    className={`${signInBtnClass} w-full`}
                   >
+                    <LogIn className="h-4 w-4 shrink-0" aria-hidden />
                     Sign in
                   </Link>
                 )}
