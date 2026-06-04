@@ -18,5 +18,7 @@ SQL Editor → paste each file → **Run** → then next.
 14. **Publish drafts** — `update course_lessons set review_status = 'published' where track_id = 'ap-bio' and ord >= 100` (Paste 3; repeat per subject after that subject’s drafts)
 15. **Polish AP Bio** — `npx tsx scripts/polish-ap-bio-lessons.ts` (needs `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`) — redistributes 96 publisher lessons across 5 units, cleans titles, OpenStax footer on all 111 lessons
 16. `021_seed_ap_chem_course.sql` — 15 published AP Chemistry lessons (run after 017; before chem ingest)
+17. `022_seed_sat_math_course.sql` — 15 published Digital SAT lessons (`track_id = sat-math`)
+18. **Polish AP Chem** — terminal only: `npx tsx scripts/polish-ap-chem-lessons.ts` (NOT in SQL Editor)
 
 After step 4 you get: assignments, uploads, battles, forums, practice tests, integrations, gradebook, parent links, marketplace, announcements.
