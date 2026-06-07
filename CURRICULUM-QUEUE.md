@@ -2,32 +2,22 @@
 
 ## Done (full pipeline)
 
-1. **AP Biology** (`ap-bio`) — ~111 lessons  
-2. **AP Chemistry** (`ap-chem`) — ~119 lessons  
-3. **SAT Math** (`sat-math`) — ~47 lessons  
+| Track | Lessons |
+|-------|---------|
+| **AP Biology** (`ap-bio`) | ~111 |
+| **AP Chemistry** (`ap-chem`) | ~119 |
+| **SAT Math** (`sat-math`) | ~47 |
+| **AP Calculus AB** (`ap-calc-ab`) | ~135 |
+| **AP Physics 1** (`ap-physics-1`) | ~119 |
+| **AP Physics 2** (`ap-physics-2`) | ~63 |
+| **AP Physics C** (`ap-physics-c`) | ~56 |
 
-## Done: AP Calculus AB (`ap-calc-ab`)
+## Next (needs PDFs in Downloads)
 
-135 lessons (15 seed + 120 publisher).
+| Priority | Track | Notes |
+|----------|-------|-------|
+| 1 | **AP Statistics** (`ap-stats`) | No stats books in Downloads yet |
+| 2 | **ACT Math** (`act-math`) | No ACT prep books in Downloads yet |
+| 3 | **Calculus I** (`college-calc-1`) | First college full-course target |
 
-## Done: AP Physics 1 (`ap-physics-1`)
-
-119 lessons (15 seed + 104 from 13 publisher books).
-
-## Queued (your PDFs still in Downloads)
-
-| Track | Say when ready |
-|-------|----------------|
-| **AP Physics 2** | "do physics 2" |
-| **AP Physics C** | "do physics c" |
-
-## After Physics family
-
-| Priority | Track |
-|----------|-------|
-| **AP Statistics** | Next new AP |
-| 5 | **AP Statistics** | Pairs with calc audience |
-| 6 | **ACT Math** | SAT family already started |
-| 7 | **Calculus I** (`college-calc-1`) | First college course with full content |
-
-Each new track needs: seed SQL → ingest → Paste 3 → polish script (copy from ap-calc-ab template).
+Each new track needs: seed SQL → `node scripts/seed-*.mjs` → ingest `--apply` → publish → polish (copy from `ap-physics-2` template).

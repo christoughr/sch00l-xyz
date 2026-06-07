@@ -137,6 +137,14 @@ const AP_PHYSICS_SECTIONS = sections("AP Physics", [
   { id: "exam-prep", name: "AP exam prep", desc: "Lab skills, FRQ, MCQ review" },
 ]);
 
+const AP_PHYSICS_2_SECTIONS = sections("AP Physics 2", [
+  { id: "fluids", name: "Fluids & thermodynamics", desc: "Pressure, buoyancy, ideal gas, entropy" },
+  { id: "electrostatics", name: "Electrostatics", desc: "Fields, potential, capacitance" },
+  { id: "circuits-magnetism", name: "Circuits & magnetism", desc: "RC circuits, induction" },
+  { id: "optics-modern", name: "Optics & modern physics", desc: "Lenses, interference, quantum" },
+  { id: "exam-prep", name: "AP exam prep", desc: "Lab skills, FRQ, MCQ review" },
+]);
+
 const BY_TRACK: Record<string, TrackSection[]> = {
   "ap-bio": AP_BIO_SECTIONS,
   "ap-chem": AP_CHEM_SECTIONS,
@@ -148,6 +156,7 @@ const BY_TRACK: Record<string, TrackSection[]> = {
     { id: "exam-prep", name: "AP exam prep", desc: "FRQ, data analysis, exam strategies" },
   ]),
   "ap-physics-1": AP_PHYSICS_SECTIONS,
+  "ap-physics-2": AP_PHYSICS_2_SECTIONS,
   "ap-physics-c": AP_PHYSICS_SECTIONS,
   "ap-calc-ab": sections("AP Calculus AB", AP_MATH),
   "ap-calc-bc": sections("AP Calculus BC", [

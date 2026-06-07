@@ -89,6 +89,16 @@ export const STUDY_TRACKS: StudyTrack[] = [
       "AP Physics 1: algebra-based mechanics, energy, momentum, rotation intro, waves. Units and free-body diagrams.",
   }),
   AP({
+    id: "ap-physics-2",
+    label: "AP Physics 2",
+    description: "Fluids, E&M, optics, modern physics",
+    subject: "science",
+    topic: "AP Physics 2 — fluids, circuits, and optics",
+    gradeLevel: "AP Physics 2",
+    tutorContext:
+      "AP Physics 2: fluids, thermodynamics, electrostatics, circuits, magnetism, optics, quantum and nuclear. Algebra-based.",
+  }),
+  AP({
     id: "ap-physics-c",
     label: "AP Physics C: Mechanics",
     description: "Calculus-based mechanics",
