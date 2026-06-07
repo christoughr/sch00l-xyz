@@ -20,14 +20,14 @@ Same steps for each track. **Paste 3 is per subject** (publish only that track's
 | `ap-chem` | `021` | `polish-ap-chem-lessons.ts` | 119 |
 | `sat-math` | `022` | `polish-sat-math-lessons.ts` | 47 (+ publisher) |
 | `sat-reading` | — | Uses `sat-math` course (unit 3 = R&W) | alias only |
+| `ap-calc-ab` | `024` | `polish-ap-calc-ab-lessons.ts` | 135 (15 seed + 120 publisher) |
 
-## Ready to ingest (seed only)
+## Next up
 
-| Track | Seed | Polish script |
-|-------|------|---------------|
-| `ap-calc-ab` | `024_seed_ap_calc_ab_course.sql` | `polish-ap-calc-ab-lessons.ts` |
-
-After you add licensed PDFs: ingest → Paste 3 → polish.
+| Track | Status |
+|-------|--------|
+| `ap-physics-1` | Needs seed `025` + PDFs |
+| `ap-stats` | Needs seed + PDFs |
 
 ## Editorial (human)
 

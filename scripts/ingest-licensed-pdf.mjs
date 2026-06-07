@@ -18,6 +18,7 @@ const args = process.argv.slice(2);
 const trackIdx = args.indexOf("--track");
 const dirIdx = args.indexOf("--dir");
 const fromDownloads = args.includes("--from-downloads");
+const applyToDb = args.includes("--apply");
 
 const trackId = trackIdx >= 0 ? args[trackIdx + 1] : "ap-bio";
 const inputDir =
@@ -140,6 +141,73 @@ async function extractFile(filePath) {
   return "";
 }
 
+function buildLessonBody(fileLabel, preview, fromMobi = false) {
+  return (
+    `# ${fileLabel}\n\n` +
+    `**Publisher source:** ${fromMobi ? "converted from MOBI" : fileLabel}\n\n` +
+    `### Study notes (extract — rewrite for publish)\n\n${preview}…\n\n` +
+    `---\n*Digital adaptation for sch00l. Align with your publisher agreement before setting published.*`
+  );
+}
+
+function loadEnvLocal() {
+  const envPath = path.join(process.cwd(), ".env.local");
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
+    const m = line.match(/^([^#=]+)=(.*)$/);
+    if (m && !process.env[m[1].trim()])
+      process.env[m[1].trim()] = m[2].trim().replace(/^["']|["']$/g, "");
+  }
+}
+
+async function applyDraftRows(trackId, rows) {
+  loadEnvLocal();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    console.error("Set SUPABASE_SERVICE_ROLE_KEY in .env.local for --apply");
+    process.exit(1);
+  }
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(url, key);
+
+  const { data: unit } = await supabase
+    .from("course_units")
+    .select("id")
+    .eq("track_id", trackId)
+    .eq("ord", 1)
+    .single();
+  if (!unit?.id) {
+    console.error(`No course_units for track ${trackId} — run seed SQL first`);
+    process.exit(1);
+  }
+
+  await supabase
+    .from("course_lessons")
+    .delete()
+    .eq("unit_id", unit.id)
+    .gte("ord", ORD_START);
+
+  const batchSize = 25;
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const batch = rows.slice(i, i + batchSize).map((r) => ({
+      unit_id: unit.id,
+      ord: r.ord,
+      title: r.title,
+      objectives: ["Master concepts from licensed prep material", "Practice AP-style reasoning"],
+      body_markdown: r.body,
+      review_status: r.review_status ?? "draft",
+      source_pdf_name: r.source,
+    }));
+    const { error } = await supabase.from("course_lessons").insert(batch);
+    if (error) {
+      console.error("Insert failed:", error.message);
+      process.exit(1);
+    }
+  }
+  console.log(`Applied ${rows.length} draft lessons to Supabase (${trackId}).`);
+}
+
 async function main() {
   if (fromDownloads) {
     const n = copyFromDownloads(inputDir, trackId);
@@ -189,6 +257,8 @@ async function main() {
   ];
 
   let globalOrd = ORD_START;
+  const draftRows = [];
+
   for (const file of files) {
     console.log("Processing", path.basename(file));
     let text = "";
@@ -206,14 +276,17 @@ async function main() {
     const sourceName = escapeSql(path.basename(file));
 
     for (let i = 0; i < chunks.length; i++) {
-      const title = escapeSql(lessonTitle(file, i));
+      const rawTitle = lessonTitle(file, i);
+      const title = escapeSql(rawTitle);
       const preview = chunks[i].slice(0, 1800);
-      const body = escapeSql(
-        `# ${lessonTitle(file, i)}\n\n` +
-          `**Publisher source:** ${path.basename(file)}\n\n` +
-          `### Study notes (extract — rewrite for publish)\n\n${preview}…\n\n` +
-          `---\n*Digital adaptation for sch00l. Align with your publisher agreement before setting published.*`
-      );
+      const bodyRaw = buildLessonBody(path.basename(file), preview);
+      const body = escapeSql(bodyRaw);
+      draftRows.push({
+        ord: globalOrd,
+        title: rawTitle,
+        body: bodyRaw,
+        source: path.basename(file),
+      });
       lines.push(`
 insert into public.course_lessons (unit_id, ord, title, objectives, body_markdown, review_status, source_pdf_name)
 select u.id, ${globalOrd}, '${title}',
@@ -237,14 +310,17 @@ from public.course_units u where u.track_id = '${trackId}' and u.ord = 1;`);
 
     for (let i = 0; i < chunks.length; i++) {
       const fakeName = path.basename(dir);
-      const title = escapeSql(`${fakeName} — part ${i + 1}`);
+      const rawTitle = `${fakeName} — part ${i + 1}`;
+      const title = escapeSql(rawTitle);
       const preview = chunks[i].slice(0, 1800);
-      const body = escapeSql(
-        `# ${fakeName} — part ${i + 1}\n\n` +
-          `**Publisher source:** converted from MOBI\n\n` +
-          `### Study notes (extract — rewrite for publish)\n\n${preview}…\n\n` +
-          `---\n*Digital adaptation for sch00l.*`
-      );
+      const bodyRaw = buildLessonBody(rawTitle, preview, true);
+      const body = escapeSql(bodyRaw);
+      draftRows.push({
+        ord: globalOrd,
+        title: rawTitle,
+        body: bodyRaw,
+        source: `${path.basename(dir)} (from .mobi)`,
+      });
       lines.push(`
 insert into public.course_lessons (unit_id, ord, title, objectives, body_markdown, review_status, source_pdf_name)
 select u.id, ${globalOrd}, '${title}',
@@ -258,9 +334,14 @@ from public.course_units u where u.track_id = '${trackId}' and u.ord = 1;`);
 
   const outPath = path.join(outDir, "drafts.sql");
   fs.writeFileSync(outPath, lines.join("\n"));
+  const count = globalOrd - ORD_START;
   console.log(
-    `Wrote ${outPath} (${globalOrd - ORD_START} drafts, ord ${ORD_START}+). Run in Supabase SQL editor.`
+    `Wrote ${outPath} (${count} drafts, ord ${ORD_START}+). Run in Supabase SQL editor.`
   );
+
+  if (applyToDb && draftRows.length) {
+    await applyDraftRows(trackId, draftRows);
+  }
 }
 
 main().catch((e) => {
