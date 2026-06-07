@@ -118,11 +118,20 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/general chemistry|gen(?:eral)? chem[^i]|zumdahl|brown.*chemistry|chemistry.*central science|openstax.*chem/i.test(t) && !/organic|biochem/i.test(t))
     return ["college-gen-chem-1"];
 
+  if (/college-calc-3|calculus iii|calculus 3[^0-9]|calc iii|multivariable calculus/i.test(t) && !/ap calc|subject test/i.test(t))
+    return ["college-calc-3"];
+
+  if (/linear algebra|matrix theory|introductory algebra.*matrix/i.test(t) && !/subject test/i.test(t))
+    return ["college-linear-algebra"];
+
+  if (/college physics.*e&m|physics ii[^i]|physics 2[^0-9]|electricity and magnetism|university physics.*vol.*2/i.test(t))
+    return ["college-physics-2"];
+
   if (/college-calc-2|calculus ii[^i]|calculus 2[^0-9]|calc ii[^i]/i.test(t) && !/ap calc|subject test/i.test(t))
     return ["college-calc-2"];
 
   if (/calculus all-in-one|calculus for dummies/i.test(t) && !/ap calc|subject test/i.test(t))
-    return ["college-calc-1", "college-calc-2"];
+    return ["college-calc-1", "college-calc-2", "college-calc-3"];
 
   if (/college-calc|calculus i[^i]|calc i[^i]|calculus 1[^0-9]/i.test(t) && !/ap calc|subject test/i.test(t))
     return ["college-calc-1"];
@@ -156,8 +165,10 @@ export function classifyByNameAndText(filename, preview = "") {
     if (/sat math|math workout|gmat|kaplan.*math/i.test(n)) return ["sat-math"];
   }
 
-  if (/physics\s*c|ap\s*physics\s*c|physics c companion/i.test(t)) return ["ap-physics-c"];
-  if (/physics\s*2|ap\s*physics\s*2|sterling.*physics\s*2/i.test(t)) return ["ap-physics-2"];
+  if (/physics\s*c|ap\s*physics\s*c|physics c companion/i.test(t))
+    return ["ap-physics-c", "college-physics-2"];
+  if (/physics\s*2|ap\s*physics\s*2|sterling.*physics\s*2/i.test(t))
+    return ["ap-physics-2", "college-physics-2"];
   if (/physics\s*1|ap\s*physics\s*1|cracking the ap physics 1/i.test(t))
     return ["ap-physics-1", "college-physics-1"];
 
