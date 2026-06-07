@@ -109,7 +109,13 @@ export function classifyByNameAndText(filename, preview = "") {
     if (ocr !== null) return ocr;
   }
 
-  if (/college-calc|calculus i[^i]|calc i[^i]|calculus 1[^0-9]|calculus all-in-one|calculus for dummies/i.test(t) && !/ap calc|subject test/i.test(t))
+  if (/college-calc-2|calculus ii[^i]|calculus 2[^0-9]|calc ii[^i]/i.test(t) && !/ap calc|subject test/i.test(t))
+    return ["college-calc-2"];
+
+  if (/calculus all-in-one|calculus for dummies/i.test(t) && !/ap calc|subject test/i.test(t))
+    return ["college-calc-1", "college-calc-2"];
+
+  if (/college-calc|calculus i[^i]|calc i[^i]|calculus 1[^0-9]/i.test(t) && !/ap calc|subject test/i.test(t))
     return ["college-calc-1"];
 
   if (/all sat subject tests|official study guide for all sat subject/i.test(t))

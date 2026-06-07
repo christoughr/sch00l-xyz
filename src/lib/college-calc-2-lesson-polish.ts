@@ -1,93 +1,57 @@
-/** Sort and polish ACT Science publisher lessons. */
+/** Sort and polish College Calculus II publisher lessons. */
 
 import {
   minimalLessonTitle,
   polishBodyMarkdown as polishBody,
 } from "./lesson-polish-shared";
 
-export const UNIT_ORDS = [1, 2, 3, 4, 5, 6, 7] as const;
+export const UNIT_ORDS = [1, 2, 3, 4, 5] as const;
 
 const UNIT_KEYWORDS: Record<number, string[]> = {
   1: [
-    "data representation",
-    "graph",
-    "table",
-    "axis",
-    "trend",
-    "interpolation",
-    "plot",
-    "chart",
-    "direct relationship",
-    "inverse relationship",
+    "integration by parts",
+    "partial fraction",
+    "trig integral",
+    "substitution",
+    "u-sub",
+    "integration technique",
   ],
   2: [
-    "research summary",
-    "experiment",
-    "variable",
-    "control",
-    "hypothesis",
-    "trial",
-    "independent",
-    "dependent",
-    "controlled study",
-    "procedure",
+    "area between",
+    "volume",
+    "revolution",
+    "shell",
+    "washer",
+    "arc length",
+    "work",
+    "surface area",
   ],
   3: [
-    "conflicting viewpoint",
-    "viewpoint",
-    "scientist",
-    "competing",
-    "model",
-    "disagree",
-    "hypothesis clash",
-    "perspective",
-    "agreement",
+    "improper integral",
+    "infinity",
+    "diverge",
+    "converge",
+    "comparison test",
+    "p-integral",
   ],
   4: [
-    "reasoning",
-    "cross-reference",
-    "figure",
-    "unit conversion",
-    "integrat",
-    "synthesis",
-    "metric",
-    "caption",
-    "anomal",
+    "sequence",
+    "series",
+    "taylor",
+    "maclaurin",
+    "power series",
+    "ratio test",
+    "alternating",
+    "radius of convergence",
   ],
   5: [
-    "practice",
-    "exam",
-    "strategy",
-    "pacing",
-    "outside knowledge",
+    "parametric",
+    "polar",
+    "arc length",
+    "polar area",
+    "vector",
+    "synthesis",
     "review",
-    "test day",
-    "triage",
-    "passage order",
-  ],
-  6: [
-    "biology",
-    "cell",
-    "organelle",
-    "genetics",
-    "inheritance",
-    "ecology",
-    "evolution",
-    "punnett",
-    "population",
-    "food web",
-  ],
-  7: [
-    "chemistry",
-    "reaction",
-    "stoichiometry",
-    "physics",
-    "force",
-    "motion",
-    "energy",
-    "earth science",
-    "geologic",
-    "atmospheric",
   ],
 };
 
@@ -98,17 +62,11 @@ export function isPublisherLesson(sourcePdfName: string | null): boolean {
 
 function scoreUnitFallback(text: string): number {
   const t = text.toLowerCase();
-  if (/practice|exam|strategy|pacing|test day|outside knowledge/i.test(t))
-    return 5;
-  if (/biology|cell|genetics|ecology|evolution|organism/i.test(t)) return 6;
-  if (/chemistry|reaction|physics|force|energy|earth science|geologic/i.test(t))
-    return 7;
-  if (/reasoning|cross-reference|unit conversion|integrat/i.test(t)) return 4;
-  if (/conflicting viewpoint|viewpoint|scientist|competing model/i.test(t))
-    return 3;
-  if (/research summary|experiment|variable|control|hypothesis/i.test(t))
-    return 2;
-  if (/data representation|graph|table|trend|axis/i.test(t)) return 1;
+  if (/parametric|polar/i.test(t)) return 5;
+  if (/sequence|series|taylor|maclaurin|power series/i.test(t)) return 4;
+  if (/improper|infinity|comparison/i.test(t)) return 3;
+  if (/volume|area between|work|revolution/i.test(t)) return 2;
+  if (/integration|integral|parts|partial fraction/i.test(t)) return 1;
   return 1;
 }
 
@@ -192,12 +150,8 @@ export function planPublisherLessonUpdates(
     isPublisherLesson(l.source_pdf_name)
   );
   const targets = publisherTargets(publisher.length);
-  const assignedCounts: Record<number, number> = {
-    1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0,
-  };
-  const lessonOrd: Record<number, number> = {
-    1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 3, 7: 3,
-  };
+  const assignedCounts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  const lessonOrd: Record<number, number> = { 1: 3, 2: 3, 3: 3, 4: 3, 5: 3 };
 
   const ranked = publisher
     .map((lesson) => {

@@ -24,6 +24,8 @@ const UNITS = [
   [3, "Conflicting viewpoints", "Competing scientific models and hypotheses"],
   [4, "Science reasoning", "Integrating multiple figures and passages"],
   [5, "Test strategies", "Pacing, annotation, and outside-knowledge traps"],
+  [6, "Biology passages", "Cells, genetics, ecology, and evolution in ACT format"],
+  [7, "Chemistry & physics", "Reactions, forces, energy, and earth science passages"],
 ];
 
 const LESSONS = [
@@ -42,6 +44,12 @@ const LESSONS = [
   [5, 1, "Passage order and triage", ["Attempt Data Representation passages first", "Save Conflicting Viewpoints for when warmed up"], "# Passage order\n\nPersonal preference matters—practice to find your fastest sequence."],
   [5, 2, "Avoiding outside knowledge", ["Answer only from information provided", "Recognize when a choice sounds true but isn't in the passage"], "# Outside knowledge\n\nBackground science can mislead you—the ACT tests reading, not memorization."],
   [5, 3, "Time management on science", ["Spend under 5 minutes per passage on average", "Guess on the last few rather than leave blanks"], "# Pacing\n\nThere is no penalty for wrong answers—never leave an bubble empty."],
+  [6, 1, "Cells and organelles", ["Read diagrams of cell structures without memorizing every label", "Connect structure names to functions described in the passage"], "# Cells\n\nACT biology passages define terms in context—a mitochondria label is enough if the text says it produces ATP."],
+  [6, 2, "Genetics and inheritance", ["Follow Punnett-square style reasoning from passage data", "Distinguish genotype language from phenotype outcomes"], "# Genetics\n\nTrack dominant/recessive vocabulary in the prose; the figure often shows ratios you must interpret."],
+  [6, 3, "Ecology and evolution", ["Interpret food webs, population graphs, and natural selection scenarios", "Avoid answers that require species names not in the passage"], "# Ecology\n\nPopulation curves and predator-prey graphs follow the same data-representation skills as chemistry plots."],
+  [7, 1, "Chemical reactions and stoichiometry", ["Use passage tables for mole ratios and reaction rates", "Identify independent variables in chemistry experiments"], "# Chemistry\n\nWhen concentrations or temperatures change, ask which variable the researchers controlled."],
+  [7, 2, "Forces, motion, and energy", ["Extract relationships from force diagrams and energy bar charts", "Check units when comparing kinetic and potential energy values"], "# Physics\n\nForce arrows and energy bars are graphs in disguise—read labels before calculating."],
+  [7, 3, "Earth and space science", ["Interpret geologic cross-sections and atmospheric data", "Compare competing models of planetary or climate processes"], "# Earth science\n\nThese passages blend data representation with conflicting viewpoints—summarize each model first."],
 ];
 
 async function main() {

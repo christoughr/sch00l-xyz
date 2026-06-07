@@ -8,7 +8,7 @@
 | SAT Reading (`sat-reading`) | 301 |
 | ACT Math (`act-math`) | 272 |
 | ACT English & Reading (`act-english`) | 255 |
-| ACT Science (`act-science`) | 87 |
+| ACT Science (`act-science`) | 93 |
 | AP Biology (`ap-bio`) | 135 |
 | AP Chemistry (`ap-chem`) | 128 |
 | AP Calculus AB (`ap-calc-ab`) | ~135 |
@@ -17,12 +17,11 @@
 | AP Physics C (`ap-physics-c`) | ~176 |
 | AP Statistics (`ap-stats`) | 128 |
 | College Calculus I (`college-calc-1`) | 31 |
+| College Calculus II (`college-calc-2`) | 23 |
 
 ## Downloads status
 
-**Classified:** all prep books in Downloads folder.
-
-**Intentionally skipped (5):** `index.pdf`, `indexeng.pdf`, `indexkr.pdf`, Korean business-registration docs.
+All prep books classified. Five unrelated files (index pages, business registration docs) are intentionally excluded from routing.
 
 ## Ingest policy
 
@@ -30,9 +29,13 @@
 - Drop `.azw3` / `.fb2` / `.mobi` in Downloads — we convert to `.converted.epub` before ingest.
 - Full ACT prep books route to math + english + science.
 - Combined SAT/ACT books route to both tracks.
+- `Calculus All-In-One for Dummies` routes to Calc I + Calc II.
 
-## Still to do
+## Next courses to build
 
-1. **Commit & push** — `act-english`, `college-calc-1` track wiring + classifier updates are local only; Vercel won't show new courses until pushed to `main`.
-2. **ACT Science** — thinnest course (87 lessons); drop ACT Science-only books if you have them.
-3. **Optional** — delete junk `index*.pdf` and `정부24` files from Downloads.
+| Priority | Track | Notes |
+|----------|-------|-------|
+| 1 | ACT Science | Thinnest exam track — add science-only prep books when available |
+| 2 | College Physics I | Stub exists in `study-tracks-college.ts`; needs seed + pipeline |
+| 3 | College Gen Chem I | Stub exists; AP chem books partially overlap |
+| 4 | AP Calc AB refresh | Many calc AB books in Downloads not yet re-ingested |
