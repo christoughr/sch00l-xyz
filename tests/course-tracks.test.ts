@@ -7,14 +7,14 @@ import {
 } from "../src/lib/course-tracks.ts";
 
 describe("course track aliases", () => {
-  it("maps sat-reading to sat-math", () => {
-    assert.equal(resolveCourseTrackId("sat-reading"), "sat-math");
+  it("resolves tracks to themselves by default", () => {
+    assert.equal(resolveCourseTrackId("sat-reading"), "sat-reading");
     assert.equal(resolveCourseTrackId("ap-bio"), "ap-bio");
   });
 
-  it("hints for aliased tracks", () => {
-    assert.ok(getCourseTrackHint("sat-reading")?.includes("SAT Math"));
+  it("no aliased track hints", () => {
+    assert.equal(getCourseTrackHint("sat-reading"), null);
     assert.equal(getCourseTrackHint("ap-bio"), null);
-    assert.equal(hasCourseTrackAlias("sat-reading"), true);
+    assert.equal(hasCourseTrackAlias("sat-reading"), false);
   });
 });

@@ -1,23 +1,30 @@
-# Curriculum queue — one course at a time
+# Curriculum queue
 
 ## Done (full pipeline)
 
 | Track | Lessons |
 |-------|---------|
-| **AP Biology** (`ap-bio`) | ~111 |
-| **AP Chemistry** (`ap-chem`) | ~119 |
-| **SAT Math** (`sat-math`) | ~47 |
-| **AP Calculus AB** (`ap-calc-ab`) | ~135 |
-| **AP Physics 1** (`ap-physics-1`) | ~119 |
-| **AP Physics 2** (`ap-physics-2`) | ~151 |
-| **AP Physics C** (`ap-physics-c`) | ~176 |
+| AP Biology (`ap-bio`) | ~111 |
+| AP Chemistry (`ap-chem`) | ~119 |
+| AP Calculus AB (`ap-calc-ab`) | ~135 |
+| AP Physics 1 (`ap-physics-1`) | ~135 |
+| AP Physics 2 (`ap-physics-2`) | ~167 |
+| AP Physics C (`ap-physics-c`) | ~176 |
+| SAT Math (`sat-math`) | ~264 |
+| SAT Reading (`sat-reading`) | ~215 |
+| ACT Math (`act-math`) | ~231 |
+| ACT Science (`act-science`) | ~63 |
+| AP Statistics (`ap-stats`) | ~103 |
 
-## Next (needs PDFs in Downloads)
+## Skipped automatically (teacher editions / wrong format)
 
-| Priority | Track | Notes |
-|----------|-------|-------|
-| 1 | **AP Statistics** (`ap-stats`) | No stats books in Downloads yet |
-| 2 | **ACT Math** (`act-math`) | No ACT prep books in Downloads yet |
-| 3 | **Calculus I** (`college-calc-1`) | First college full-course target |
+- `annas-arch-69a2025c9d90.pdf` — image-only scan, no extractable text
+- AP Stats `.fb2` / `.azw3` — convert to PDF/EPUB to ingest
+- SAT Subject Test Math Level 1/2 — legacy exam (not Digital SAT)
+- `*in the classroom*` teacher guides
 
-Each new track needs: seed SQL → `node scripts/seed-*.mjs` → ingest `--apply` → publish → polish (copy from `ap-physics-2` template).
+## Optional next
+
+- Official **College Board Digital SAT** book
+- ACT full-prep books (English/Reading sections)
+- College Calc I track

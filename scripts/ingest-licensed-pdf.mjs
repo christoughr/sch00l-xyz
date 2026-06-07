@@ -13,6 +13,7 @@ import fs from "fs";
 import path from "path";
 import AdmZip from "adm-zip";
 import { extractText, getDocumentProxy } from "unpdf";
+import { classifyByNameAndText } from "./classify-downloads.mjs";
 
 const args = process.argv.slice(2);
 const trackIdx = args.indexOf("--track");
@@ -91,24 +92,11 @@ function extractEpub(filePath) {
   return parts.join("\n\n");
 }
 
-const DOWNLOAD_PATTERNS = {
-  "ap-bio": /biology|ap.?bio/i,
-  "ap-chem": /chemistry|ap.?chem|5 steps to a 5.*chem/i,
-  "ap-calc-ab": /calculus|ap.?calc|5 steps to a 5.*calc/i,
-  "ap-physics-1": /physics\s*1|ap\s*physics\s*1|crash course.*physics\s*1/i,
-  "ap-physics-2": /physics\s*2|ap\s*physics\s*2/i,
-  "ap-physics-c": /physics\s*c|ap\s*physics\s*c/i,
-  "sat-math": /digital sat|sat prep|college.?board|for dummies.*sat/i,
-  sat: /digital sat|sat prep|college.?board/i,
-  ssat: /ssat/i,
-};
-
 function copyFromDownloads(targetDir, track) {
   fs.mkdirSync(targetDir, { recursive: true });
-  const pattern = DOWNLOAD_PATTERNS[track] ?? new RegExp(track.replace(/-/g, ".?"), "i");
   const names = fs.readdirSync(DOWNLOADS);
   const matches = names.filter(
-    (n) => pattern.test(n) && /\.(pdf|epub)$/i.test(n)
+    (n) => /\.(pdf|epub)$/i.test(n) && classifyByNameAndText(n).includes(track)
   );
   for (const name of matches) {
     const src = path.join(DOWNLOADS, name);

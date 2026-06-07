@@ -1,13 +1,8 @@
 /** Maps study picker tracks to course_lessons track_id in Supabase. */
 
-const COURSE_TRACK_ALIASES: Record<string, string> = {
-  "sat-reading": "sat-math",
-};
+const COURSE_TRACK_ALIASES: Record<string, string> = {};
 
-const COURSE_TRACK_HINTS: Record<string, string> = {
-  "sat-reading":
-    "Reading & Writing lessons live under SAT Math → unit 3 (same Digital SAT course).",
-};
+const COURSE_TRACK_HINTS: Record<string, string> = {};
 
 export function resolveCourseTrackId(studyTrackId: string): string {
   return COURSE_TRACK_ALIASES[studyTrackId] ?? studyTrackId;
