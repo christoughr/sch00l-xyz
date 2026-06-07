@@ -9,7 +9,7 @@ import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const TRACKS = ["ap-bio", "ap-chem", "sat-math", "ap-calc-ab"];
+const TRACKS = ["ap-bio", "ap-chem", "sat-math", "ap-calc-ab", "ap-physics-1"];
 const DRY = process.argv.includes("--dry-run");
 
 function loadEnv() {

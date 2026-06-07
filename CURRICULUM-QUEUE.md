@@ -8,17 +8,24 @@
 
 ## Done: AP Calculus AB (`ap-calc-ab`)
 
-135 lessons live (15 seed + 120 from 15 publisher books).
+135 lessons (15 seed + 120 publisher).
 
-## Now: AP Physics 1 (`ap-physics-1`)
+## Done: AP Physics 1 (`ap-physics-1`)
 
-Needs seed SQL `025` + licensed PDFs.
+119 lessons (15 seed + 104 from 13 publisher books).
 
-## After Physics
+## Queued (your PDFs still in Downloads)
 
-| Priority | Track | Why |
-|----------|-------|-----|
-| 5 | **AP Statistics** | Pairs with calc audience |
+| Track | Say when ready |
+|-------|----------------|
+| **AP Physics 2** | "do physics 2" |
+| **AP Physics C** | "do physics c" |
+
+## After Physics family
+
+| Priority | Track |
+|----------|-------|
+| **AP Statistics** | Next new AP |
 | 5 | **AP Statistics** | Pairs with calc audience |
 | 6 | **ACT Math** | SAT family already started |
 | 7 | **Calculus I** (`college-calc-1`) | First college course with full content |
