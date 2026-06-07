@@ -31,10 +31,15 @@ const polishScript = {
   "act-science": "polish-act-science-lessons.ts",
   "ap-stats": "polish-ap-stats-lessons.ts",
   "sat-math": "polish-sat-math-lessons.ts",
+  "ap-bio": "polish-ap-bio-lessons.ts",
+  "ap-chem": "polish-ap-chem-lessons.ts",
+  "ap-calc-ab": "polish-ap-calc-ab-lessons.ts",
   "ap-physics-1": "polish-ap-physics-1-lessons.ts",
   "ap-physics-2": "polish-ap-physics-2-lessons.ts",
+  "ap-physics-c": "polish-ap-physics-c-lessons.ts",
 }[track];
 
+run("node", ["scripts/prepare-downloads.mjs"]);
 if (!flags.has("--skip-seed") && seedScript) run("node", [`scripts/${seedScript}`]);
 if (flags.has("--refresh")) run("node", ["scripts/delete-publisher-lessons.mjs", track]);
 run("node", ["scripts/ingest-licensed-pdf.mjs", "--track", track, "--from-downloads", "--apply"]);

@@ -61,6 +61,8 @@ export const ANNAS_ARCH_MANUAL = {
   "annas-arch-d491267c4dae.pdf": ["ap-physics-2"], // Barron's AP Physics 2
   "annas-arch-d9ab746b1238.epub": ["ap-physics-2"], // 5 Steps AP Physics 2 2024
   "annas-arch-f9722fcbd9fe.pdf": ["act-math"], // 500 ACT Math Questions
+  "annas-arch-69a2025c9d90.pdf": ["sat-math"], // PrepPros Complete Guide to Digital SAT Math (scan)
+  "annas-arch-69a2025c9d90.ocr-text.pdf": ["sat-math"],
 };
 
 /** @returns {string[]} track ids */
@@ -69,10 +71,32 @@ export function classifyByNameAndText(filename, preview = "") {
   const n = filename.toLowerCase();
   const t = `${n} ${preview.toLowerCase()}`;
 
-  if (/gmat|ssat|subject test math level|in the classroom|teacher/i.test(t)) return [];
+  if (/^gmat\b|\bssat\b/i.test(t)) return [];
 
-  if (/ap\s*statistics|ap\s*stats|practice of statistics.*ap|barron.*statistics|5 steps.*statistics/i.test(t))
+  if (/sat subject test.*math|subject test.*math level/i.test(t)) return ["sat-math"];
+
+  if (/sat math in the classroom/i.test(t)) return ["sat-math"];
+  if (/act math in the classroom/i.test(t)) return ["act-math"];
+
+  if (/ap\s*statistics|ap\s*stats|practice of statistics|q&a statistics|barron.*statistics|5 steps.*statistics/i.test(t))
     return ["ap-stats"];
+
+  if (/\.converted\.epub$/i.test(n)) {
+    if (/statistics|stats|q&a/i.test(n)) return ["ap-stats"];
+    if (/biology|ap bio/i.test(n)) return ["ap-bio"];
+    if (/sat math|math workout|gmat|kaplan.*math/i.test(n)) return ["sat-math"];
+  }
+
+  if (/\.ocr\.epub$/i.test(n)) {
+    const base = preview.toLowerCase();
+    if (/physics\s*2/i.test(base)) return ["ap-physics-2"];
+    if (/physics\s*c/i.test(base)) return ["ap-physics-c"];
+    if (/physics\s*1/i.test(base)) return ["ap-physics-1"];
+    if (/statistics/i.test(base)) return ["ap-stats"];
+    if (/sat math|subject test/i.test(base)) return ["sat-math"];
+    if (/act math/i.test(base)) return ["act-math"];
+    return ["sat-math"];
+  }
 
   if (/physics\s*c|ap\s*physics\s*c|physics c companion/i.test(t)) return ["ap-physics-c"];
   if (/physics\s*2|ap\s*physics\s*2|sterling.*physics\s*2/i.test(t)) return ["ap-physics-2"];

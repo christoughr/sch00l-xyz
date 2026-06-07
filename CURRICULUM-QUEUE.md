@@ -16,12 +16,10 @@
 | ACT Science (`act-science`) | ~63 |
 | AP Statistics (`ap-stats`) | ~103 |
 
-## Skipped automatically (teacher editions / wrong format)
+## Ingest policy
 
-- `annas-arch-69a2025c9d90.pdf` — image-only scan, no extractable text
-- AP Stats `.fb2` / `.azw3` — convert to PDF/EPUB to ingest
-- SAT Subject Test Math Level 1/2 — legacy exam (not Digital SAT)
-- `*in the classroom*` teacher guides
+- Legacy SAT Subject Test, classroom guides, and scanned PDFs are **included** (auto-convert/OCR via `prepare-downloads.mjs`).
+- Drop `.azw3` / `.fb2` / `.mobi` in Downloads — we convert to `.converted.epub` before ingest.
 
 ## Optional next
 
