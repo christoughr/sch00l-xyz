@@ -26,6 +26,9 @@ const seedScript = {
   "ap-stats": "seed-ap-stats.mjs",
   "college-calc-1": "seed-college-calc-1.mjs",
   "college-calc-2": "seed-college-calc-2.mjs",
+  "college-physics-1": "seed-college-physics-1.mjs",
+  "college-gen-chem-1": "seed-college-gen-chem-1.mjs",
+  "ap-calc-ab": "seed-ap-calc-ab.mjs",
 }[track];
 
 const polishScript = {
@@ -36,6 +39,8 @@ const polishScript = {
   "ap-stats": "polish-ap-stats-lessons.ts",
   "college-calc-1": "polish-college-calc-1-lessons.ts",
   "college-calc-2": "polish-college-calc-2-lessons.ts",
+  "college-physics-1": "polish-college-physics-1-lessons.ts",
+  "college-gen-chem-1": "polish-college-gen-chem-1-lessons.ts",
   "sat-math": "polish-sat-math-lessons.ts",
   "ap-bio": "polish-ap-bio-lessons.ts",
   "ap-chem": "polish-ap-chem-lessons.ts",

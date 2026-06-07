@@ -109,6 +109,15 @@ export function classifyByNameAndText(filename, preview = "") {
     if (ocr !== null) return ocr;
   }
 
+  if (/college physics|university physics|physics for scientists|openstax.*physics|serway.*physics/i.test(t) && !/lab manual/i.test(t))
+    return ["college-physics-1"];
+
+  if (/college physics.*lab manual|lab manual.*college physics|college physics.*ap.*lab/i.test(t))
+    return ["college-physics-1", "ap-physics-1"];
+
+  if (/general chemistry|gen(?:eral)? chem[^i]|zumdahl|brown.*chemistry|chemistry.*central science|openstax.*chem/i.test(t) && !/organic|biochem/i.test(t))
+    return ["college-gen-chem-1"];
+
   if (/college-calc-2|calculus ii[^i]|calculus 2[^0-9]|calc ii[^i]/i.test(t) && !/ap calc|subject test/i.test(t))
     return ["college-calc-2"];
 
@@ -135,7 +144,7 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/ap\s*statistics|ap\s*stats|practice of statistics|q&a statistics|barron.*statistics|5 steps.*statistics|statistics crash course/i.test(t))
     return ["ap-stats"];
 
-  if (/college physics.*ap|ap courses.*lab manual|lab manual.*ap/i.test(t)) return ["ap-physics-1"];
+  if (/college physics.*ap|ap courses.*lab manual|lab manual.*ap/i.test(t)) return ["ap-physics-1", "college-physics-1"];
 
   if (/top 50 skills.*top score.*sat|top 50 skills for a top score/i.test(t))
     return ["sat-math", "sat-reading"];
@@ -149,11 +158,15 @@ export function classifyByNameAndText(filename, preview = "") {
 
   if (/physics\s*c|ap\s*physics\s*c|physics c companion/i.test(t)) return ["ap-physics-c"];
   if (/physics\s*2|ap\s*physics\s*2|sterling.*physics\s*2/i.test(t)) return ["ap-physics-2"];
-  if (/physics\s*1|ap\s*physics\s*1|cracking the ap physics 1/i.test(t)) return ["ap-physics-1"];
+  if (/physics\s*1|ap\s*physics\s*1|cracking the ap physics 1/i.test(t))
+    return ["ap-physics-1", "college-physics-1"];
 
   if (/^5 steps to a 5 -- greg jacobs/i.test(n)) return ["ap-physics-1"];
 
   if (/500\s+sat\s+math/i.test(t)) return ["sat-math"];
+
+  if (/princeton review act science|act science prep|for the love of act science|ultimate guide to act science/i.test(t))
+    return ["act-science"];
 
   if (/\bact\s*science\b|500\s+act\s+science/i.test(t)) return ["act-science"];
 
@@ -213,7 +226,7 @@ export function classifyByNameAndText(filename, preview = "") {
   }
 
   if (/biology|ap.?bio/i.test(t)) return ["ap-bio"];
-  if (/chemistry|ap.?chem/i.test(t)) return ["ap-chem"];
+  if (/chemistry|ap.?chem/i.test(t)) return ["ap-chem", "college-gen-chem-1"];
   if (/ap.?calc|5 steps.*calculus ab|cracking the ap calculus/i.test(t)) return ["ap-calc-ab"];
 
   return [];

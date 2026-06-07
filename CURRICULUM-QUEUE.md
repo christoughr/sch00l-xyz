@@ -9,33 +9,26 @@
 | ACT Math (`act-math`) | 272 |
 | ACT English & Reading (`act-english`) | 255 |
 | ACT Science (`act-science`) | 93 |
+| AP Calculus AB (`ap-calc-ab`) | 135 |
 | AP Biology (`ap-bio`) | 135 |
 | AP Chemistry (`ap-chem`) | 128 |
-| AP Calculus AB (`ap-calc-ab`) | ~135 |
 | AP Physics 1 (`ap-physics-1`) | 151 |
 | AP Physics 2 (`ap-physics-2`) | ~167 |
 | AP Physics C (`ap-physics-c`) | ~176 |
 | AP Statistics (`ap-stats`) | 128 |
 | College Calculus I (`college-calc-1`) | 31 |
 | College Calculus II (`college-calc-2`) | 23 |
+| College Physics I (`college-physics-1`) | 135 |
+| College Gen Chem I (`college-gen-chem-1`) | 79 |
 
-## Downloads status
+## Dual-routing policy
 
-All prep books classified. Five unrelated files (index pages, business registration docs) are intentionally excluded from routing.
+- AP Physics 1 textbooks → `ap-physics-1` + `college-physics-1`
+- AP Chemistry textbooks → `ap-chem` + `college-gen-chem-1`
+- Calculus All-In-One for Dummies → `college-calc-1` + `college-calc-2`
 
-## Ingest policy
+## Optional next
 
-- Legacy SAT Subject Test, classroom guides, and scanned PDFs are **included** (auto-convert/OCR via `prepare-downloads.mjs`).
-- Drop `.azw3` / `.fb2` / `.mobi` in Downloads — we convert to `.converted.epub` before ingest.
-- Full ACT prep books route to math + english + science.
-- Combined SAT/ACT books route to both tracks.
-- `Calculus All-In-One for Dummies` routes to Calc I + Calc II.
-
-## Next courses to build
-
-| Priority | Track | Notes |
-|----------|-------|-------|
-| 1 | ACT Science | Thinnest exam track — add science-only prep books when available |
-| 2 | College Physics I | Stub exists in `study-tracks-college.ts`; needs seed + pipeline |
-| 3 | College Gen Chem I | Stub exists; AP chem books partially overlap |
-| 4 | AP Calc AB refresh | Many calc AB books in Downloads not yet re-ingested |
+- ACT Science-only prep books (still thinnest exam track at 93)
+- College Calc III, Linear Algebra, Physics II stubs in `study-tracks-college.ts`
+- Dedicated university OpenStax textbooks for gen chem / physics (less AP overlap)
