@@ -9,8 +9,8 @@
 | **SAT Math** (`sat-math`) | ~47 |
 | **AP Calculus AB** (`ap-calc-ab`) | ~135 |
 | **AP Physics 1** (`ap-physics-1`) | ~119 |
-| **AP Physics 2** (`ap-physics-2`) | ~63 |
-| **AP Physics C** (`ap-physics-c`) | ~56 |
+| **AP Physics 2** (`ap-physics-2`) | ~151 |
+| **AP Physics C** (`ap-physics-c`) | ~176 |
 
 ## Next (needs PDFs in Downloads)
 
