@@ -305,6 +305,17 @@ export const STUDY_TRACKS: StudyTrack[] = [
       "ACT Science: graphs, experiments, conflicting viewpoints. Reading speed + pattern recognition.",
   },
   {
+    id: "act-english",
+    category: "sat_act",
+    label: "ACT English & Reading",
+    description: "Grammar, rhetoric, and passage skills",
+    subject: "english",
+    topic: "ACT English — usage, rhetoric, and reading",
+    gradeLevel: "ACT",
+    tutorContext:
+      "ACT English: usage/mechanics, rhetorical skills, passage comprehension. Underlined portions and NO CHANGE.",
+  },
+  {
     id: "mcat-bb",
     category: "exam_prep",
     label: "MCAT — Bio/Biochem",

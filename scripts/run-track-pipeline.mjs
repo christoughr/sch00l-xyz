@@ -22,14 +22,18 @@ const seedScript = {
   "sat-reading": "seed-sat-reading.mjs",
   "act-math": "seed-act-math.mjs",
   "act-science": "seed-act-science.mjs",
+  "act-english": "seed-act-english.mjs",
   "ap-stats": "seed-ap-stats.mjs",
+  "college-calc-1": "seed-college-calc-1.mjs",
 }[track];
 
 const polishScript = {
   "sat-reading": "polish-sat-reading-lessons.ts",
   "act-math": "polish-act-math-lessons.ts",
   "act-science": "polish-act-science-lessons.ts",
+  "act-english": "polish-act-english-lessons.ts",
   "ap-stats": "polish-ap-stats-lessons.ts",
+  "college-calc-1": "polish-college-calc-1-lessons.ts",
   "sat-math": "polish-sat-math-lessons.ts",
   "ap-bio": "polish-ap-bio-lessons.ts",
   "ap-chem": "polish-ap-chem-lessons.ts",

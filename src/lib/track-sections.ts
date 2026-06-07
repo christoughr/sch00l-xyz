@@ -184,6 +184,13 @@ const BY_TRACK: Record<string, TrackSection[]> = {
   "sat-reading": sections("SAT Reading & Writing", SAT_ACT),
   "act-math": sections("ACT Math", SAT_ACT),
   "act-science": sections("ACT Science", SAT_ACT),
+  "act-english": sections("ACT English & Reading", [
+    { id: "usage-mechanics", name: "Usage & mechanics", desc: "Grammar, punctuation, and sentence structure" },
+    { id: "rhetorical-skills", name: "Rhetorical skills", desc: "Organization, clarity, style, and tone" },
+    { id: "reading-comp", name: "Reading comprehension", desc: "Main idea, inference, and vocabulary in context" },
+    { id: "writing-strategy", name: "Writing strategy", desc: "Revision, development, and coherent argument" },
+    { id: "test-pacing", name: "Test pacing", desc: "Annotation, elimination, and section timing" },
+  ]),
   "mcat-bb": sections("MCAT Bio/Biochem", EXAM_PREP),
   "mcat-cp": sections("MCAT Chem/Phys", EXAM_PREP),
   "mcat-ps": sections("MCAT Psych/Soc", EXAM_PREP),
