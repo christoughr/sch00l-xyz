@@ -11,18 +11,13 @@ if (!file) {
   process.exit(1);
 }
 
-function loadEnv() {
-  const envPath = path.join(__dirname, "..", ".env.local");
-  if (!fs.existsSync(envPath)) return;
-  for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
-    const m = line.match(/^([^#=]+)=(.*)$/);
-    if (m && !process.env[m[1].trim()])
-      process.env[m[1].trim()] = m[2].trim().replace(/^["']|["']$/g, "");
-  }
+async function loadEnv() {
+  const { loadEnvLocal } = await import("./load-env.mjs");
+  loadEnvLocal(path.join(__dirname, ".."));
 }
 
 async function main() {
-  loadEnv();
+  await loadEnv();
   const dbUrl = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
   if (!dbUrl) {
     console.error(

@@ -42,7 +42,7 @@ for (const [track, files] of sorted) {
 console.log("\n## Priority ingest (10+ files, college/AP)\n");
 for (const [track, files] of sorted) {
   if (files.length < 5) continue;
-  if (!/^(college-|ap-|act-|sat-|exam_prep)/.test(track)) continue;
+  if (!/^(college-|ap-|act-|sat-|exam_prep|mcat-|gmat|gre-|toefl|ielts|med-|k12-|dat|oat|pcat|usmle|cpa-|cfa-|pmp|aws-)/.test(track)) continue;
   console.log(`### ${track} (${files.length})`);
   for (const f of files.slice(0, 8)) console.log(`- ${f.slice(0, 90)}${f.length > 90 ? "…" : ""}`);
   if (files.length > 8) console.log(`- … +${files.length - 8} more`);

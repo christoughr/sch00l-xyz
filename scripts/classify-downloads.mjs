@@ -107,7 +107,7 @@ export function classifyByNameAndText(filename, preview = "") {
 
   if (/^index(?:eng|kr)?\.pdf$/i.test(n)) return [];
   if (/정부24|사업자등록|business registration|문서출력/i.test(n)) return [];
-  if (/^gmat\b|\bssat\b/i.test(t)) return [];
+  if (/^\bssat\b/i.test(t)) return [];
 
   if (/gazabarron|barron.*ap complete.*collection/i.test(t))
     return ["ap-bio", "ap-chem", "ap-stats", "ap-physics-1", "ap-physics-2", "sat-math", "sat-reading"];
@@ -341,16 +341,53 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/intro to college math|basic arithmetic, geometry, algebra/i.test(t))
     return ["college-calc-1"];
 
-  if (/mcat.*biology|mcat.*biochemistry|berkeley review.*biology|kaplan.*mcat.*biology/i.test(t))
+  if (/mcat.*biology|mcat.*biochemistry|berkeley review.*biology|kaplan.*mcat.*biology|mcat.*528/i.test(t))
     return ["mcat-bb"];
-  if (/mcat.*chemistry|mcat.*physics|berkeley review.*physics|kaplan.*mcat.*chemistry/i.test(t))
+  if (/mcat.*chemistry|mcat.*physics|berkeley review.*physics|kaplan.*mcat.*physics|kaplan.*mcat.*math/i.test(t))
     return ["mcat-cp"];
-  if (/mcat.*psych|mcat.*sociology|kaplan.*mcat.*behavioral/i.test(t))
+  if (/mcat.*psych|mcat.*sociology|mcat.*behavioral|kaplan.*mcat.*behavioral|examkrackers.*psych/i.test(t))
     return ["mcat-ps"];
-  if (/mcat.*cars|critical analysis.*mcat|kaplan.*mcat.*critical/i.test(t))
+  if (/mcat.*cars|critical analysis.*mcat|kaplan.*mcat.*critical|berkeley review.*verbal/i.test(t))
     return ["mcat-cars"];
-  if (/berkeley review.*mcat|kaplan.*mcat.*7|examkrackers.*mcat/i.test(t))
+  if (/berkeley review.*mcat|kaplan.*mcat|examkrackers.*mcat|princeton review.*mcat|mcat prep|mcat complete/i.test(t))
     return ["mcat-bb", "mcat-cp", "mcat-ps", "mcat-cars"];
+
+  if (/multiple mini interview|\bmmi\b|medical school interview|winning strategies from.*mmi/i.test(t))
+    return ["med-mmi"];
+
+  if (/\bgmat\b|graduate management admission|gmac official guide|manhattan prep gmat/i.test(t))
+    return ["gmat"];
+
+  if (/\bgre\b|graduate record|manhattan prep gre|5 lb.*gre|gre prep plus|gre quant|gre verbal|gre analytical writing/i.test(t)) {
+    if (/analytical writing|essay topics|issue essay|argument essay/i.test(t))
+      return ["gre-analytical-writing"];
+    if (/verbal|reading comp|text completion|sentence equivalence/i.test(t))
+      return ["gre-verbal"];
+    if (/quant|math|500 gre math|5 lb.*gre/i.test(t)) return ["gre-quant"];
+    return ["gre-quant", "gre-verbal"];
+  }
+
+  if (/\btoefl\b|toefl ibt/i.test(t)) return ["toefl-ibt"];
+
+  if (/\bielts\b/i.test(t)) {
+    if (/general training|ielts general/i.test(t)) return ["ielts-general"];
+    return ["ielts-academic"];
+  }
+
+  if (/\bdat\b|dental admission test/i.test(t)) return ["dat"];
+  if (/\boat\b|optometry admission/i.test(t)) return ["oat"];
+  if (/\bpcat\b|pharmacy college admission/i.test(t)) return ["pcat"];
+  if (/usmle step 1|first aid.*step 1|pathoma/i.test(t)) return ["usmle-step1"];
+  if (/\bcpa\b.*far|financial accounting.*cpa/i.test(t)) return ["cpa-far"];
+  if (/\bcfa\b.*level\s*i|cfa level 1/i.test(t)) return ["cfa-level1"];
+  if (/\bpmp\b|project management professional/i.test(t)) return ["pmp"];
+  if (/aws cloud practitioner|\bclf-c02\b/i.test(t)) return ["aws-cloud-practitioner"];
+
+  if (/kindergarten|grade k\b|pre-k|prek/i.test(t)) return ["k12-k-math", "k12-k-reading"];
+  if (/elementary|grades? [1-5]|grade [1-5]|primary school/i.test(t))
+    return ["k12-elem-math", "k12-elem-reading", "k12-elem-science"];
+  if (/middle school|grades? [6-8]|grade [6-8]|junior high/i.test(t))
+    return ["k12-ms-math", "k12-ms-science", "k12-ms-ela"];
 
   if (/chemistry|ap.?chem/i.test(t)) return ["ap-chem", "college-gen-chem-1"];
   if (/ap.?calc|5 steps.*calculus ab|cracking the ap calculus/i.test(t)) return ["ap-calc-ab"];

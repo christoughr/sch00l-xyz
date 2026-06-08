@@ -1,6 +1,10 @@
 import type { SubjectId } from "./subject-ids";
 import { COLLEGE_STUDY_TRACKS } from "./study-tracks-college";
 import { GLOBAL_STUDY_TRACKS } from "./study-tracks-global";
+import {
+  EXAM_PREP_EXTRA_TRACKS,
+  K12_EARLY_STUDY_TRACKS,
+} from "./study-tracks-k12-exams";
 
 export type StudyTrackCategory =
   | "ap"
@@ -35,7 +39,7 @@ export const TRACK_CATEGORIES: {
   { id: "sat_act", label: "SAT / ACT" },
   { id: "exam_prep", label: "Exam prep" },
   { id: "college", label: "College & university" },
-  { id: "k12", label: "High school" },
+  { id: "k12", label: "K–12" },
   { id: "languages", label: "Languages" },
   { id: "international", label: "International" },
   { id: "professional", label: "Professional" },
@@ -414,6 +418,7 @@ export const STUDY_TRACKS: StudyTrack[] = [
     tutorContext:
       "GMAT: DS, IR tables, critical reasoning for business cases. Time-aware reasoning.",
   },
+  ...EXAM_PREP_EXTRA_TRACKS.filter((t) => t.id !== "gmat"),
   {
     id: "ib-math-aa",
     category: "exam_prep",
@@ -437,6 +442,7 @@ export const STUDY_TRACKS: StudyTrack[] = [
       "IB Bio: data-based questions, IA-style reasoning, syllabus connections across topics.",
   },
   ...COLLEGE_STUDY_TRACKS,
+  ...K12_EARLY_STUDY_TRACKS,
   {
     id: "k12-algebra-2",
     category: "k12",
