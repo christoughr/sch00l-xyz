@@ -127,7 +127,7 @@ export default function TutorsPage() {
         </h2>
         <p className="text-sm text-zinc-400 mb-6">
           Set your own hourly rate inside market bands. Students choose budget
-          tier; you keep ~82% after platform fee.
+          tier; you keep ~55% after platform fee.
         </p>
         <TutorApplyForm />
       </section>

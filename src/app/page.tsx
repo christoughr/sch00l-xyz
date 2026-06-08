@@ -38,7 +38,7 @@ const features = [
 
 export default function HomePage() {
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative w-full max-w-[100vw] overflow-x-hidden">
       <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" />
       <div className="absolute inset-0 glow-orb pointer-events-none" />
 
@@ -47,7 +47,7 @@ export default function HomePage() {
           {SITE_DOMAIN} — AI built for students who actually study
         </p>
 
-        <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-6xl leading-[1.1]">
+        <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-6xl leading-[1.1] break-words">
           AI that helps students{" "}
           <span className="text-brand-400">study</span>, not scroll.
         </h1>

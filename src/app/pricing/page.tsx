@@ -2,26 +2,104 @@
 
 import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
-import { PLATFORM_FEE, PRICING, formatUsd, freeSessionsShortLabel } from "@/lib/pricing";
+import {
+  PLATFORM_FEE,
+  PRICING,
+  SELLABLE_CURRICULA,
+  type BillingInterval,
+  alaCarteTotal,
+  annualSavingsPercent,
+  billingPeriodLabel,
+  bundleSavings,
+  bundleSavingsPercent,
+  formatUsd,
+  freeSessionsShortLabel,
+  monthlyEquivalent,
+  priceForInterval,
+} from "@/lib/pricing";
 import { trackEvent } from "@/lib/analytics";
 import { useEffect, useState } from "react";
 import { PaymentButton } from "@/components/PaymentButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
 
+function IntervalToggle({
+  interval,
+  onChange,
+}: {
+  interval: BillingInterval;
+  onChange: (v: BillingInterval) => void;
+}) {
+  return (
+    <div className="inline-flex rounded-xl border border-white/10 bg-white/5 p-1">
+      <button
+        type="button"
+        onClick={() => onChange("monthly")}
+        className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+          interval === "monthly"
+            ? "bg-brand-500 text-white"
+            : "text-zinc-400 hover:text-white"
+        }`}
+      >
+        Monthly
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("annual")}
+        className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+          interval === "annual"
+            ? "bg-brand-500 text-white"
+            : "text-zinc-400 hover:text-white"
+        }`}
+      >
+        Annual
+        <span className="ml-1.5 text-xs opacity-80">save more</span>
+      </button>
+    </div>
+  );
+}
+
+function PriceBlock({
+  monthly,
+  annual,
+  interval,
+}: {
+  monthly: number;
+  annual: number;
+  interval: BillingInterval;
+}) {
+  const price = priceForInterval(monthly, annual, interval);
+  const savings = annualSavingsPercent(monthly, annual);
+  return (
+    <div>
+      <p className="text-3xl font-bold text-white">
+        {formatUsd(price)}
+        <span className="text-sm font-normal text-zinc-400">
+          {billingPeriodLabel(interval)}
+        </span>
+      </p>
+      {interval === "annual" && savings > 0 && (
+        <p className="mt-1 text-xs text-brand-300">
+          {formatUsd(monthlyEquivalent(annual))}/mo · {savings}% off monthly
+        </p>
+      )}
+    </div>
+  );
+}
+
 function PlanCard({
   name,
-  price,
-  period,
+  subtitle,
   highlight,
   features,
   children,
+  priceSlot,
 }: {
   name: string;
-  price: string;
-  period?: string;
+  subtitle?: string;
   highlight?: boolean;
   features: readonly string[];
   children: React.ReactNode;
+  priceSlot: React.ReactNode;
 }) {
   return (
     <article
@@ -32,12 +110,8 @@ function PlanCard({
       }`}
     >
       <h2 className="text-lg font-semibold text-white">{name}</h2>
-      <p className="mt-2 text-3xl font-bold text-white">
-        {price}
-        {period && (
-          <span className="text-sm font-normal text-zinc-400">{period}</span>
-        )}
-      </p>
+      {subtitle && <p className="mt-1 text-sm text-zinc-400">{subtitle}</p>}
+      <div className="mt-3">{priceSlot}</div>
       <ul className="mt-6 space-y-2 flex-1">
         {features.map((f) => (
           <li key={f} className="flex gap-2 text-sm text-zinc-300">
@@ -52,6 +126,7 @@ function PlanCard({
 }
 
 export default function PricingPage() {
+  const [interval, setInterval] = useState<BillingInterval>("annual");
   const [proReady, setProReady] = useState(false);
   const [tutorReady, setTutorReady] = useState(false);
   const [configLoaded, setConfigLoaded] = useState(false);
@@ -73,6 +148,19 @@ export default function PricingPage() {
   }, []);
 
   const human = PRICING.humanTutor;
+  const membership = PRICING.membership;
+  const track = PRICING.track;
+  const bundle = PRICING.bundle;
+  const curriculumRange = SELLABLE_CURRICULA.reduce(
+    (acc, c) => ({
+      minM: Math.min(acc.minM, c.priceMonthly),
+      maxM: Math.max(acc.maxM, c.priceMonthly),
+      minA: Math.min(acc.minA, c.priceAnnual),
+      maxA: Math.max(acc.maxA, c.priceAnnual),
+    }),
+    { minM: Infinity, maxM: 0, minA: Infinity, maxA: 0 }
+  );
+
   const btnClass = (highlight?: boolean) =>
     `mt-6 block text-center rounded-xl py-3 text-sm font-medium ${
       highlight
@@ -81,102 +169,225 @@ export default function PricingPage() {
     }`;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 w-full overflow-x-hidden">
       <div className="mb-10 text-center">
         <p className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3 py-1 text-xs text-brand-300 mb-4">
           <Sparkles className="h-3 w-3" />
-          AI free to start · Pro via Lemon Squeezy when live
+          Membership + curricula + bundle
         </p>
         <h1 className="text-3xl font-bold text-white sm:text-4xl">Pricing</h1>
-        <p className="mt-3 text-zinc-400 max-w-xl mx-auto">
-          Start free with Socratic AI ({freeSessionsShortLabel()}). Pro checkout opens when our
-          payment store is live — join the waitlist meanwhile, or request a human tutor.
+        <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
+          Start free ({freeSessionsShortLabel()}). Paid access is a{" "}
+          <strong className="text-zinc-200">platform membership</strong> plus
+          curriculum libraries or individual courses — or get everything in the
+          all-in-one bundle.
         </p>
+        <div className="mt-6">
+          <IntervalToggle interval={interval} onChange={setInterval} />
+        </div>
         {configLoaded && !proReady && !tutorReady && (
           <p className="mt-4 text-sm text-amber-200/90 max-w-md mx-auto">
-            Card checkout is not live yet — use the waitlist below. We&apos;ll email
-            when Lemon Squeezy is connected.
+            Card checkout is not live yet — join the waitlist below. We&apos;ll
+            email when billing is connected.
           </p>
         )}
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4 mb-12">
+      {/* Step 1: Membership */}
+      <section className="mb-12">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500 mb-4">
+          1 · Platform membership (required)
+        </h2>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <PlanCard
+            name={membership.name}
+            subtitle="Every paid plan starts here — your seat on sch00l"
+            features={membership.features}
+            priceSlot={
+              <PriceBlock
+                monthly={membership.priceMonthly}
+                annual={membership.priceAnnual}
+                interval={interval}
+              />
+            }
+          >
+            <Link href="/#waitlist" className={btnClass()}>
+              Join membership waitlist
+            </Link>
+          </PlanCard>
+          <PlanCard
+            name={PRICING.free.name}
+            subtitle="Try before you buy"
+            features={PRICING.free.features}
+            priceSlot={
+              <p className="text-3xl font-bold text-white">{formatUsd(0)}</p>
+            }
+          >
+            <Link href="/study" className={btnClass()}>
+              Start free
+            </Link>
+          </PlanCard>
+        </div>
+      </section>
+
+      {/* Step 2: Per curriculum */}
+      <section className="mb-12">
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-4">
+          <div>
+            <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
+              2 · Curriculum libraries
+            </h2>
+            <p className="mt-1 text-sm text-zinc-400">
+              {formatUsd(
+                priceForInterval(
+                  curriculumRange.minM,
+                  curriculumRange.minA,
+                  interval
+                )
+              )}
+              –
+              {formatUsd(
+                priceForInterval(
+                  curriculumRange.maxM,
+                  curriculumRange.maxA,
+                  interval
+                )
+              )}
+              {billingPeriodLabel(interval)} per library · membership required
+            </p>
+          </div>
+          <p className="text-xs text-zinc-500">
+            Or {formatUsd(priceForInterval(track.priceMonthly, track.priceAnnual, interval))}
+            {billingPeriodLabel(interval)} for a single course
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {SELLABLE_CURRICULA.map((c) => (
+            <article
+              key={c.id}
+              className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col"
+            >
+              <h3 className="font-medium text-white">{c.label}</h3>
+              <p className="mt-1 text-xs text-zinc-500 flex-1">{c.blurb}</p>
+              <p className="mt-3 text-lg font-semibold text-white">
+                {formatUsd(
+                  priceForInterval(c.priceMonthly, c.priceAnnual, interval)
+                )}
+                <span className="text-xs font-normal text-zinc-400">
+                  {billingPeriodLabel(interval)}
+                </span>
+              </p>
+              <Link
+                href="/#waitlist"
+                className="mt-3 block text-center rounded-lg border border-white/15 py-2 text-xs text-zinc-300 hover:bg-white/5"
+              >
+                Join waitlist
+              </Link>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Step 3: Bundle */}
+      <section className="mb-12">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500 mb-4">
+          3 · All-in-one bundle
+        </h2>
         <PlanCard
-          name={PRICING.free.name}
-          price={formatUsd(0)}
-          features={PRICING.free.features}
-        >
-          <Link href="/study" className={btnClass()}>
-            Start free
-          </Link>
-        </PlanCard>
-        <PlanCard
-          name={PRICING.pro.name}
-          price={formatUsd(PRICING.pro.priceMonthly)}
-          period="/mo"
+          name={bundle.name}
+          subtitle={`Membership + all ${SELLABLE_CURRICULA.length} curriculum libraries`}
           highlight
-          features={PRICING.pro.features}
+          features={[
+            ...bundle.features,
+            `Save ${formatUsd(bundleSavings(interval))} (${bundleSavingsPercent(interval)}%) vs à la carte ${formatUsd(alaCarteTotal(interval))}${billingPeriodLabel(interval)}`,
+          ]}
+          priceSlot={
+            <PriceBlock
+              monthly={bundle.priceMonthly}
+              annual={bundle.priceAnnual}
+              interval={interval}
+            />
+          }
         >
           {proReady ? (
             <PaymentButton
               plan="pro"
-              label={`Subscribe — ${formatUsd(PRICING.pro.priceMonthly)}/mo`}
+              label={`Subscribe — ${formatUsd(priceForInterval(bundle.priceMonthly, bundle.priceAnnual, interval))}${billingPeriodLabel(interval)}`}
               highlight
               fallbackHref="/#waitlist"
               fallbackLabel="Join waitlist instead"
             />
           ) : (
             <Link href="/#waitlist" className={btnClass(true)}>
-              Join Pro waitlist
+              Join bundle waitlist
             </Link>
           )}
         </PlanCard>
-        <PlanCard
-          name={human.name}
-          price={`${formatUsd(human.rateFrom)}–${formatUsd(human.rateTo)}`}
-          period="/hr"
-          features={[
-            ...human.features,
-            `${PLATFORM_FEE.humanTutorPercent}% platform fee — tutors keep the rest`,
-          ]}
-        >
-          {tutorReady ? (
-            <PaymentButton
-              plan="tutor_hour"
-              label="Book 1 hour"
-              fallbackHref="/tutors"
-              fallbackLabel="Request tutor instead"
-            />
-          ) : (
-            <Link href="/tutors" className={btnClass()}>
-              Request human tutor
+      </section>
+
+      {/* Add-ons */}
+      <section className="mb-12">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500 mb-4">
+          Add-ons
+        </h2>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <PlanCard
+            name={human.name}
+            features={[
+              ...human.features,
+              `${PLATFORM_FEE.humanTutorPercent}% platform fee — tutors keep the rest`,
+            ]}
+            priceSlot={
+              <p className="text-3xl font-bold text-white">
+                {formatUsd(human.rateFrom)}–{formatUsd(human.rateTo)}
+                <span className="text-sm font-normal text-zinc-400">/hr</span>
+              </p>
+            }
+          >
+            {tutorReady ? (
+              <PaymentButton
+                plan="tutor_hour"
+                label="Book 1 hour"
+                fallbackHref="/tutors"
+                fallbackLabel="Request tutor instead"
+              />
+            ) : (
+              <Link href="/tutors" className={btnClass()}>
+                Request human tutor
+              </Link>
+            )}
+          </PlanCard>
+          <PlanCard
+            name={PRICING.school.name}
+            features={[
+              ...PRICING.school.features,
+              `Min ${PRICING.school.minimumSeats} seats`,
+            ]}
+            priceSlot={
+              <p className="text-3xl font-bold text-white">
+                {formatUsd(PRICING.school.pricePerStudentMonth)}
+                <span className="text-sm font-normal text-zinc-400">
+                  /student/mo
+                </span>
+              </p>
+            }
+          >
+            <Link href="/teacher" className={btnClass()}>
+              Contact for pilot
             </Link>
-          )}
-        </PlanCard>
-        <PlanCard
-          name={PRICING.school.name}
-          price={formatUsd(PRICING.school.pricePerStudentMonth)}
-          period="/student/mo"
-          features={[
-            ...PRICING.school.features,
-            `Min ${PRICING.school.minimumSeats} seats`,
-          ]}
-        >
-          <Link href="/teacher" className={btnClass()}>
-            Contact for pilot
-          </Link>
-        </PlanCard>
-      </div>
+          </PlanCard>
+        </div>
+      </section>
 
       {!proReady && configLoaded && (
         <section
           id="waitlist"
           className="rounded-2xl border border-brand-400/30 bg-brand-500/10 p-8 mb-12 scroll-mt-24"
         >
-          <h2 className="text-lg font-semibold text-white">Join the Pro waitlist</h2>
+          <h2 className="text-lg font-semibold text-white">Join the waitlist</h2>
           <p className="mt-2 text-sm text-zinc-400 max-w-lg">
-            Checkout isn&apos;t live yet. Get notified when unlimited AI sessions
-            are available.
+            Checkout isn&apos;t live yet. Get notified when membership,
+            curricula, and bundle billing open.
           </p>
           <div className="mt-6">
             <WaitlistForm source="pricing" />
@@ -193,18 +404,36 @@ export default function PricingPage() {
         </summary>
         <ul className="mt-4 space-y-3 text-sm text-zinc-400 max-w-2xl">
           <li>
-            <strong className="text-zinc-200">AI study:</strong> Free (
-            {freeSessionsShortLabel()}) or Pro ({formatUsd(PRICING.pro.priceMonthly)}/mo unlimited).
+            <strong className="text-zinc-200">Free:</strong>{" "}
+            {freeSessionsShortLabel()} on any track preview.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Membership:</strong>{" "}
+            {formatUsd(membership.priceMonthly)}/mo or{" "}
+            {formatUsd(membership.priceAnnual)}/yr — required seat before any
+            paid curriculum.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Curriculum library:</strong>{" "}
+            {formatUsd(curriculumRange.minM)}–{formatUsd(curriculumRange.maxM)}/mo
+            or {formatUsd(curriculumRange.minA)}–{formatUsd(curriculumRange.maxA)}
+            /yr per area — each curriculum priced separately.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Single course:</strong>{" "}
+            {formatUsd(track.priceMonthly)}/mo or {formatUsd(track.priceAnnual)}
+            /yr for one track (e.g. Calc I, AP Physics).
+          </li>
+          <li>
+            <strong className="text-zinc-200">All-in-one:</strong>{" "}
+            {formatUsd(bundle.priceMonthly)}/mo or {formatUsd(bundle.priceAnnual)}
+            /yr — membership + every library ({bundleSavingsPercent("annual")}%
+            off à la carte annually).
           </li>
           <li>
             <strong className="text-zinc-200">Human tutor:</strong> Market ranges{" "}
-            {formatUsd(human.rateFrom)}–{formatUsd(human.rateTo)}/hr by subject — you
-            pick a budget tier; tutors bid in range. {PLATFORM_FEE.humanTutorPercent}%
-            platform fee; pay only after you approve a match.
-          </li>
-          <li>
-            <strong className="text-zinc-200">Schools:</strong> Per-seat pricing from{" "}
-            {formatUsd(PRICING.school.pricePerStudentMonth)}/student/mo.
+            {formatUsd(human.rateFrom)}–{formatUsd(human.rateTo)}/hr —{" "}
+            {PLATFORM_FEE.humanTutorPercent}% platform fee.
           </li>
         </ul>
       </details>

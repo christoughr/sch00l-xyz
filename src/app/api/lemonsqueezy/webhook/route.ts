@@ -1,7 +1,10 @@
 import crypto from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { grantEntitlement, revokeEntitlementsBySubscription } from "@/lib/entitlements";
 import { notifyFounder } from "@/lib/founder-notify";
+import { lemonVariantMeta } from "@/lib/lemonsqueezy";
 import { setProStatus } from "@/lib/pro-gate";
+import type { SellableCurriculumId } from "@/lib/pricing";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -21,57 +24,125 @@ function verifySignature(rawBody: string, signatureHeader: string | null): boole
   return crypto.timingSafeEqual(hmac, signature);
 }
 
-async function grantPro(opts: {
-  userId?: string | null;
-  email?: string | null;
-  subscriptionId?: string;
-  orderId?: string;
-}): Promise<void> {
+async function resolveUserId(
+  userId?: string | null,
+  email?: string | null
+): Promise<string | null> {
+  if (userId) return userId;
   const admin = createAdminClient();
-  if (!admin) return;
+  if (!admin || !email) return null;
+  const { data } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("email", email.toLowerCase().trim())
+    .maybeSingle();
+  return data?.id ?? null;
+}
 
-  if (opts.userId) {
+async function grantFromCheckout(opts: {
+  userId: string;
+  plan: string;
+  subscriptionId?: string;
+  variantId?: string;
+  interval?: string;
+  curriculumId?: string;
+  trackId?: string;
+}): Promise<void> {
+  const interval =
+    opts.interval === "annual" ? "annual" : ("monthly" as const);
+
+  if (opts.variantId) {
+    const meta = lemonVariantMeta(opts.variantId);
+    if (meta) {
+      if (meta.kind === "membership") {
+        await grantEntitlement({
+          userId: opts.userId,
+          kind: "membership",
+          billingInterval: meta.interval,
+          lsSubscriptionId: opts.subscriptionId,
+          lsVariantId: opts.variantId,
+        });
+        return;
+      }
+      if (meta.kind === "bundle") {
+        await grantEntitlement({
+          userId: opts.userId,
+          kind: "bundle",
+          billingInterval: meta.interval,
+          lsSubscriptionId: opts.subscriptionId,
+          lsVariantId: opts.variantId,
+        });
+        await setProStatus(opts.userId, true, {
+          lsSubscriptionId: opts.subscriptionId,
+        });
+        return;
+      }
+      if (meta.kind === "curriculum" && meta.curriculumId) {
+        await grantEntitlement({
+          userId: opts.userId,
+          kind: "curriculum",
+          curriculumId: meta.curriculumId,
+          billingInterval: meta.interval,
+          lsSubscriptionId: opts.subscriptionId,
+          lsVariantId: opts.variantId,
+        });
+        return;
+      }
+      if (meta.kind === "track") {
+        await grantEntitlement({
+          userId: opts.userId,
+          kind: "track",
+          trackId: opts.trackId || undefined,
+          billingInterval: meta.interval,
+          lsSubscriptionId: opts.subscriptionId,
+          lsVariantId: opts.variantId,
+        });
+        return;
+      }
+    }
+  }
+
+  if (
+    opts.plan === "pro" ||
+    opts.plan === "bundle" ||
+    opts.plan.startsWith("bundle")
+  ) {
+    await grantEntitlement({
+      userId: opts.userId,
+      kind: "bundle",
+      billingInterval: interval,
+      lsSubscriptionId: opts.subscriptionId,
+      lsVariantId: opts.variantId,
+    });
     await setProStatus(opts.userId, true, {
       lsSubscriptionId: opts.subscriptionId,
-      lsOrderId: opts.orderId,
     });
     return;
   }
 
-  const email = opts.email?.toLowerCase().trim();
-  if (!email) return;
-
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
-
-  if (profile?.id) {
-    await setProStatus(profile.id, true, {
+  if (opts.plan.startsWith("curriculum:")) {
+    const curriculumId = opts.plan.split(":")[1] as SellableCurriculumId;
+    await grantEntitlement({
+      userId: opts.userId,
+      kind: "curriculum",
+      curriculumId,
+      billingInterval: interval,
       lsSubscriptionId: opts.subscriptionId,
-      lsOrderId: opts.orderId,
+      lsVariantId: opts.variantId,
+    });
+    return;
+  }
+
+  if (opts.plan.startsWith("track:") || opts.trackId) {
+    await grantEntitlement({
+      userId: opts.userId,
+      kind: "track",
+      trackId: opts.trackId || opts.plan.split(":")[1],
+      billingInterval: interval,
+      lsSubscriptionId: opts.subscriptionId,
+      lsVariantId: opts.variantId,
     });
   }
-}
-
-async function revokePro(opts: {
-  userId?: string | null;
-  email?: string | null;
-}): Promise<void> {
-  const admin = createAdminClient();
-  if (!admin) return;
-
-  let userId = opts.userId;
-  if (!userId && opts.email) {
-    const { data } = await admin
-      .from("profiles")
-      .select("id")
-      .eq("email", opts.email.toLowerCase().trim())
-      .maybeSingle();
-    userId = data?.id;
-  }
-  if (userId) await setProStatus(userId, false);
 }
 
 export async function POST(req: Request) {
@@ -93,6 +164,9 @@ export async function POST(req: Request) {
       custom_data?: {
         plan?: string;
         user_id?: string;
+        interval?: string;
+        curriculum_id?: string;
+        track_id?: string;
       };
     };
     data?: {
@@ -100,6 +174,7 @@ export async function POST(req: Request) {
       attributes?: {
         user_email?: string;
         customer_email?: string;
+        variant_id?: number;
         status?: string;
         total?: number;
         currency?: string;
@@ -113,26 +188,37 @@ export async function POST(req: Request) {
     payload.data?.attributes?.user_email ??
     payload.data?.attributes?.customer_email ??
     null;
-  const userId = custom.user_id ?? null;
+  const userId = await resolveUserId(custom.user_id, email);
   const plan = custom.plan ?? "unknown";
   const subscriptionId =
     event.startsWith("subscription") ? payload.data?.id ?? undefined : undefined;
   const orderId =
     event === "order_created" ? payload.data?.id ?? undefined : undefined;
+  const variantId = payload.data?.attributes?.variant_id
+    ? String(payload.data.attributes.variant_id)
+    : undefined;
 
   try {
     if (
       event === "subscription_created" ||
       event === "subscription_payment_success" ||
-      (event === "order_created" && plan === "pro")
+      (event === "order_created" && plan !== "tutor_hour")
     ) {
       await notifyFounder({
         kind: "waitlist",
         summary: `Lemon Squeezy: ${event}`,
         fields: { email, plan, userId },
       });
-      if (plan === "pro" || event.startsWith("subscription")) {
-        await grantPro({ userId, email, subscriptionId, orderId });
+      if (userId) {
+        await grantFromCheckout({
+          userId,
+          plan,
+          subscriptionId,
+          variantId,
+          interval: custom.interval,
+          curriculumId: custom.curriculum_id || undefined,
+          trackId: custom.track_id || undefined,
+        });
       }
     }
 
@@ -142,7 +228,11 @@ export async function POST(req: Request) {
         summary: `Lemon Squeezy subscription ended: ${event}`,
         fields: { email, userId },
       });
-      await revokePro({ userId, email });
+      if (subscriptionId) {
+        await revokeEntitlementsBySubscription(subscriptionId);
+      } else if (userId) {
+        await setProStatus(userId, false);
+      }
     }
   } catch (e) {
     console.error("Lemon webhook:", e);

@@ -115,13 +115,26 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/college physics.*lab manual|lab manual.*college physics|college physics.*ap.*lab/i.test(t))
     return ["college-physics-1", "ap-physics-1"];
 
-  if (/general chemistry|gen(?:eral)? chem[^i]|zumdahl|brown.*chemistry|chemistry.*central science|openstax.*chem/i.test(t) && !/organic|biochem/i.test(t))
+  if (
+    /gen(?:eral)?\s*chem(?:istry)?\s*(ii|2|two|second)|chem(?:istry)?\s*(2046|ii\b)|acp gen chem ii|gen chem ii/i.test(
+      t
+    ) &&
+    !/organic chemistry|biochem|mcat/i.test(t)
+  )
+    return ["college-gen-chem-2"];
+
+  if (
+    /general chemistry|gen(?:eral)?\s*chem(?:istry)?\s*i\b|zumdahl|brown.*chemistry|chemistry.*central science|openstax.*chem/i.test(
+      t
+    ) &&
+    !/organic|biochem|gen chem ii|chem\s*ii/i.test(t)
+  )
     return ["college-gen-chem-1"];
 
   if (/college-calc-3|calculus iii|calculus 3[^0-9]|calc iii|multivariable calculus/i.test(t) && !/ap calc|subject test/i.test(t))
     return ["college-calc-3"];
 
-  if (/linear algebra|matrix theory|introductory algebra.*matrix/i.test(t) && !/subject test/i.test(t))
+  if (/linear algebra|matrix theory|introductory algebra.*matrix|gilbert strang|introduction to linear algebra|linear algebra done right|hefferon.*linear|engineering mathematics.*vol.*algebra/i.test(t) && !/subject test/i.test(t))
     return ["college-linear-algebra"];
 
   if (/college physics.*e&m|physics ii[^i]|physics 2[^0-9]|electricity and magnetism|university physics.*vol.*2/i.test(t))
@@ -237,6 +250,26 @@ export function classifyByNameAndText(filename, preview = "") {
   }
 
   if (/biology|ap.?bio/i.test(t)) return ["ap-bio"];
+
+  if (/mcat.*general chemistry|berkeley review.*general chemistry/i.test(t)) {
+    if (/part\s*2|volume\s*2|\bii\b/i.test(t))
+      return ["exam_prep", "college-gen-chem-2"];
+    return ["exam_prep", "college-gen-chem-1"];
+  }
+
+  if (
+    /general chemistry|gen(?:eral)?\s*chem(?:istry)?\s*i\b|chem\s*101|chem\s*2045|survival guide to general chemistry|essentials of chemistry|principles of general|introductory general.*chemistry|acp general chemistry i|timberlake.*chemistry|chang.*chemistry|9781337|9781259|9781269|9781118459850/i.test(
+      t
+    ) &&
+    !/organic chemistry|biological chemistry|gen.?organic.?bio|gob chem|mcat|berkeley review|gen chem ii|chem\s*ii/i.test(
+      t
+    )
+  )
+    return ["college-gen-chem-1"];
+
+  if (/general.?organic.?biological|gen.?organic.?bio|essentials of gen.?organic/i.test(t))
+    return ["college-gen-chem-1"];
+
   if (/chemistry|ap.?chem/i.test(t)) return ["ap-chem", "college-gen-chem-1"];
   if (/ap.?calc|5 steps.*calculus ab|cracking the ap calculus/i.test(t)) return ["ap-calc-ab"];
 

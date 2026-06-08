@@ -1,18 +1,9 @@
+import { loadEntitlements } from "@/lib/entitlements";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 
 export async function isProUserId(userId: string): Promise<boolean> {
-  const admin = createAdminClient();
-  const client = admin ?? (await createClient());
-  if (!client) return false;
-
-  const { data } = await client
-    .from("profiles")
-    .select("is_pro")
-    .eq("id", userId)
-    .maybeSingle();
-
-  return !!data?.is_pro;
+  const snap = await loadEntitlements(userId);
+  return snap.isPro;
 }
 
 export async function setProStatus(

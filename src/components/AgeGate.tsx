@@ -95,12 +95,8 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
   if (consent && canUseApp(consent)) return <>{children}</>;
 
   return (
-    <>
-      <div className="invisible h-0 overflow-hidden" aria-hidden inert>
-        {children}
-      </div>
-      <div
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-surface-900 p-4"
+    <div
+        className="fixed inset-0 z-[100] flex items-center justify-center overflow-x-hidden overflow-y-auto bg-surface-900 p-4"
         role="dialog"
         aria-modal="true"
         aria-labelledby="age-gate-title"
@@ -193,6 +189,5 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
           </button>
         </form>
       </div>
-    </>
   );
 }

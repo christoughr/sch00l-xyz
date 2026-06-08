@@ -4,10 +4,26 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const schema = z.object({
-  plan: z.enum(["pro", "tutor_hour"]),
-  email: z.string().email().optional(),
-});
+const schema = z.union([
+  z.object({
+    plan: z.enum(["pro", "tutor_hour"]),
+    email: z.string().email().optional(),
+  }),
+  z.object({
+    kind: z.enum([
+      "membership",
+      "bundle",
+      "curriculum",
+      "track",
+      "pro",
+      "tutor_hour",
+    ]),
+    interval: z.enum(["monthly", "annual"]).optional(),
+    curriculumId: z.string().optional(),
+    trackId: z.string().optional(),
+    email: z.string().email().optional(),
+  }),
+]);
 
 export async function POST(req: Request) {
   const ip = clientIp(req);
@@ -40,7 +56,7 @@ export async function POST(req: Request) {
     }
   }
 
-  const result = await startCheckout(parsed.data.plan, email, userId);
+  const result = await startCheckout(parsed.data, email, userId);
 
   if ("url" in result) {
     return NextResponse.json({ url: result.url });

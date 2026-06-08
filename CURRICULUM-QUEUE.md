@@ -22,7 +22,8 @@
 | College Linear Algebra (`college-linear-algebra`) | 15 |
 | College Physics I (`college-physics-1`) | 135 |
 | College Physics II (`college-physics-2`) | 344 |
-| College Gen Chem I (`college-gen-chem-1`) | 79 |
+| College Gen Chem I (`college-gen-chem-1`) | ~191 |
+| College Gen Chem II (`college-gen-chem-2`) | ~31 |
 
 ## Exam prep courses (summary)
 

@@ -3,11 +3,19 @@ import {
   isLemonSqueezyConfigured,
   lemonSuccessUrl,
   lemonVariantIds,
+  resolveLemonVariantId,
+  type LemonCheckoutKind,
+  type LemonCheckoutRequest,
 } from "./lemonsqueezy";
 import { getStripe, isStripeConfigured, stripePriceIds } from "./stripe";
 import { SITE_URL } from "./site";
 
+/** Legacy plan ids */
 export type PaymentPlan = "pro" | "tutor_hour";
+
+export type CheckoutRequest =
+  | { plan: PaymentPlan }
+  | LemonCheckoutRequest;
 
 export function paymentConfig() {
   const lemon = isLemonSqueezyConfigured();
@@ -16,65 +24,108 @@ export function paymentConfig() {
   const stripePrices = stripePriceIds();
 
   const proReady =
-    (lemon && !!lemonVariants.pro) ||
+    (lemon &&
+      (!!lemonVariants.pro ||
+        !!lemonVariants.bundle_monthly ||
+        !!lemonVariants.bundle_annual)) ||
     (stripe && !!stripePrices.proMonthly);
   const tutorReady =
     (lemon && !!lemonVariants.tutor) ||
     (stripe && !!stripePrices.tutorHour);
+  const membershipReady =
+    lemon &&
+    (!!lemonVariants.membership_monthly ||
+      !!lemonVariants.membership_annual);
+  const bundleReady =
+    lemon &&
+    (!!lemonVariants.bundle_monthly ||
+      !!lemonVariants.bundle_annual ||
+      !!lemonVariants.pro);
 
   let provider: "lemonsqueezy" | "stripe" | null = null;
-  if (lemon && (lemonVariants.pro || lemonVariants.tutor)) {
+  if (lemon && (lemonVariants.pro || lemonVariants.tutor || bundleReady)) {
     provider = "lemonsqueezy";
   } else if (stripe && (stripePrices.proMonthly || stripePrices.tutorHour)) {
     provider = "stripe";
   }
 
-  return { provider, proReady, tutorReady, lemon, stripe };
+  return {
+    provider,
+    proReady,
+    tutorReady,
+    membershipReady,
+    bundleReady,
+    lemon,
+    stripe,
+  };
+}
+
+function toLemonRequest(req: CheckoutRequest): LemonCheckoutRequest | null {
+  if ("plan" in req) {
+    if (req.plan === "pro") return { kind: "pro", interval: "monthly" };
+    if (req.plan === "tutor_hour") return { kind: "tutor_hour" };
+    return null;
+  }
+  return req;
 }
 
 export async function startCheckout(
-  plan: PaymentPlan,
+  req: CheckoutRequest,
   email?: string,
   userId?: string
 ): Promise<{ url: string } | { error: string; fallbackUrl: string }> {
   const { provider } = paymentConfig();
   const base = SITE_URL.replace(/\/$/, "");
+  const lemonReq = toLemonRequest(req);
+  const legacyPlan =
+    "plan" in req ? req.plan : lemonReq?.kind === "tutor_hour" ? "tutor_hour" : "pro";
 
-  if (provider === "lemonsqueezy") {
-    const variants = lemonVariantIds();
-    const variantId = plan === "pro" ? variants.pro : variants.tutor;
+  if (provider === "lemonsqueezy" && lemonReq) {
+    const variantId = resolveLemonVariantId(lemonReq);
     if (!variantId) {
       return {
         error: "Price not configured",
-        fallbackUrl: plan === "pro" ? "/#waitlist" : "/tutors",
+        fallbackUrl: legacyPlan === "pro" ? "/#waitlist" : "/tutors",
       };
     }
+    const kind: LemonCheckoutKind = lemonReq.kind;
+    const planLabel =
+      kind === "curriculum" && lemonReq.curriculumId
+        ? `curriculum:${lemonReq.curriculumId}`
+        : kind === "track" && lemonReq.trackId
+          ? `track:${lemonReq.trackId}`
+          : kind;
     const url = await createLemonCheckout({
       variantId,
-      plan,
+      plan: planLabel,
       email,
       userId,
-      redirectUrl: lemonSuccessUrl(plan),
+      redirectUrl: lemonSuccessUrl(kind),
+      custom: {
+        interval: lemonReq.interval ?? "monthly",
+        curriculum_id: lemonReq.curriculumId ?? "",
+        track_id: lemonReq.trackId ?? "",
+      },
     });
     if (url) return { url };
     return {
       error: "Checkout unavailable",
-      fallbackUrl: plan === "pro" ? "/#waitlist" : "/tutors",
+      fallbackUrl: legacyPlan === "pro" ? "/#waitlist" : "/tutors",
     };
   }
 
-  if (provider === "stripe") {
+  if (provider === "stripe" && "plan" in req) {
     const stripe = getStripe();
     const prices = stripePriceIds();
     if (!stripe) {
       return { error: "Stripe unavailable", fallbackUrl: "/#waitlist" };
     }
-    const isPro = plan === "pro";
+    const isPro = req.plan === "pro";
     const priceId = isPro ? prices.proMonthly : prices.tutorHour;
     if (!priceId) {
       return {
         error: "Price not configured",
-        fallbackUrl: plan === "pro" ? "/#waitlist" : "/tutors",
+        fallbackUrl: req.plan === "pro" ? "/#waitlist" : "/tutors",
       };
     }
     const session = await stripe.checkout.sessions.create({
@@ -85,7 +136,7 @@ export async function startCheckout(
         ? `${base}/pro/success?session_id={CHECKOUT_SESSION_ID}`
         : `${base}/tutors?paid=1`,
       cancel_url: `${base}/pricing`,
-      metadata: { plan },
+      metadata: { plan: req.plan },
     });
     if (session.url) return { url: session.url };
     return { error: "Could not start checkout", fallbackUrl: "/pricing" };
@@ -93,6 +144,6 @@ export async function startCheckout(
 
   return {
     error: "Payments not configured",
-    fallbackUrl: plan === "pro" ? "/#waitlist" : "/tutors",
+    fallbackUrl: legacyPlan === "pro" ? "/#waitlist" : "/tutors",
   };
 }
