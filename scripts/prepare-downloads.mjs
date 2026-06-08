@@ -25,6 +25,14 @@ const OCR_NAME_PATTERNS = [
   /study guide and student solutions manual for mcmurry/i,
   /microsoft word - klein_ssm/i,
   /student.?s study guide and solutions manual for organic/i,
+  /mathematical foundations.*discrete math|gallier.*discrete/i,
+  /lecture notes for 21-228.*discrete mathematics/i,
+];
+
+/** Image PDFs that falsely report a text layer — always OCR. */
+const FORCE_OCR_PATTERNS = [
+  /mathematical foundations.*discrete math|gallier.*discrete/i,
+  /lecture notes for 21-228.*discrete mathematics.*\.pdf$/i,
 ];
 
 function isUpToDate(src, dest) {
