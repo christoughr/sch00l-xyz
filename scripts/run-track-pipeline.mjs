@@ -71,6 +71,8 @@ if (!flags.has("--skip-seed") && seedScript) run("node", [`scripts/${seedScript}
 if (flags.has("--refresh")) run("node", ["scripts/delete-publisher-lessons.mjs", track]);
 run("node", ["scripts/ingest-licensed-pdf.mjs", "--track", track, "--from-downloads", "--apply"]);
 if (!flags.has("--skip-rewrite"))
-  run("npx", ["tsx", "scripts/rewrite-publisher-lessons.ts", track, "--limit", "100"]);
+  run("npx", ["tsx", "scripts/rewrite-publisher-lessons.ts", track, "--limit", "500"]);
 run("node", ["scripts/publish-track-drafts.mjs", track]);
 if (polishScript) run("npx", ["tsx", `scripts/${polishScript}`]);
+if (!flags.has("--skip-quiz"))
+  run("npx", ["tsx", "scripts/generate-lesson-quizzes.ts", track, "--limit", "500"]);

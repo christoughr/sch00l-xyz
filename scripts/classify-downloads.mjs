@@ -105,9 +105,15 @@ export function classifyByNameAndText(filename, preview = "") {
   const n = normalizeTitle(filename.toLowerCase());
   const t = normalizeTitle(`${filename} ${preview}`.toLowerCase());
 
-  if (/^all \d+ openstax|openstax titles including latest|openstax sciences for college/i.test(n)) return [];
-  if (/^gmat\b|\bssat\b/i.test(t)) return [];
+  if (/^index(?:eng|kr)?\.pdf$/i.test(n)) return [];
   if (/정부24|사업자등록|business registration|문서출력/i.test(n)) return [];
+  if (/^gmat\b|\bssat\b/i.test(t)) return [];
+
+  if (/gazabarron|barron.*ap complete.*collection/i.test(t))
+    return ["ap-bio", "ap-chem", "ap-stats", "ap-physics-1", "ap-physics-2", "sat-math", "sat-reading"];
+
+  if (/openstax sciences for college|all \d+ openstax titles/i.test(t))
+    return ["college-gen-chem-1", "college-physics-1", "college-stats-intro"];
 
   if (/\.(ocr\.epub|ocr-text\.pdf|converted\.epub)$/i.test(n)) {
     const ocr = classifyOcrOrConverted(n, preview);

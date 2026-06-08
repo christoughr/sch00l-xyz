@@ -1,13 +1,25 @@
 /** Detect publisher extract text that must be paraphrased before publish. */
 
+export function wasLlmRewritten(body: string): boolean {
+  return (
+    /### Key ideas/i.test(body) &&
+    /### Practice/i.test(body) &&
+    /Ask the AI tutor to quiz you on this topic/i.test(body)
+  );
+}
+
 export function needsPublisherRewrite(body: string, sourcePdfName: string | null): boolean {
   if (!body?.trim()) return false;
   if (sourcePdfName === "sch00l-original-oer-aligned") return false;
+  if (wasLlmRewritten(body)) return false;
   if (/### Study notes \(extract|publisher source:|digital adaptation for sch00l/i.test(body))
     return true;
-  // Heuristic: long blocks with minimal markdown structure often = raw paste
+  if (sourcePdfName) return true;
   const plain = body.replace(/[#*_`\[\]()>-]/g, " ").replace(/\s+/g, " ").trim();
   if (plain.length > 400 && (body.match(/###/g)?.length ?? 0) <= 1) return true;
+  // Polish script wrapper with publisher paste still underneath
+  if (/### Key ideas/i.test(body) && !/### Worked example/i.test(body) && plain.length > 500)
+    return true;
   return false;
 }
 

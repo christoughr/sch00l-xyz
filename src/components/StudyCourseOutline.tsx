@@ -34,7 +34,7 @@ export function StudyCourseOutline({
 }: {
   trackId: string;
   sectionId: string | null;
-  onPickLesson: (title: string, body: string) => void;
+  onPickLesson: (lessonId: string, title: string, body: string) => void;
 }) {
   const [units, setUnits] = useState<Unit[]>([]);
   const [access, setAccess] = useState<CourseAccess | null>(null);
@@ -127,6 +127,7 @@ export function StudyCourseOutline({
                         type="button"
                         onClick={() =>
                           onPickLesson(
+                            lesson.id,
                             `${unit.title}: ${lesson.title}`,
                             lesson.body_markdown
                           )

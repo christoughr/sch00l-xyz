@@ -12,7 +12,7 @@ let skipped = 0;
 
 for (const name of fs.readdirSync(DOWNLOADS)) {
   if (!/\.(pdf|epub|zip|txt|djvu|ocr\.epub|converted\.txt)$/i.test(name)) continue;
-  if (/^all \d+ openstax/i.test(name)) {
+  if (/^index(?:eng|kr)?\.pdf$/i.test(name) || /정부24|사업자등록|business registration/i.test(name)) {
     skipped++;
     continue;
   }

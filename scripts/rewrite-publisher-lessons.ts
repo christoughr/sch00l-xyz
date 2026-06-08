@@ -25,19 +25,14 @@ if (!track) {
   process.exit(1);
 }
 
-function loadEnv() {
-  const envPath = path.join(__dirname, "..", ".env.local");
-  if (!fs.existsSync(envPath)) return;
-  for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
-    const m = line.match(/^([^#=]+)=(.*)$/);
-    if (m && !process.env[m[1].trim()])
-      process.env[m[1].trim()] = m[2].trim().replace(/^["']|["']$/g, "");
-  }
+async function loadEnv() {
+  const { loadEnvLocal } = await import("./load-env.mjs");
+  loadEnvLocal(path.join(__dirname, ".."));
 }
 
 async function main() {
-  loadEnv();
-  if (!process.env.OPENAI_API_KEY && !process.env.AI_API_KEY) {
+  await loadEnv();
+  if (!process.env.OPENAI_API_KEY && !process.env.GROQ_API_KEY && !process.env.AI_API_KEY) {
     console.error("Set OPENAI_API_KEY or AI_API_KEY in .env.local for paraphrase rewrite");
     process.exit(1);
   }
@@ -61,14 +56,16 @@ async function main() {
     .from("course_lessons")
     .select("id, title, body_markdown, source_pdf_name, ord, review_status")
     .in("unit_id", unitIds)
-    .gte("ord", 100)
     .order("ord");
 
-  const todo = (lessons ?? [])
-    .filter((l) => needsPublisherRewrite(l.body_markdown ?? "", l.source_pdf_name))
-    .slice(0, limit);
+  const needsRewrite = (lessons ?? []).filter((l) =>
+    needsPublisherRewrite(l.body_markdown ?? "", l.source_pdf_name)
+  );
+  const todo = needsRewrite.slice(0, limit);
 
-  console.log(`Track ${track}: ${todo.length} lessons need rewrite (${lessons?.length ?? 0} publisher rows)`);
+  console.log(
+    `Track ${track}: ${todo.length}/${needsRewrite.length} need rewrite (${lessons?.length ?? 0} total lessons)`
+  );
   if (!todo.length) return;
 
   let ok = 0;
