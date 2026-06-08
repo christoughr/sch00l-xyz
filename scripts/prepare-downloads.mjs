@@ -131,10 +131,13 @@ for (const name of fs.readdirSync(DOWNLOADS)) {
     continue;
   }
 
-  const hasText = await pdfHasText(full);
-  if (hasText) continue;
+  const forceOcr = FORCE_OCR_PATTERNS.some((re) => re.test(name));
+  if (!forceOcr) {
+    const hasText = await pdfHasText(full);
+    if (hasText) continue;
+  }
 
-  console.log("Auto-OCR (no text layer):", name, "→", tracks.join("+"));
+  console.log(forceOcr ? "Force-OCR:" : "Auto-OCR (no text layer):", name, "→", tracks.join("+"));
   if (calibreConvert(full, ocrOut, ["--pdf-engine", "calibre"])) ocr.push(path.basename(ocrOut));
 }
 

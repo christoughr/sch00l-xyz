@@ -18,6 +18,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const track = process.argv[2];
 const limitIdx = process.argv.indexOf("--limit");
 const limit = limitIdx >= 0 ? Number(process.argv[limitIdx + 1]) : 50;
+const concIdx = process.argv.indexOf("--concurrency");
+const concurrency = concIdx >= 0 ? Math.max(1, Number(process.argv[concIdx + 1])) : 5;
 const dryRun = process.argv.includes("--dry-run");
 
 if (!track) {
@@ -69,7 +71,9 @@ async function main() {
   if (!todo.length) return;
 
   let ok = 0;
-  for (const lesson of todo) {
+  let cursor = 0;
+
+  async function rewriteOne(lesson: (typeof todo)[0]) {
     const rewritten = await chatCompletion(
       REWRITE_SYSTEM_PROMPT,
       buildRewriteUserPrompt(lesson.title, lesson.body_markdown ?? ""),
@@ -77,12 +81,12 @@ async function main() {
     );
     if (!rewritten || rewritten.length < 200) {
       console.warn("  skip (no LLM output):", lesson.title.slice(0, 60));
-      continue;
+      return;
     }
     if (dryRun) {
       console.log("  [dry-run]", lesson.title.slice(0, 50), "→", rewritten.slice(0, 80), "...");
       ok++;
-      continue;
+      return;
     }
     const { error } = await supabase
       .from("course_lessons")
@@ -93,8 +97,19 @@ async function main() {
       ok++;
       console.log("  rewritten:", lesson.title.slice(0, 70));
     }
-    await new Promise((r) => setTimeout(r, 300));
   }
+
+  async function worker() {
+    while (true) {
+      const i = cursor++;
+      if (i >= todo.length) return;
+      await rewriteOne(todo[i]);
+      await new Promise((r) => setTimeout(r, 80));
+    }
+  }
+
+  console.log(`  concurrency: ${concurrency}`);
+  await Promise.all(Array.from({ length: concurrency }, () => worker()));
   console.log(`Done — ${ok}/${todo.length} rewritten for ${track}`);
 }
 

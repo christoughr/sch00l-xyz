@@ -14,6 +14,9 @@ const root = path.join(__dirname, "..");
 const limitIdx = process.argv.indexOf("--limit-per-track");
 const limitPerTrack =
   limitIdx >= 0 ? String(process.argv[limitIdx + 1]) : "500";
+const concurrency = process.argv.includes("--concurrency")
+  ? process.argv[process.argv.indexOf("--concurrency") + 1]
+  : "5";
 const extraArgs = process.argv.filter(
   (a) => a !== "--limit-per-track" && a !== process.argv[limitIdx + 1]
 );
@@ -26,7 +29,15 @@ function runTrack(track: string): Promise<number> {
       track,
       "--limit",
       limitPerTrack,
-      ...extraArgs.filter((a) => a !== process.argv[0] && !a.endsWith("rewrite-all-tracks.ts")),
+      "--concurrency",
+      concurrency,
+      ...extraArgs.filter(
+        (a) =>
+          a !== process.argv[0] &&
+          !a.endsWith("rewrite-all-tracks.ts") &&
+          a !== "--concurrency" &&
+          a !== concurrency
+      ),
     ];
     const child = spawn("npx", args, {
       cwd: root,

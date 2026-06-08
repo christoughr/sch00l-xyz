@@ -331,8 +331,26 @@ export function classifyByNameAndText(filename, preview = "") {
   )
     return ["college-gen-chem-1"];
 
-  if (/general.?organic.?biological|gen.?organic.?bio|essentials of gen.?organic/i.test(t))
+  if (
+    /general.?organic.?biological|gen.?organic.?bio|essentials of gen.?organic|gorzynski smith|gobc|organic and biological chemistry/i.test(
+      t
+    )
+  )
     return ["college-gen-chem-1"];
+
+  if (/intro to college math|basic arithmetic, geometry, algebra/i.test(t))
+    return ["college-calc-1"];
+
+  if (/mcat.*biology|mcat.*biochemistry|berkeley review.*biology|kaplan.*mcat.*biology/i.test(t))
+    return ["mcat-bb"];
+  if (/mcat.*chemistry|mcat.*physics|berkeley review.*physics|kaplan.*mcat.*chemistry/i.test(t))
+    return ["mcat-cp"];
+  if (/mcat.*psych|mcat.*sociology|kaplan.*mcat.*behavioral/i.test(t))
+    return ["mcat-ps"];
+  if (/mcat.*cars|critical analysis.*mcat|kaplan.*mcat.*critical/i.test(t))
+    return ["mcat-cars"];
+  if (/berkeley review.*mcat|kaplan.*mcat.*7|examkrackers.*mcat/i.test(t))
+    return ["mcat-bb", "mcat-cp", "mcat-ps", "mcat-cars"];
 
   if (/chemistry|ap.?chem/i.test(t)) return ["ap-chem", "college-gen-chem-1"];
   if (/ap.?calc|5 steps.*calculus ab|cracking the ap calculus/i.test(t)) return ["ap-calc-ab"];

@@ -36,6 +36,8 @@ const seedScript = {
   "college-discrete-math": "seed-college-discrete-math.mjs",
   "college-org-chem": "seed-college-org-chem.mjs",
   "college-differential-equations": "seed-college-differential-equations.mjs",
+  "mcat-cp": "seed-mcat-cp.mjs",
+  "mcat-bb": "seed-mcat-bb.mjs",
   "ap-calc-ab": "seed-ap-calc-ab.mjs",
 }[track];
 
