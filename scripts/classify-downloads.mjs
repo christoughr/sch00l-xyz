@@ -352,7 +352,7 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/berkeley review.*mcat|kaplan.*mcat|examkrackers.*mcat|princeton review.*mcat|mcat prep|mcat complete/i.test(t))
     return ["mcat-bb", "mcat-cp", "mcat-ps", "mcat-cars"];
 
-  if (/multiple mini interview|\bmmi\b|medical school interview|winning strategies from.*mmi/i.test(t))
+  if (/multiple mini interview|\bmmi\b|medical school interview|winning strategies from.*mmi|interviews for medical school|isc medical|medical school interview preparation/i.test(t))
     return ["med-mmi"];
 
   if (/\bgmat\b|graduate management admission|gmac official guide|manhattan prep gmat/i.test(t))
