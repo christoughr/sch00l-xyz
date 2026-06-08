@@ -29,6 +29,7 @@
 /content/ingest/**/*.epub
 /content/ingest/**/*.mobi
 /content/ingest/**/*.zip
+/content/ingest/**/*.converted.txt
 /content/ingest/**/.extract/
 /content/ingest/**/mobi-*/
 

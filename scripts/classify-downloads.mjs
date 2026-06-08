@@ -5,6 +5,7 @@
  */
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import AdmZip from "adm-zip";
 import { extractText, getDocumentProxy } from "unpdf";
 
@@ -142,7 +143,7 @@ export function classifyByNameAndText(filename, preview = "") {
     return ["college-linear-algebra"];
 
   if (
-    /differential equation|diff eq|differential equations|boyce.*elementary|zill.*differential|blanchard.*differential|math 225|ode textbook/i.test(
+    /differential equation|diff eq|differential equations|boyce.*elementary|zill.*differential|blanchard.*differential|nagle.*differential|fundamentals of differential|math 225|ode textbook/i.test(
       t
     ) &&
     !/partial differential.*engineer/i.test(t)
@@ -150,7 +151,7 @@ export function classifyByNameAndText(filename, preview = "") {
     return ["college-differential-equations"];
 
   if (
-    /organic chemistry|org chem|orgo\b|wade.*organic|bruice|klein.*organic|mcmurry|carey.*organic|solomons.*organic|smith.*organic chemistry/i.test(
+    /organic chemistry|org chem|orgo\b|wade.*organic|bruice|organic.*klein|klein.*organic|klein.*ssm|ssm.*klein|microsoft word - klein|mcmurry|carey.*organic|solomons.*organic|smith.*organic chemistry/i.test(
       t
     ) &&
     !/biological chemistry|biochem|general.?organic.?bio|gob chem|introductory general and organic/i.test(
@@ -338,32 +339,38 @@ function suggestRename(filename, preview, tracks) {
   return null;
 }
 
-const files = fs.readdirSync(DOWNLOADS).filter((f) => /\.(pdf|epub|fb2|azw3|zip)$/i.test(f));
-const report = { unclassified: [], renamed: [], byTrack: {} };
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1]);
 
-for (const name of files) {
-  const full = path.join(DOWNLOADS, name);
-  const needsPreview = /^annas-arch/i.test(name) || /^5 steps to a 5 -- greg/i.test(name);
-  const preview = needsPreview ? await previewFile(full) : "";
-  const tracks = classifyByNameAndText(name, preview);
+if (isMain) {
+  const files = fs.readdirSync(DOWNLOADS).filter((f) => /\.(pdf|epub|fb2|azw3|zip|djvu|txt)$/i.test(f));
+  const report = { unclassified: [], renamed: [], byTrack: {} };
 
-  if (!tracks.length) {
-    report.unclassified.push({ name, preview: preview.slice(0, 120) });
-    continue;
-  }
-  for (const tr of tracks) {
-    report.byTrack[tr] = report.byTrack[tr] ?? [];
-    report.byTrack[tr].push(name);
-  }
+  for (const name of files) {
+    const full = path.join(DOWNLOADS, name);
+    const needsPreview = /^annas-arch/i.test(name) || /^5 steps to a 5 -- greg/i.test(name);
+    const preview = needsPreview ? await previewFile(full) : "";
+    const tracks = classifyByNameAndText(name, preview);
 
-  const newName = suggestRename(name, preview, tracks);
-  if (rename && newName && newName !== name) {
-    const dest = path.join(DOWNLOADS, newName);
-    if (!fs.existsSync(dest)) {
-      fs.copyFileSync(full, dest);
-      report.renamed.push({ from: name, to: newName, tracks });
+    if (!tracks.length) {
+      report.unclassified.push({ name, preview: preview.slice(0, 120) });
+      continue;
+    }
+    for (const tr of tracks) {
+      report.byTrack[tr] = report.byTrack[tr] ?? [];
+      report.byTrack[tr].push(name);
+    }
+
+    const newName = suggestRename(name, preview, tracks);
+    if (rename && newName && newName !== name) {
+      const dest = path.join(DOWNLOADS, newName);
+      if (!fs.existsSync(dest)) {
+        fs.copyFileSync(full, dest);
+        report.renamed.push({ from: name, to: newName, tracks });
+      }
     }
   }
-}
 
-console.log(JSON.stringify(report, null, 2));
+  console.log(JSON.stringify(report, null, 2));
+}
