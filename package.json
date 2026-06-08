@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "check:env": "node scripts/check-env.mjs",
+    "prep:status": "node scripts/prep-status.mjs",
+    "prep:watch": "node scripts/prep-watch.mjs --interval 60",
     "test": "npx --yes tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium",
@@ -34,7 +36,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
-    "pg": "^8.21.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

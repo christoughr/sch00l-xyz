@@ -383,6 +383,8 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/\bpmp\b|project management professional/i.test(t)) return ["pmp"];
   if (/aws cloud practitioner|\bclf-c02\b/i.test(t)) return ["aws-cloud-practitioner"];
 
+  if (/kindergarten.*math|math.*kindergarten|preschool and kindergarten|math no problem|kindergarten math workbook|beginning math|homeschool.*kindergarten.*math/i.test(t))
+    return ["k12-k-math"];
   if (/kindergarten|grade k\b|pre-k|prek/i.test(t)) return ["k12-k-math", "k12-k-reading"];
   if (/elementary|grades? [1-5]|grade [1-5]|primary school/i.test(t))
     return ["k12-elem-math", "k12-elem-reading", "k12-elem-science"];
