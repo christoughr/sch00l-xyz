@@ -24,6 +24,8 @@
 | College Physics II (`college-physics-2`) | 344 |
 | College Gen Chem I (`college-gen-chem-1`) | ~191 |
 | College Gen Chem II (`college-gen-chem-2`) | ~31 |
+| Intro Statistics (`college-stats-intro`) | ~47 |
+| Discrete Math (`college-discrete-math`) | ~31 |
 
 ## Exam prep courses (summary)
 

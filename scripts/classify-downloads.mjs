@@ -68,7 +68,11 @@ export const ANNAS_ARCH_MANUAL = {
 function classifyOcrOrConverted(n, preview = "") {
   const t = `${n} ${preview}`.toLowerCase();
   if (/정부24|사업자등록|business registration|문서출력/i.test(t)) return [];
-  if (/statistics|ap stats|q&a statistics/i.test(t)) return ["ap-stats"];
+  if (/intro stats|introductory statistics|de veaux|velleman|bock.*stat/i.test(t))
+    return ["college-stats-intro"];
+  if (/discrete mathematics|discrete math/i.test(t)) return ["college-discrete-math"];
+  if (/ap stats|ap statistics|q&a statistics|fast track.*ap.*stat/i.test(t))
+    return ["ap-stats"];
   if (/chemistry|ap chem/i.test(t)) return ["ap-chem"];
   if (/biology|subject test.*biology/i.test(t)) return ["ap-bio"];
   if (
@@ -163,7 +167,30 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/sat math in the classroom/i.test(t)) return ["sat-math"];
   if (/act math in the classroom/i.test(t)) return ["act-math"];
 
-  if (/ap\s*statistics|ap\s*stats|practice of statistics|q&a statistics|barron.*statistics|5 steps.*statistics|statistics crash course/i.test(t))
+  if (
+    /discrete mathematics|discrete math|cse 280.*discrete|gallier.*discrete|bender.*discrete|williamson.*discrete|short course in discrete|lecture notes.*discrete mathematics/i.test(
+      t
+    ) &&
+    !/ap /i.test(t)
+  )
+    return ["college-discrete-math"];
+
+  if (
+    /intro stats|introductory statistics|de veaux|velleman|bock.*stat|stat 200|stats 200|9780136806752|9780321825278|9780134210223|9780321286710/i.test(
+      t
+    ) &&
+    !/ap statistics|ap stats|fast track.*ap/i.test(t)
+  )
+    return ["college-stats-intro"];
+
+  if (/organic chemistry laborator|org chem lab|chem 36 and 130|pavia.*laboratory/i.test(t))
+    return ["college-org-chem"];
+
+  if (
+    /ap\s*statistics|ap\s*stats|practice of statistics|q&a statistics|barron.*statistics|5 steps.*statistics|statistics crash course|fast track.*ap.*stat/i.test(
+      t
+    )
+  )
     return ["ap-stats"];
 
   if (/college physics.*ap|ap courses.*lab manual|lab manual.*ap/i.test(t)) return ["ap-physics-1", "college-physics-1"];
