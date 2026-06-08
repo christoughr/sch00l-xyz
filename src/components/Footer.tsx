@@ -30,6 +30,9 @@ export function Footer() {
           <Link href="/terms" className="hover:text-zinc-300">
             Terms
           </Link>
+          <Link href="/refund" className="hover:text-zinc-300">
+            Refunds
+          </Link>
           <Link href="/settings" className="hover:text-zinc-300">
             Settings
           </Link>

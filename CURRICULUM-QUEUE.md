@@ -1,36 +1,39 @@
 # Curriculum queue
 
-## College tracks — what you actually gave us
+## College tracks live (with pipelines)
 
-| Track | Dedicated textbook? | Source books in Downloads |
-|-------|---------------------|---------------------------|
-| Calc I | **Yes** | Springer *Calculus I* + *Calculus for Dummies* |
-| Calc II | **No** | *Calculus All-In-One for Dummies* only (shared with I & III) |
-| Calc III | **No** | Same Dummies books (multivariable chapters) |
-| Linear Algebra | **No** | None — seed lessons only (15) |
-| Physics I | **No** | AP Physics 1 prep books + OpenStax AP lab manual |
-| Physics II | **No** | AP Physics 2 + AP Physics C prep books (dual-routed) |
-| Gen Chem I | **No** | AP Chemistry prep books (dual-routed) |
+| Track | Lessons | Notes |
+|-------|---------|-------|
+| `college-calc-1` | 31 | Springer Calc I + Dummies |
+| `college-calc-2` | 23 | Dummies multivariable chapters |
+| `college-calc-3` | 31 | Dummies |
+| `college-linear-algebra` | 111 | 12 LA textbooks |
+| `college-physics-1` | 135 | AP Physics 1 dual-route |
+| `college-physics-2` | 344 | AP Physics 2/C dual-route |
+| `college-gen-chem-1` | ~191 | Gen chem + AP chem dual-route |
+| `college-gen-chem-2` | ~31 | Delaware State ACP + seed |
+| `college-stats-intro` | ~47 | De Veaux / Bock Intro Stats |
+| `college-discrete-math` | ~31+ | Gallier, Bender, zyBooks zip |
+| `college-org-chem` | 15 seed | **Drop Wade/Bruice/Klein to grow** |
+| `college-differential-equations` | 15 seed | **Drop Boyce/Zill to grow** |
 
-## College courses live
+## Exam prep (summary)
 
-| Track | Lessons |
-|-------|---------|
-| College Calculus I (`college-calc-1`) | 31 |
-| College Calculus II (`college-calc-2`) | 23 |
-| College Calculus III (`college-calc-3`) | 31 |
-| College Linear Algebra (`college-linear-algebra`) | 15 |
-| College Physics I (`college-physics-1`) | 135 |
-| College Physics II (`college-physics-2`) | 344 |
-| College Gen Chem I (`college-gen-chem-1`) | ~191 |
-| College Gen Chem II (`college-gen-chem-2`) | ~31 |
-| Intro Statistics (`college-stats-intro`) | ~47 |
-| Discrete Math (`college-discrete-math`) | ~31 |
+SAT Math 423 · SAT Reading 301 · ACT Math 272 · ACT English 255 · ACT Science 93 · AP Calc AB 135 · AP Bio 135 · AP Chem 128 · AP Physics 1 151 · AP Physics 2 ~167 · AP Physics C ~176 · AP Stats ~136
 
-## Exam prep courses (summary)
+## Drop textbooks
 
-SAT Math 423 · SAT Reading 301 · ACT Math 272 · ACT English 255 · ACT Science 93 · AP Calc AB 135 · AP Bio 135 · AP Chem 128 · AP Physics 1 151 · AP Physics 2 ~167 · AP Physics C ~176 · AP Stats 128
+See **TEXTBOOK-DROP-LIST.md** for the full prioritized list.
 
-## To grow college courses with real textbooks
+## Ingest notes
 
-Drop university texts (OpenStax, Zumdahl gen chem, Young & Freedman physics, Strang linear algebra, Stewart multivariable) in Downloads — classifier will pick them up on refresh.
+- **zyBooks `.zip`**: auto-extracted (HTML inside zip, or embedded PDFs)
+- **MOBI**: convert to EPUB/PDF first
+- Classifier: `node scripts/classify-downloads.mjs`
+- Ingest: `node scripts/run-track-pipeline.mjs <track> [--refresh]`
+
+## Billing (⭐ skipped for now)
+
+- SQL 028 entitlements: **done**
+- Lemon Squeezy checkout: **later**
+- Content gating: **wired** — activates when `LEMONSQUEEZY_VARIANT_PRO` is set (or `CONTENT_GATING=true`)

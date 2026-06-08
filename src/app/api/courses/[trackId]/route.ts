@@ -1,4 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import {
+  applyLessonLocks,
+  getTrackAccess,
+} from "@/lib/track-access";
+import type { StudyTrackId } from "@/lib/study-tracks";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -11,6 +16,14 @@ export async function GET(
   if (!supabase) {
     return NextResponse.json({ units: [], source: "none" });
   }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const access = await getTrackAccess(
+    user?.id ?? null,
+    trackId as StudyTrackId
+  );
 
   const { data: units, error: unitsErr } = await supabase
     .from("course_units")
@@ -26,7 +39,7 @@ export async function GET(
   }
 
   if (!units?.length) {
-    return NextResponse.json({ units: [], trackId });
+    return NextResponse.json({ units: [], trackId, access });
   }
 
   const unitIds = units.map((u) => u.id);
@@ -37,8 +50,18 @@ export async function GET(
     .eq("review_status", "published")
     .order("ord", { ascending: true });
 
-  const byUnit = new Map<string, typeof lessons>();
-  for (const lesson of lessons ?? []) {
+  const flat: typeof lessons = [];
+  for (const u of units) {
+    const unitLessons = (lessons ?? [])
+      .filter((l) => l.unit_id === u.id)
+      .sort((a, b) => a.ord - b.ord);
+    flat.push(...unitLessons);
+  }
+  const lockedFlat = applyLessonLocks(flat, access.full, access.previewLimit);
+  const lockedById = new Map(lockedFlat.map((l) => [l.id, l]));
+
+  const byUnit = new Map<string, typeof lockedFlat>();
+  for (const lesson of lockedFlat) {
     const list = byUnit.get(lesson.unit_id) ?? [];
     list.push(lesson);
     byUnit.set(lesson.unit_id, list);
@@ -46,9 +69,21 @@ export async function GET(
 
   return NextResponse.json({
     trackId,
+    access: {
+      full: access.full,
+      gated: access.gated,
+      previewLimit: access.previewLimit,
+    },
     units: units.map((u) => ({
       ...u,
-      lessons: byUnit.get(u.id) ?? [],
+      lessons: (byUnit.get(u.id) ?? []).map((l) => ({
+        id: l.id,
+        ord: l.ord,
+        title: l.title,
+        objectives: l.objectives,
+        body_markdown: lockedById.get(l.id)?.body_markdown ?? l.body_markdown,
+        locked: lockedById.get(l.id)?.locked ?? false,
+      })),
     })),
   });
 }

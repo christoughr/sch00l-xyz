@@ -96,7 +96,7 @@ function copyFromDownloads(targetDir, track) {
   fs.mkdirSync(targetDir, { recursive: true });
   const names = fs.readdirSync(DOWNLOADS);
   const matches = names.filter(
-    (n) => /\.(pdf|epub)$/i.test(n) && classifyByNameAndText(n).includes(track)
+    (n) => /\.(pdf|epub|zip)$/i.test(n) && classifyByNameAndText(n).includes(track)
   );
   for (const name of matches) {
     const src = path.join(DOWNLOADS, name);
@@ -125,10 +125,53 @@ function extractHtmlDir(dirPath) {
   return parts.join("\n\n");
 }
 
+function sanitizeDirName(name) {
+  return name.replace(/[^\w.-]+/g, "_").slice(0, 80);
+}
+
+function findFilesRecursive(dir, ext) {
+  const out = [];
+  function walk(d) {
+    for (const name of fs.readdirSync(d)) {
+      const full = path.join(d, name);
+      const st = fs.statSync(full);
+      if (st.isDirectory()) walk(full);
+      else if (name.toLowerCase().endsWith(ext)) out.push(full);
+    }
+  }
+  walk(dir);
+  return out;
+}
+
+async function extractZybookZip(filePath, workDir) {
+  const zip = new AdmZip(filePath);
+  const dest = path.join(
+    workDir,
+    `zybook-${sanitizeDirName(path.basename(filePath, path.extname(filePath)))}`
+  );
+  fs.mkdirSync(dest, { recursive: true });
+  zip.extractAllTo(dest, true);
+  const pdfs = findFilesRecursive(dest, ".pdf");
+  for (const pdf of pdfs) {
+    try {
+      const t = await extractPdf(pdf);
+      if (t.trim().length > 200) return t;
+    } catch {
+      /* try next pdf */
+    }
+  }
+  return extractHtmlDir(dest);
+}
+
 async function extractFile(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   if (ext === ".pdf") return extractPdf(filePath);
   if (ext === ".epub") return extractEpub(filePath);
+  if (ext === ".zip") {
+    const workDir = path.join(path.dirname(filePath), ".extract");
+    fs.mkdirSync(workDir, { recursive: true });
+    return extractZybookZip(filePath, workDir);
+  }
   return "";
 }
 
@@ -202,7 +245,7 @@ async function applyDraftRows(trackId, rows) {
 async function main() {
   if (fromDownloads) {
     const n = copyFromDownloads(inputDir, trackId);
-    console.log(`Copied ${n} PDF/EPUB files from Downloads.`);
+    console.log(`Copied ${n} PDF/EPUB/ZIP files from Downloads.`);
   }
 
   if (!fs.existsSync(inputDir)) {
@@ -213,7 +256,7 @@ async function main() {
 
   const files = fs
     .readdirSync(inputDir)
-    .filter((f) => /\.(pdf|epub)$/i.test(f))
+    .filter((f) => /\.(pdf|epub|zip)$/i.test(f))
     .map((f) => path.join(inputDir, f));
 
   const mobiDirs = fs

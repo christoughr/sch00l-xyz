@@ -6,6 +6,7 @@ import {
   PLATFORM_FEE,
   PRICING,
   SELLABLE_CURRICULA,
+  CURRICULUM_PRICES,
   type BillingInterval,
   alaCarteTotal,
   annualSavingsPercent,
@@ -16,6 +17,7 @@ import {
   freeSessionsShortLabel,
   monthlyEquivalent,
   priceForInterval,
+  totalWithMembership,
 } from "@/lib/pricing";
 import { trackEvent } from "@/lib/analytics";
 import { useEffect, useState } from "react";
@@ -173,15 +175,30 @@ export default function PricingPage() {
       <div className="mb-10 text-center">
         <p className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3 py-1 text-xs text-brand-300 mb-4">
           <Sparkles className="h-3 w-3" />
-          Membership + curricula + bundle
+          Billing opening soon — study free meanwhile
         </p>
         <h1 className="text-3xl font-bold text-white sm:text-4xl">Pricing</h1>
         <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-          Start free ({freeSessionsShortLabel()}). Paid access is a{" "}
-          <strong className="text-zinc-200">platform membership</strong> plus
-          curriculum libraries or individual courses — or get everything in the
-          all-in-one bundle.
+          Start free ({freeSessionsShortLabel()}). Paid plans ={" "}
+          <strong className="text-zinc-200">membership</strong> + curriculum
+          (or single course). Prices below — checkout via waitlist until billing
+          is live.
         </p>
+        <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 max-w-xl mx-auto text-sm text-zinc-400">
+          <strong className="text-zinc-200">Example:</strong> College Calc I only
+          = {formatUsd(membership.priceMonthly)} membership +{" "}
+          {formatUsd(CURRICULUM_PRICES.college.priceMonthly)} College library ={" "}
+          <strong className="text-white">
+            {formatUsd(
+              totalWithMembership(
+                CURRICULUM_PRICES.college.priceMonthly,
+                CURRICULUM_PRICES.college.priceAnnual,
+                "monthly"
+              )
+            )}
+            /mo
+          </strong>
+        </div>
         <div className="mt-6">
           <IntervalToggle interval={interval} onChange={setInterval} />
         </div>
@@ -274,8 +291,13 @@ export default function PricingPage() {
                   priceForInterval(c.priceMonthly, c.priceAnnual, interval)
                 )}
                 <span className="text-xs font-normal text-zinc-400">
-                  {billingPeriodLabel(interval)}
+                  {billingPeriodLabel(interval)} library
                 </span>
+              </p>
+              <p className="mt-1 text-xs text-zinc-500">
+                + {formatUsd(priceForInterval(membership.priceMonthly, membership.priceAnnual, interval))} membership ={" "}
+                {formatUsd(totalWithMembership(c.priceMonthly, c.priceAnnual, interval))}
+                {billingPeriodLabel(interval)} total
               </p>
               <Link
                 href="/#waitlist"
@@ -377,6 +399,52 @@ export default function PricingPage() {
             </Link>
           </PlanCard>
         </div>
+      </section>
+
+      {/* Family, trial, refund */}
+      <section className="mb-12 grid gap-6 lg:grid-cols-3">
+        <PlanCard
+          name={PRICING.family.name}
+          subtitle={`${PRICING.family.seats} student seats`}
+          features={PRICING.family.features}
+          priceSlot={
+            <PriceBlock
+              monthly={PRICING.family.priceMonthly}
+              annual={PRICING.family.priceAnnual}
+              interval={interval}
+            />
+          }
+        >
+          <Link href="/#waitlist" className={btnClass()}>
+            Join waitlist
+          </Link>
+        </PlanCard>
+        <PlanCard
+          name={PRICING.trial.name}
+          features={PRICING.trial.features}
+          priceSlot={
+            <p className="text-3xl font-bold text-white">
+              {PRICING.trial.days} days
+            </p>
+          }
+        >
+          <Link href="/refund" className={btnClass()}>
+            Trial & refund policy
+          </Link>
+        </PlanCard>
+        <PlanCard
+          name={PRICING.refund.name}
+          features={PRICING.refund.features}
+          priceSlot={
+            <p className="text-3xl font-bold text-white">
+              {PRICING.refund.days} days
+            </p>
+          }
+        >
+          <Link href="/refund" className={btnClass()}>
+            Read full policy
+          </Link>
+        </PlanCard>
       </section>
 
       {!proReady && configLoaded && (

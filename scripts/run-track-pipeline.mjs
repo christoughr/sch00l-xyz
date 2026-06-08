@@ -34,6 +34,8 @@ const seedScript = {
   "college-physics-2": "seed-college-physics-2.mjs",
   "college-stats-intro": "seed-college-stats-intro.mjs",
   "college-discrete-math": "seed-college-discrete-math.mjs",
+  "college-org-chem": "seed-college-org-chem.mjs",
+  "college-differential-equations": "seed-college-differential-equations.mjs",
   "ap-calc-ab": "seed-ap-calc-ab.mjs",
 }[track];
 
@@ -60,6 +62,8 @@ const polishScript = {
   "ap-physics-c": "polish-ap-physics-c-lessons.ts",
   "college-stats-intro": "polish-college-stats-intro-lessons.ts",
   "college-discrete-math": "polish-college-discrete-math-lessons.ts",
+  "college-org-chem": "polish-college-org-chem-lessons.ts",
+  "college-differential-equations": "polish-college-differential-equations-lessons.ts",
 }[track];
 
 run("node", ["scripts/prepare-downloads.mjs"]);

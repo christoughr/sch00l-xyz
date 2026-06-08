@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BookOpen, ChevronRight } from "lucide-react";
+import { BookOpen, ChevronRight, Lock } from "lucide-react";
 import { resolveCourseTrackId } from "@/lib/course-tracks";
 
 type Lesson = {
@@ -9,6 +10,7 @@ type Lesson = {
   ord: number;
   title: string;
   body_markdown: string;
+  locked?: boolean;
 };
 
 type Unit = {
@@ -17,6 +19,12 @@ type Unit = {
   title: string;
   description: string | null;
   lessons: Lesson[];
+};
+
+type CourseAccess = {
+  full: boolean;
+  gated: boolean;
+  previewLimit: number;
 };
 
 export function StudyCourseOutline({
@@ -29,6 +37,7 @@ export function StudyCourseOutline({
   onPickLesson: (title: string, body: string) => void;
 }) {
   const [units, setUnits] = useState<Unit[]>([]);
+  const [access, setAccess] = useState<CourseAccess | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
 
@@ -39,6 +48,7 @@ export function StudyCourseOutline({
       .then((d) => {
         const list = (d.units ?? []) as Unit[];
         setUnits(list);
+        setAccess((d.access as CourseAccess) ?? null);
         if (sectionId) {
           const match = list.find(
             (u) =>
@@ -74,6 +84,14 @@ export function StudyCourseOutline({
           Course lessons ({lessonCount})
         </h3>
       </div>
+      {access?.gated && !access.full && (
+        <p className="text-xs text-zinc-500 mb-3">
+          First {access.previewLimit} lessons free ·{" "}
+          <Link href="/pricing" className="text-brand-400 underline">
+            Unlock full course
+          </Link>
+        </p>
+      )}
       <ul className="space-y-2">
         {units.map((unit) => (
           <li key={unit.id} className="rounded-lg border border-white/5">
@@ -99,18 +117,25 @@ export function StudyCourseOutline({
                   .sort((a, b) => a.ord - b.ord)
                   .map((lesson, idx) => (
                   <li key={lesson.id}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onPickLesson(
-                          `${unit.title}: ${lesson.title}`,
-                          lesson.body_markdown
-                        )
-                      }
-                      className="w-full px-4 py-2 text-left text-xs text-zinc-400 hover:text-brand-300 hover:bg-white/5"
-                    >
-                      {idx + 1}. {lesson.title}
-                    </button>
+                    {lesson.locked ? (
+                      <div className="flex items-center gap-2 px-4 py-2 text-xs text-zinc-500">
+                        <Lock className="h-3 w-3 shrink-0" />
+                        {idx + 1}. {lesson.title}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onPickLesson(
+                            `${unit.title}: ${lesson.title}`,
+                            lesson.body_markdown
+                          )
+                        }
+                        className="w-full px-4 py-2 text-left text-xs text-zinc-400 hover:text-brand-300 hover:bg-white/5"
+                      >
+                        {idx + 1}. {lesson.title}
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -28,6 +28,8 @@
 /content/ingest/**/*.pdf
 /content/ingest/**/*.epub
 /content/ingest/**/*.mobi
+/content/ingest/**/*.zip
+/content/ingest/**/.extract/
 /content/ingest/**/mobi-*/
 
 # misc

@@ -144,6 +144,35 @@ export const PRICING = {
       "Volume pricing for districts",
     ],
   },
+  family: {
+    name: "Family plan",
+    seats: 4,
+    priceMonthly: 449,
+    priceAnnual: 4490,
+    features: [
+      "Up to 4 student seats on one membership",
+      "Shared billing — curricula purchased per seat or bundle",
+      "Each seat gets cloud sync and progress",
+    ],
+  },
+  trial: {
+    name: "Free trial",
+    days: 7,
+    features: [
+      "7-day trial on first curriculum library purchase",
+      "Cancel before trial ends — no charge",
+      "One trial per household",
+    ],
+  },
+  refund: {
+    name: "Refund policy",
+    days: 14,
+    features: [
+      "Full refund within 14 days of first subscription charge",
+      "Contact support@sch00l.ai with your account email",
+      "Does not apply to completed human tutor sessions",
+    ],
+  },
 } as const;
 
 export function curriculumPrice(
@@ -206,6 +235,22 @@ export function bundleSavingsPercent(interval: BillingInterval): number {
 
 export function billingPeriodLabel(interval: BillingInterval): string {
   return interval === "monthly" ? "/mo" : "/yr";
+}
+
+/** Membership + one curriculum library (true à la carte price). */
+export function totalWithMembership(
+  curriculumMonthly: number,
+  curriculumAnnual: number,
+  interval: BillingInterval
+): number {
+  return (
+    priceForInterval(
+      PRICING.membership.priceMonthly,
+      PRICING.membership.priceAnnual,
+      interval
+    ) +
+    priceForInterval(curriculumMonthly, curriculumAnnual, interval)
+  );
 }
 
 export function freeSessionsMarketingLabel(): string {

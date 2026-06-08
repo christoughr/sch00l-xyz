@@ -141,6 +141,27 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/linear algebra|matrix theory|introductory algebra.*matrix|gilbert strang|introduction to linear algebra|linear algebra done right|hefferon.*linear|engineering mathematics.*vol.*algebra/i.test(t) && !/subject test/i.test(t))
     return ["college-linear-algebra"];
 
+  if (
+    /differential equation|diff eq|differential equations|boyce.*elementary|zill.*differential|blanchard.*differential|math 225|ode textbook/i.test(
+      t
+    ) &&
+    !/partial differential.*engineer/i.test(t)
+  )
+    return ["college-differential-equations"];
+
+  if (
+    /organic chemistry|org chem|orgo\b|wade.*organic|bruice|klein.*organic|mcmurry|carey.*organic|solomons.*organic|smith.*organic chemistry/i.test(
+      t
+    ) &&
+    !/biological chemistry|biochem|general.?organic.?bio|gob chem|introductory general and organic/i.test(
+      t
+    )
+  )
+    return ["college-org-chem"];
+
+  if (/organic chemistry laborator|org chem lab|pavia.*laboratory|chem 36 and 130/i.test(t))
+    return ["college-org-chem"];
+
   if (/college physics.*e&m|physics ii[^i]|physics 2[^0-9]|electricity and magnetism|university physics.*vol.*2/i.test(t))
     return ["college-physics-2"];
 
@@ -168,7 +189,7 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/act math in the classroom/i.test(t)) return ["act-math"];
 
   if (
-    /discrete mathematics|discrete math|cse 280.*discrete|gallier.*discrete|bender.*discrete|williamson.*discrete|short course in discrete|lecture notes.*discrete mathematics/i.test(
+    /discrete mathematics|discrete math|cse 280.*discrete|gallier.*discrete|bender.*discrete|williamson.*discrete|short course in discrete|lecture notes.*discrete mathematics|zybooks.*discrete/i.test(
       t
     ) &&
     !/ap /i.test(t)
@@ -182,9 +203,6 @@ export function classifyByNameAndText(filename, preview = "") {
     !/ap statistics|ap stats|fast track.*ap/i.test(t)
   )
     return ["college-stats-intro"];
-
-  if (/organic chemistry laborator|org chem lab|chem 36 and 130|pavia.*laboratory/i.test(t))
-    return ["college-org-chem"];
 
   if (
     /ap\s*statistics|ap\s*stats|practice of statistics|q&a statistics|barron.*statistics|5 steps.*statistics|statistics crash course|fast track.*ap.*stat/i.test(
@@ -320,7 +338,7 @@ function suggestRename(filename, preview, tracks) {
   return null;
 }
 
-const files = fs.readdirSync(DOWNLOADS).filter((f) => /\.(pdf|epub|fb2|azw3)$/i.test(f));
+const files = fs.readdirSync(DOWNLOADS).filter((f) => /\.(pdf|epub|fb2|azw3|zip)$/i.test(f));
 const report = { unclassified: [], renamed: [], byTrack: {} };
 
 for (const name of files) {
