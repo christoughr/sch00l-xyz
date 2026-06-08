@@ -105,7 +105,7 @@ export function classifyByNameAndText(filename, preview = "") {
   const n = normalizeTitle(filename.toLowerCase());
   const t = normalizeTitle(`${filename} ${preview}`.toLowerCase());
 
-  if (/^all \d+ openstax|openstax titles including latest/i.test(n)) return [];
+  if (/^all \d+ openstax|openstax titles including latest|openstax sciences for college/i.test(n)) return [];
   if (/^gmat\b|\bssat\b/i.test(t)) return [];
   if (/정부24|사업자등록|business registration|문서출력/i.test(n)) return [];
 

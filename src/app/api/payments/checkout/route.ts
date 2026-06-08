@@ -1,8 +1,14 @@
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { startCheckout } from "@/lib/payments";
+import { SELLABLE_CURRICULA, type SellableCurriculumId } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+const sellableCurriculumIds = SELLABLE_CURRICULA.map((c) => c.id) as [
+  SellableCurriculumId,
+  ...SellableCurriculumId[],
+];
 
 const schema = z.union([
   z.object({
@@ -19,7 +25,7 @@ const schema = z.union([
       "tutor_hour",
     ]),
     interval: z.enum(["monthly", "annual"]).optional(),
-    curriculumId: z.string().optional(),
+    curriculumId: z.enum(sellableCurriculumIds).optional(),
     trackId: z.string().optional(),
     email: z.string().email().optional(),
   }),
