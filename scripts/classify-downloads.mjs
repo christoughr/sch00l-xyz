@@ -105,7 +105,7 @@ export function classifyByNameAndText(filename, preview = "") {
   const n = normalizeTitle(filename.toLowerCase());
   const t = normalizeTitle(`${filename} ${preview}`.toLowerCase());
 
-  if (/^index(?:eng|kr)?\.pdf$/i.test(n)) return [];
+  if (/^all \d+ openstax|openstax titles including latest/i.test(n)) return [];
   if (/^gmat\b|\bssat\b/i.test(t)) return [];
   if (/정부24|사업자등록|business registration|문서출력/i.test(n)) return [];
 
@@ -114,11 +114,23 @@ export function classifyByNameAndText(filename, preview = "") {
     if (ocr !== null) return ocr;
   }
 
-  if (/college physics|university physics|physics for scientists|openstax.*physics|serway.*physics/i.test(t) && !/lab manual/i.test(t))
+  if (/college physics for ap|physics for ap.*course/i.test(t) && !/lab manual/i.test(t))
+    return ["ap-physics-1", "college-physics-1"];
+
+  if (/college physics|university physics|physics for scientists|openstax.*physics|serway.*physics|giambattista.*physics|young.*college physics/i.test(t) && !/lab manual/i.test(t))
     return ["college-physics-1"];
 
   if (/college physics.*lab manual|lab manual.*college physics|college physics.*ap.*lab/i.test(t))
     return ["college-physics-1", "ap-physics-1"];
+
+  if (
+    /chemistry\s*2e|openstax.*chemistry\s*2e|chem(?:istry)?\s*2e\b/i.test(t) &&
+    !/organic|atoms first|biochem|mcat/i.test(t)
+  )
+    return ["college-gen-chem-2"];
+
+  if (/atoms first|chemistry.*atoms first/i.test(t) && !/organic|biochem|mcat/i.test(t))
+    return ["college-gen-chem-1"];
 
   if (
     /gen(?:eral)?\s*chem(?:istry)?\s*(ii|2|two|second)|chem(?:istry)?\s*(2046|ii\b)|acp gen chem ii|gen chem ii/i.test(

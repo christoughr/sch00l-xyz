@@ -98,6 +98,7 @@ function copyFromDownloads(targetDir, track) {
   const matches = names.filter((n) => {
     if (!/\.(pdf|epub|zip|txt)$/i.test(n)) return false;
     if (/\.converted\.pdf$/i.test(n)) return false;
+    if (/^all \d+ openstax/i.test(n)) return false;
     return classifyByNameAndText(n).includes(track);
   });
   for (const name of matches) {
