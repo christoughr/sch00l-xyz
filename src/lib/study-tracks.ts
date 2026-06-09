@@ -1,5 +1,6 @@
 import type { SubjectId } from "./subject-ids";
 import { COLLEGE_STUDY_TRACKS } from "./study-tracks-college";
+import { EXPANDED_STUDY_TRACKS } from "./study-tracks-expanded";
 import { GLOBAL_STUDY_TRACKS } from "./study-tracks-global";
 import {
   EXAM_PREP_EXTRA_TRACKS,
@@ -632,7 +633,8 @@ export const STUDY_TRACKS: StudyTrack[] = [
     tutorContext:
       "Music theory: notation, scales, chords, rhythm. Ear training suggestions when relevant.",
   },
-  ...GLOBAL_STUDY_TRACKS,
+  ...GLOBAL_STUDY_TRACKS.filter((t) => t.id !== "ssat-middle" && t.id !== "ssat-upper"),
+  ...EXPANDED_STUDY_TRACKS,
   {
     id: "custom",
     category: "custom",

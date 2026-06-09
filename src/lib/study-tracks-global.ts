@@ -584,26 +584,6 @@ export const GLOBAL_STUDY_TRACKS: GlobalStudyTrack[] = [
     tutorContext:
       "GSAT Math: 學測 mixed topics, speed, and common 陷阱. Connect to 指考 when student is Grade 12.",
   }),
-  EXAM({
-    id: "ssat-middle",
-    label: "SSAT Middle Level",
-    description: "Independent school admission — grades 5–7",
-    subject: "math",
-    topic: "SSAT Middle — math and verbal reasoning",
-    gradeLevel: "SSAT Middle",
-    tutorContext:
-      "SSAT Middle: quantitative comparison, analogies, reading comp. Build vocabulary and number sense without over-drilling tricks.",
-  }),
-  EXAM({
-    id: "ssat-upper",
-    label: "SSAT Upper Level",
-    description: "Independent school admission — grades 8–11",
-    subject: "math",
-    topic: "SSAT Upper — math, reading, and essay prep",
-    gradeLevel: "SSAT Upper",
-    tutorContext:
-      "SSAT Upper: harder quantitative reasoning, synonyms/analogies, timed passages. Essay = clear thesis + examples.",
-  }),
 
   // —— Middle East (IGCSE) ——
   INT({
