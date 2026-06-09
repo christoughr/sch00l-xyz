@@ -109,6 +109,50 @@ export const K12_EARLY_STUDY_TRACKS: StudyTrack[] = [
   }),
 ];
 
+/** US high school diploma pathway (grades 9–12 core). */
+export const US_HS_DIPLOMA_TRACKS: StudyTrack[] = [
+  K12({
+    id: "us-hs-english",
+    label: "US High School English",
+    description: "Literature, rhetoric, research writing",
+    subject: "english",
+    topic: "US HS English — analysis and argument",
+    gradeLevel: "Grades 9–12",
+    tutorContext:
+      "US HS ELA: close reading, thesis-driven essays, MLA citations, rhetorical analysis. Scaffold PEEL/CEER before full papers.",
+  }),
+  K12({
+    id: "us-hs-algebra",
+    label: "US High School Algebra",
+    description: "Linear, quadratic, exponential functions",
+    subject: "math",
+    topic: "US HS Algebra — equations and functions",
+    gradeLevel: "Grades 9–11",
+    tutorContext:
+      "HS Algebra: solving equations, graphing lines/quadratics, systems, exponentials. Connect representations — table, graph, equation.",
+  }),
+  K12({
+    id: "us-hs-biology",
+    label: "US High School Biology",
+    description: "Cells, genetics, evolution, ecology",
+    subject: "science",
+    topic: "US HS Biology — cells and genetics",
+    gradeLevel: "Grades 9–12",
+    tutorContext:
+      "HS Biology: cell structure, DNA→protein, natural selection, ecosystems. Claim-evidence-reasoning for lab-style questions.",
+  }),
+  K12({
+    id: "us-hs-us-history",
+    label: "US History",
+    description: "Founding through modern America",
+    subject: "history",
+    topic: "US History — documents and causation",
+    gradeLevel: "Grades 9–12",
+    tutorContext:
+      "US History: primary sources, causation, continuity/change. DBQ-style thesis with document grouping.",
+  }),
+];
+
 /** English proficiency + grad/professional exams beyond core MCAT/GRE/GMAT. */
 export const EXAM_PREP_EXTRA_TRACKS: StudyTrack[] = [
   {

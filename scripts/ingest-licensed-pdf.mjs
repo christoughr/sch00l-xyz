@@ -35,7 +35,17 @@ const MAX_CHUNKS_PER_FILE = 8;
 const ORD_START = 100; // avoids collision with 018 seed (ord 1–3 per unit)
 
 function escapeSql(s) {
-  return s.replace(/'/g, "''").slice(0, 8000);
+  return sanitizeForDbText(s)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "''")
+    .slice(0, 8000);
+}
+
+/** Postgres rejects `\u` when not followed by 4 hex digits (common in PDF extract). */
+function sanitizeForDbText(s) {
+  return String(s ?? "")
+    .replace(/\u0000/g, "")
+    .replace(/\\u(?![0-9a-fA-F]{4})/g, "\\\\u");
 }
 
 function chunkText(text) {
@@ -323,7 +333,7 @@ async function main() {
       draftRows.push({
         ord: globalOrd,
         title: rawTitle,
-        body: bodyRaw,
+        body: sanitizeForDbText(bodyRaw),
         source: path.basename(file),
       });
       lines.push(`
@@ -357,7 +367,7 @@ from public.course_units u where u.track_id = '${trackId}' and u.ord = 1;`);
       draftRows.push({
         ord: globalOrd,
         title: rawTitle,
-        body: bodyRaw,
+        body: sanitizeForDbText(bodyRaw),
         source: `${path.basename(dir)} (from .mobi)`,
       });
       lines.push(`

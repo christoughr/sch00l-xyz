@@ -179,10 +179,9 @@ export default function PricingPage() {
         </p>
         <h1 className="text-3xl font-bold text-white sm:text-4xl">Pricing</h1>
         <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-          Start free ({freeSessionsShortLabel()}). Paid plans ={" "}
-          <strong className="text-zinc-200">membership</strong> + curriculum
-          (or single course). Prices below — checkout via waitlist until billing
-          is live.
+          Premium vs SparkNotes or Chegg — full course libraries, AI tutor, prep
+          quizzes, and Study Notebook. Priced to convert, not to scare off at
+          checkout.
         </p>
         <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 max-w-xl mx-auto text-sm text-zinc-400">
           <strong className="text-zinc-200">Example:</strong> College Calc I only
@@ -401,8 +400,8 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* Family, trial, refund */}
-      <section className="mb-12 grid gap-6 lg:grid-cols-3">
+      {/* Family */}
+      <section className="mb-12 grid gap-6 lg:grid-cols-2">
         <PlanCard
           name={PRICING.family.name}
           subtitle={`${PRICING.family.seats} student seats`}
@@ -420,29 +419,22 @@ export default function PricingPage() {
           </Link>
         </PlanCard>
         <PlanCard
-          name={PRICING.trial.name}
-          features={PRICING.trial.features}
+          name="Billing policy"
+          subtitle="All paid plans"
+          features={[
+            "All sales final — no free trial",
+            "No refunds on subscriptions or curriculum libraries",
+            "Cancel anytime — access through the current billing period",
+            "Human tutor sessions non-refundable once completed",
+          ]}
           priceSlot={
-            <p className="text-3xl font-bold text-white">
-              {PRICING.trial.days} days
+            <p className="text-lg font-semibold text-zinc-300">
+              Paid at checkout
             </p>
           }
         >
           <Link href="/refund" className={btnClass()}>
-            Trial & refund policy
-          </Link>
-        </PlanCard>
-        <PlanCard
-          name={PRICING.refund.name}
-          features={PRICING.refund.features}
-          priceSlot={
-            <p className="text-3xl font-bold text-white">
-              {PRICING.refund.days} days
-            </p>
-          }
-        >
-          <Link href="/refund" className={btnClass()}>
-            Read full policy
+            Read billing policy
           </Link>
         </PlanCard>
       </section>

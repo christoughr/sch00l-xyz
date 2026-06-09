@@ -383,9 +383,125 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/\bpmp\b|project management professional/i.test(t)) return ["pmp"];
   if (/aws cloud practitioner|\bclf-c02\b/i.test(t)) return ["aws-cloud-practitioner"];
 
-  if (/kindergarten.*math|math.*kindergarten|preschool and kindergarten|math no problem|kindergarten math workbook|beginning math|homeschool.*kindergarten.*math/i.test(t))
+  if (
+    /sight word|jolly phonics|hooked on phonics|phonics workbook|phonics reader|dolch sight|letters.?&.?sight|fast start.*early reader|spectrum.*reading|kindergarten.*reading|reading comprehension.*kindergarten|get ready for kindergarten.*letter|early learner.*reading|read-it! reader|scholastic reader level 1|dk reader|jolly reader|spelling workbook.*kindergarten|spectrum kindergarten spelling|language arts.*kindergarten|kindergarten.*language arts|kindergarten scholar|kindergarten practice|playful reading|investigating kindergarten/i.test(
+      t
+    )
+  )
+    return ["k12-k-reading"];
+
+  if (/kindergarten.*math|math.*kindergarten|preschool and kindergarten.*math|math no problem|kindergarten math workbook|beginning math|homeschool.*kindergarten.*math|spectrum math.*grade k|hands on math k|sadlier math kindergarten|kindergarten math with confidence|envision math.*kindergarten|math in focus.*kindergarten/i.test(t))
     return ["k12-k-math"];
-  if (/kindergarten|grade k\b|pre-k|prek/i.test(t)) return ["k12-k-math", "k12-k-reading"];
+
+  if (/kindergarten|grade k\b|pre-k|prek/i.test(t)) return ["k12-k-reading"];
+
+  if (/go math|gomath|hmh gomath/i.test(t)) {
+    if (/kindergarten|\bgrade k\b|chapter 11.*kindergarten/i.test(t)) return ["k12-k-math"];
+    if (/grade [6-9]\b|accelerated 7|algebra 1|algebra 2|\bgeometry\b|assessment resource.*grade 6|worktext grade [678]/i.test(t))
+      return ["k12-ms-math"];
+    if (/grade [1-5]\b|grade 4-2018|student edition volume.*grade [1-5]|go math! 2016, grade [1-5]|teacher edition chapter.*grade [1-5]/i.test(t))
+      return ["k12-elem-math"];
+    return ["k12-elem-math"];
+  }
+
+  if (/student edition volume \d+ grade [1-5]/i.test(t) && !/reading/i.test(t))
+    return ["k12-elem-math"];
+
+  if (/saxon math|saxon math homeschool|math 54|math 65/i.test(t)) {
+    if (/course [123]\b|intermediate 6|grade 8|math 87|geometry|algebra/i.test(t)) return ["k12-ms-math"];
+    if (/math [123]\b|5\/4|6\/5|intermediate [345]|california saxon math [123]\b|grade 1|planning guide.*grade 1/i.test(t))
+      return ["k12-elem-math"];
+    return ["k12-elem-math"];
+  }
+
+  if (/let'?s estimate|estimating and rounding|spectrum math.*grade [1-5]|eureka math.*grade [1-5]/i.test(t))
+    return ["k12-elem-math"];
+
+  if (
+    /harry potter|dog man|wings of fire|fighting fantasy|cursed child|renaissance thought|breakthroughs in science|summer express.*(grades? [67]|between grades)|diary of a roblox|princess leia|star wars adventures|barney says|teletubbies|scooby doo|dudley the dragon|bunny reads back/i.test(
+      t
+    )
+  )
+    return [];
+
+  if (/spectrum/i.test(t)) {
+    if (
+      /reading|sight words|long vowels|letters and sounds|beginning reading|readiness|phonics and word study/i.test(
+        t
+      )
+    ) {
+      if (/kindergarten|\bgrade k\b/i.test(t)) return ["k12-k-reading"];
+      if (/grade [1-5]\b/i.test(t)) return ["k12-elem-reading"];
+      return ["k12-elem-reading"];
+    }
+    return [];
+  }
+
+  if (/into reading|hmh into reading|journeys|reading street/i.test(t)) {
+    if (/grade [6-8]\b/i.test(t)) return ["k12-ms-ela"];
+    if (/kindergarten|\bgrade k\b/i.test(t)) return ["k12-k-reading"];
+    return ["k12-elem-reading"];
+  }
+
+  if (/rigby literacy|literacy by design|rigby literacy by design/i.test(t)) {
+    if (/grade k\b|\[grade k\]|student reader grade k|collections.*\bk\b/i.test(t))
+      return ["k12-k-reading"];
+    if (/grade [6-8]\b|\[grade [678]\]/i.test(t)) return ["k12-ms-ela"];
+    return ["k12-elem-reading"];
+  }
+
+  if (/scholastic/i.test(t)) {
+    if (
+      /reader level 1|leveled book|literacy place|success with (grammar|vocabulary|spelling)|morning jumpstarts.*reading|sight word tales|teaching guide.*sight|vocabulary words grade|word family tales|read xl|descriptive writing|follow the directions|implementation guide|literacy place|children's dictionary/i.test(
+        t
+      )
+    )
+      return ["k12-elem-reading"];
+    if (/grade [1-5]\b/i.test(t) && /grammar|vocabulary|spelling|reading|phonics|writing/i.test(t))
+      return ["k12-elem-reading"];
+    return [];
+  }
+
+  if (
+    /hooked on phonics.*(first grade|second grade|grade [12]|learn to read)|master skills reading|word journeys|reading workshop.*grade [1-5]/i.test(
+      t
+    )
+  )
+    return ["k12-elem-reading"];
+
+  if (
+    /oxford reading tree|songbirds phonics|floppy's phonics|phonics kids|smart phonics|phonics show|speed phonics|week-by-week phonics|phonics mentor|phonics tales|phonics reader|level one phonics|phonics activity book|phonics workbook|disney pixar phonics|reading phonics to vocabulary 1st grade|discovery workbooks.*phonics/i.test(
+      t
+    )
+  ) {
+    if (/kindergarten|pre-k|prek|senior infants|pre-k level/i.test(t)) return ["k12-k-reading"];
+    return ["k12-elem-reading"];
+  }
+
+  if (/jolly phonics/i.test(t)) {
+    if (/kindergarten|pupil book [12]\b|workbook [12]\b/i.test(t)) return ["k12-k-reading"];
+    return ["k12-elem-reading"];
+  }
+
+  if (/foss\b|science fusion|holt science spectrum/i.test(t)) {
+    if (/grade [678]\b|grades? 6-8|worktext grade [678]|interactive worktext grade [678]/i.test(t))
+      return ["k12-ms-science"];
+    if (/grade k\b|\[grade k\]|science stories.*\[grade k\]/i.test(t)) return [];
+    return ["k12-elem-science"];
+  }
+
+  if (/spectrum science/i.test(t)) {
+    if (/grade [678]\b/i.test(t)) return ["k12-ms-science"];
+    if (/kindergarten|\bgrade k\b/i.test(t)) return [];
+    return ["k12-elem-science"];
+  }
+
+  if (/ossd|ontario secondary|eng4u|mhf4u|mcv4u|sch4u|sph4u|ontario grade 12/i.test(t))
+    return ["international"];
+
+  if (/high school diploma|us diploma|common core ela|algebra 1.*high school|us history.*high school/i.test(t))
+    return ["k12"];
+
   if (/elementary|grades? [1-5]|grade [1-5]|primary school/i.test(t))
     return ["k12-elem-math", "k12-elem-reading", "k12-elem-science"];
   if (/middle school|grades? [6-8]|grade [6-8]|junior high/i.test(t))

@@ -1,4 +1,4 @@
-/** Revenue model — sch00l keeps maximum platform share where possible */
+/** Revenue model — optimized for conversion + margin (not sticker shock). */
 
 import type { StudyTrackCategory } from "./study-tracks";
 import { TRACK_CATEGORIES } from "./study-tracks";
@@ -15,25 +15,28 @@ const CURRICULUM_BLURBS: Record<SellableCurriculumId, string> = {
   sat_act: "SAT Math, SAT Reading, ACT Math, English, Science",
   exam_prep: "GRE, GMAT, MCAT, LSAT, and professional exam tracks",
   college: "Calc I–III, Linear Algebra, Physics, Gen Chem, and semester courses",
-  k12: "Middle & high school core subjects by grade band",
+  k12: "K–8 core + US high school diploma pathways",
   languages: "Spanish, French, Mandarin, ESL, and conversation tracks",
-  international: "IB, A-Levels, GCSE, and country-specific curricula",
+  international: "OSSD, IB, A-Levels, GCSE, and country-specific curricula",
   professional: "Certifications, bootcamps, and career upskilling paths",
 };
 
-/** Per-curriculum pricing — each library priced independently */
+/**
+ * Sweet-spot pricing: premium vs SparkNotes/Chegg, but still believable at checkout.
+ * Annual ≈ 10× monthly (~17% savings vs paying monthly).
+ */
 export const CURRICULUM_PRICES: Record<
   SellableCurriculumId,
   { priceMonthly: number; priceAnnual: number }
 > = {
-  ap: { priceMonthly: 349, priceAnnual: 3490 },
-  sat_act: { priceMonthly: 299, priceAnnual: 2990 },
-  exam_prep: { priceMonthly: 399, priceAnnual: 3990 },
-  college: { priceMonthly: 379, priceAnnual: 3790 },
-  k12: { priceMonthly: 249, priceAnnual: 2490 },
-  languages: { priceMonthly: 229, priceAnnual: 2290 },
-  international: { priceMonthly: 279, priceAnnual: 2790 },
-  professional: { priceMonthly: 359, priceAnnual: 3590 },
+  ap: { priceMonthly: 59, priceAnnual: 590 },
+  sat_act: { priceMonthly: 55, priceAnnual: 550 },
+  exam_prep: { priceMonthly: 69, priceAnnual: 690 },
+  college: { priceMonthly: 59, priceAnnual: 590 },
+  k12: { priceMonthly: 49, priceAnnual: 490 },
+  languages: { priceMonthly: 45, priceAnnual: 450 },
+  international: { priceMonthly: 55, priceAnnual: 550 },
+  professional: { priceMonthly: 59, priceAnnual: 590 },
 };
 
 export const SELLABLE_CURRICULA: {
@@ -53,15 +56,11 @@ export const SELLABLE_CURRICULA: {
 }));
 
 export const PLATFORM_FEE = {
-  /** Human tutor: student pays hourly; sch00l keeps this % */
   humanTutorPercent: 45,
-  /** Paid subscriptions: 100% to sch00l (no rev share) */
   subscriptionMarginPercent: 100,
-  /** School B2B: per-seat SaaS, 100% to sch00l */
   schoolMarginPercent: 100,
 } as const;
 
-/** Premium positioning — membership + per-curriculum + bundle discount */
 export const PRICING = {
   free: {
     name: "Free",
@@ -71,25 +70,26 @@ export const PRICING = {
       `${FREE_AI_SESSIONS_PER_DAY} AI study session per day`,
       "Pre/post quizzes & learning lift",
       "Flashcards (SM-2 spaced repetition)",
+      "Study Notebook (paste notes, get summaries)",
       "Browser-only progress",
     ],
   },
   membership: {
     name: "Platform membership",
-    priceMonthly: 149,
-    priceAnnual: 1490,
+    priceMonthly: 39,
+    priceAnnual: 390,
     features: [
       "Required seat for any paid curriculum",
       "Cloud sync across devices",
       "Unlimited AI sessions on unlocked tracks",
+      "Study Notebook — upload notes, Q&A, quiz me",
       "Priority human tutor matching",
-      "Advanced progress history & exports",
     ],
   },
   track: {
     name: "Single course",
-    priceMonthly: 129,
-    priceAnnual: 1290,
+    priceMonthly: 35,
+    priceAnnual: 350,
     features: [
       "One full study track end-to-end",
       "Ideal when you only need one exam or semester",
@@ -98,36 +98,35 @@ export const PRICING = {
   },
   bundle: {
     name: "All-in-one",
-    priceMonthly: 2499,
-    priceAnnual: 24990,
+    priceMonthly: 199,
+    priceAnnual: 1990,
     features: [
       "Membership + every curriculum library",
       "All current & future tracks in catalog",
-      "Modest bundle discount vs à la carte",
+      "Best value vs buying libraries separately",
       "Priority new-course access at launch",
     ],
   },
-  /** Legacy checkout plan id — maps to all-in-one bundle */
   pro: {
     name: "sch00l Pro",
-    priceMonthly: 2499,
-    priceAnnual: 24990,
+    priceMonthly: 199,
+    priceAnnual: 1990,
     features: [
       "Membership + all curriculum libraries",
       "Unlimited AI tutor sessions",
+      "Study Notebook + full course libraries",
       "Cloud sync across devices",
-      "Priority human tutor matching",
     ],
   },
   humanTutor: {
     name: "Human tutor",
-    studentRatePerHour: 120,
-    rateFrom: 60,
-    rateTo: 200,
+    studentRatePerHour: 95,
+    rateFrom: 65,
+    rateTo: 185,
     platformFeePerHour: 0,
     tutorPayoutPerHour: 0,
     features: [
-      "Market rates — typically $60–$200/hr by subject",
+      "Market rates — typically $65–$185/hr by subject",
       "You pick budget tier; tutors bid in range",
       "AI session summary included — no repeating yourself",
       "Pay only after you approve a match",
@@ -135,7 +134,7 @@ export const PRICING = {
   },
   school: {
     name: "School / classroom",
-    pricePerStudentMonth: 49,
+    pricePerStudentMonth: 19,
     minimumSeats: 10,
     features: [
       "Class-wide learning lift dashboard",
@@ -147,30 +146,12 @@ export const PRICING = {
   family: {
     name: "Family plan",
     seats: 4,
-    priceMonthly: 449,
-    priceAnnual: 4490,
+    priceMonthly: 99,
+    priceAnnual: 990,
     features: [
       "Up to 4 student seats on one membership",
       "Shared billing — curricula purchased per seat or bundle",
       "Each seat gets cloud sync and progress",
-    ],
-  },
-  trial: {
-    name: "Free trial",
-    days: 7,
-    features: [
-      "7-day trial on first curriculum library purchase",
-      "Cancel before trial ends — no charge",
-      "One trial per household",
-    ],
-  },
-  refund: {
-    name: "Refund policy",
-    days: 14,
-    features: [
-      "Full refund within 14 days of first subscription charge",
-      "Contact support@sch00l.ai with your account email",
-      "Does not apply to completed human tutor sessions",
     ],
   },
 } as const;
@@ -205,7 +186,6 @@ export function monthlyEquivalent(annual: number): number {
   return Math.round((annual / 12) * 100) / 100;
 }
 
-/** Membership + every curriculum library at individual prices */
 export function alaCarteTotal(interval: BillingInterval): number {
   const m = PRICING.membership;
   const curriculaSum = SELLABLE_CURRICULA.reduce(
@@ -237,7 +217,6 @@ export function billingPeriodLabel(interval: BillingInterval): string {
   return interval === "monthly" ? "/mo" : "/yr";
 }
 
-/** Membership + one curriculum library (true à la carte price). */
 export function totalWithMembership(
   curriculumMonthly: number,
   curriculumAnnual: number,

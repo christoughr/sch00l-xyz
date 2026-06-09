@@ -4,6 +4,7 @@ import {
   Shield,
   BarChart3,
   GraduationCap,
+  BookOpen,
   ArrowRight,
 } from "lucide-react";
 import { WaitlistForm } from "@/components/WaitlistForm";
@@ -33,6 +34,11 @@ const features = [
     icon: GraduationCap,
     title: "Built for real students",
     body: "Math, science, essays, CS, languages — one focused study flow, not a generic chatbot.",
+  },
+  {
+    icon: BookOpen,
+    title: "Beyond SparkNotes",
+    body: "Course-linked lessons, prep quizzes, and a Study Notebook — summaries you can actually ask follow-ups about.",
   },
 ];
 
@@ -67,10 +73,10 @@ export default function HomePage() {
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
-            href="/progress"
+            href="/notebook"
             className="inline-flex items-center rounded-xl border border-white/15 px-6 py-3 text-zinc-300 transition hover:bg-white/5"
           >
-            View progress
+            Study Notebook
           </Link>
           <CopyShareLink url={`${SITE_URL}/study`} />
         </div>

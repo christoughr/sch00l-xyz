@@ -4,6 +4,7 @@ import { GLOBAL_STUDY_TRACKS } from "./study-tracks-global";
 import {
   EXAM_PREP_EXTRA_TRACKS,
   K12_EARLY_STUDY_TRACKS,
+  US_HS_DIPLOMA_TRACKS,
 } from "./study-tracks-k12-exams";
 
 export type StudyTrackCategory =
@@ -443,6 +444,7 @@ export const STUDY_TRACKS: StudyTrack[] = [
   },
   ...COLLEGE_STUDY_TRACKS,
   ...K12_EARLY_STUDY_TRACKS,
+  ...US_HS_DIPLOMA_TRACKS,
   {
     id: "k12-algebra-2",
     category: "k12",

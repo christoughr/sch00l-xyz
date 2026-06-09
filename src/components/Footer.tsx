@@ -21,8 +21,8 @@ export function Footer() {
           <Link href="/progress" className="hover:text-zinc-300">
             Progress
           </Link>
-          <Link href="/flashcards" className="hover:text-zinc-300">
-            Cards
+          <Link href="/notebook" className="hover:text-zinc-300">
+            Notebook
           </Link>
           <Link href="/privacy" className="hover:text-zinc-300">
             Privacy
@@ -31,7 +31,7 @@ export function Footer() {
             Terms
           </Link>
           <Link href="/refund" className="hover:text-zinc-300">
-            Refunds
+            Billing
           </Link>
           <Link href="/settings" className="hover:text-zinc-300">
             Settings

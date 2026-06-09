@@ -61,6 +61,57 @@ export const GLOBAL_STUDY_TRACKS: GlobalStudyTrack[] = [
     tutorContext:
       "GCSE Combined/Triple Science: required practicals, equation recall, and 6-mark extended responses. Separate trilogy vs synergy when relevant.",
   }),
+  // —— Canada (OSSD) ——
+  INT({
+    id: "ca-ossd-english",
+    label: "OSSD English (ENG4U)",
+    description: "Ontario Grade 12 university English",
+    subject: "english",
+    topic: "OSSD English — analysis and academic writing",
+    gradeLevel: "Ontario Grade 12",
+    tutorContext:
+      "OSSD ENG4U: literary analysis, media literacy, ISU planning. Thesis, textual evidence, and Ontario achievement chart language.",
+  }),
+  INT({
+    id: "ca-ossd-advanced-functions",
+    label: "OSSD Advanced Functions (MHF4U)",
+    description: "Polynomial, rational, trigonometric functions",
+    subject: "math",
+    topic: "OSSD MHF4U — functions and transformations",
+    gradeLevel: "Ontario Grade 12",
+    tutorContext:
+      "MHF4U: function types, transformations, rates of change. Connect graphs, equations, and applications for university prep.",
+  }),
+  INT({
+    id: "ca-ossd-calculus",
+    label: "OSSD Calculus & Vectors (MCV4U)",
+    description: "Limits, derivatives, vectors",
+    subject: "math",
+    topic: "OSSD MCV4U — calculus and vectors",
+    gradeLevel: "Ontario Grade 12",
+    tutorContext:
+      "MCV4U: derivative rules, curve sketching, vector geometry. Show full algebraic steps for Ontario exam style.",
+  }),
+  INT({
+    id: "ca-ossd-biology",
+    label: "OSSD Biology (SBI4U)",
+    description: "Biochemistry, molecular genetics, populations",
+    subject: "science",
+    topic: "OSSD SBI4U — molecular biology",
+    gradeLevel: "Ontario Grade 12",
+    tutorContext:
+      "SBI4U: metabolism, gene expression, homeostasis. Lab report structure and data interpretation for OSSD standards.",
+  }),
+  INT({
+    id: "ca-ossd-chemistry",
+    label: "OSSD Chemistry (SCH4U)",
+    description: "Organic, equilibrium, electrochemistry",
+    subject: "science",
+    topic: "OSSD SCH4U — organic and equilibrium",
+    gradeLevel: "Ontario Grade 12",
+    tutorContext:
+      "SCH4U: reaction mechanisms, equilibrium ICE tables, redox. Balance conceptual models with calculation steps.",
+  }),
   INT({
     id: "uk-alevel-math",
     label: "A-Level Mathematics",
