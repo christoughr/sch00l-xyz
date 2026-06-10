@@ -1,4 +1,4 @@
-/** Revenue model — optimized for conversion + margin (not sticker shock). */
+/** Peak revenue model — premium libraries, high-ROI exam tracks, full catalog bundle. */
 
 import type { StudyTrackCategory } from "./study-tracks";
 import { TRACK_CATEGORIES } from "./study-tracks";
@@ -10,10 +10,17 @@ export type BillingInterval = "monthly" | "annual";
 
 export type SellableCurriculumId = Exclude<StudyTrackCategory, "custom">;
 
+/** Annual ≈ 10× monthly (~17% off vs paying monthly × 12). */
+export const ANNUAL_MULTIPLIER = 10;
+
+function annualFromMonthly(monthly: number): number {
+  return monthly * ANNUAL_MULTIPLIER;
+}
+
 const CURRICULUM_BLURBS: Record<SellableCurriculumId, string> = {
   ap: "All AP courses — Calc, Bio, Chem, Physics, Stats, and more",
   sat_act: "SAT Math, SAT Reading, ACT Math, English, Science",
-  exam_prep: "GRE, GMAT, MCAT, LSAT, and professional exam tracks",
+  exam_prep: "GRE, GMAT, MCAT, LSAT, USMLE, and professional exam tracks",
   college: "Calc I–III, Linear Algebra, Physics, Gen Chem, and semester courses",
   k12: "K–8 core + US high school diploma pathways",
   languages: "Spanish, French, Mandarin, ESL, and conversation tracks",
@@ -21,94 +28,202 @@ const CURRICULUM_BLURBS: Record<SellableCurriculumId, string> = {
   professional: "Certifications, bootcamps, and career upskilling paths",
 };
 
-/**
- * Premium pricing: reflects full course libraries + AI tutor value.
- * Still below enterprise sticker shock; annual ≈ 10× monthly (~17% off vs monthly×12).
- */
+/** Peak library pricing — every category priced as a premium product. */
 export const CURRICULUM_PRICES: Record<
   SellableCurriculumId,
   { priceMonthly: number; priceAnnual: number }
 > = {
-  ap: { priceMonthly: 119, priceAnnual: 1190 },
-  sat_act: { priceMonthly: 109, priceAnnual: 1090 },
-  exam_prep: { priceMonthly: 199, priceAnnual: 1990 },
-  college: { priceMonthly: 119, priceAnnual: 1190 },
-  k12: { priceMonthly: 99, priceAnnual: 990 },
-  languages: { priceMonthly: 89, priceAnnual: 890 },
-  international: { priceMonthly: 109, priceAnnual: 1090 },
-  professional: { priceMonthly: 149, priceAnnual: 1490 },
+  k12: { priceMonthly: 149, priceAnnual: annualFromMonthly(149) },
+  languages: { priceMonthly: 129, priceAnnual: annualFromMonthly(129) },
+  international: { priceMonthly: 199, priceAnnual: annualFromMonthly(199) },
+  sat_act: { priceMonthly: 249, priceAnnual: annualFromMonthly(249) },
+  ap: { priceMonthly: 279, priceAnnual: annualFromMonthly(279) },
+  college: { priceMonthly: 279, priceAnnual: annualFromMonthly(279) },
+  professional: { priceMonthly: 299, priceAnnual: annualFromMonthly(299) },
+  exam_prep: { priceMonthly: 499, priceAnnual: annualFromMonthly(499) },
 };
 
-/** High-ROI exams — priced for career upside (law, medicine, grad school). */
+/** Default single-track price when no exam-specific override exists. */
+export const PEAK_STANDARD_TRACK = {
+  priceMonthly: 199,
+  priceAnnual: annualFromMonthly(199),
+} as const;
+
+/** High-ROI exams — top of the peak tier (law, medicine, grad school). */
 export const PREMIUM_TRACK_PRICES: Record<
   string,
   { priceMonthly: number; priceAnnual: number; label: string }
 > = {
-  lsat: { priceMonthly: 349, priceAnnual: 3490, label: "LSAT" },
-  gmat: { priceMonthly: 329, priceAnnual: 3290, label: "GMAT" },
-  "gre-quant": { priceMonthly: 279, priceAnnual: 2790, label: "GRE Quantitative" },
-  "gre-verbal": { priceMonthly: 279, priceAnnual: 2790, label: "GRE Verbal" },
+  lsat: { priceMonthly: 499, priceAnnual: annualFromMonthly(499), label: "LSAT" },
+  gmat: { priceMonthly: 479, priceAnnual: annualFromMonthly(479), label: "GMAT" },
+  "gre-quant": {
+    priceMonthly: 379,
+    priceAnnual: annualFromMonthly(379),
+    label: "GRE Quantitative",
+  },
+  "gre-verbal": {
+    priceMonthly: 379,
+    priceAnnual: annualFromMonthly(379),
+    label: "GRE Verbal",
+  },
   "gre-analytical-writing": {
-    priceMonthly: 199,
-    priceAnnual: 1990,
+    priceMonthly: 299,
+    priceAnnual: annualFromMonthly(299),
     label: "GRE Analytical Writing",
   },
-  "mcat-bb": { priceMonthly: 349, priceAnnual: 3490, label: "MCAT Bio/Biochem" },
-  "mcat-cp": { priceMonthly: 349, priceAnnual: 3490, label: "MCAT Chem/Phys" },
-  "mcat-ps": { priceMonthly: 349, priceAnnual: 3490, label: "MCAT Psych/Soc" },
-  "mcat-cars": { priceMonthly: 349, priceAnnual: 3490, label: "MCAT CARS" },
-  "med-mmi": { priceMonthly: 399, priceAnnual: 3990, label: "Medical School MMI" },
-  dat: { priceMonthly: 299, priceAnnual: 2990, label: "DAT" },
-  oat: { priceMonthly: 299, priceAnnual: 2990, label: "OAT" },
-  pcat: { priceMonthly: 279, priceAnnual: 2790, label: "PCAT" },
-  "usmle-step1": { priceMonthly: 499, priceAnnual: 4990, label: "USMLE Step 1" },
-  "usmle-step2-ck": { priceMonthly: 499, priceAnnual: 4990, label: "USMLE Step 2 CK" },
-  "usmle-step3": { priceMonthly: 449, priceAnnual: 4490, label: "USMLE Step 3" },
-  "comlex-level1": { priceMonthly: 449, priceAnnual: 4490, label: "COMLEX Level 1" },
-  "comlex-level2": { priceMonthly: 449, priceAnnual: 4490, label: "COMLEX Level 2" },
-  pance: { priceMonthly: 399, priceAnnual: 3990, label: "PANCE" },
-  naplex: { priceMonthly: 399, priceAnnual: 3990, label: "NAPLEX" },
-  inbde: { priceMonthly: 349, priceAnnual: 3490, label: "INBDE" },
-  "nclex-rn": { priceMonthly: 299, priceAnnual: 2990, label: "NCLEX-RN" },
-  "nclex-pn": { priceMonthly: 249, priceAnnual: 2490, label: "NCLEX-PN" },
-  "ati-teas": { priceMonthly: 219, priceAnnual: 2190, label: "ATI TEAS" },
-  "hesi-a2": { priceMonthly: 219, priceAnnual: 2190, label: "HESI A2" },
+  "mcat-bb": {
+    priceMonthly: 499,
+    priceAnnual: annualFromMonthly(499),
+    label: "MCAT Bio/Biochem",
+  },
+  "mcat-cp": {
+    priceMonthly: 499,
+    priceAnnual: annualFromMonthly(499),
+    label: "MCAT Chem/Phys",
+  },
+  "mcat-ps": {
+    priceMonthly: 499,
+    priceAnnual: annualFromMonthly(499),
+    label: "MCAT Psych/Soc",
+  },
+  "mcat-cars": {
+    priceMonthly: 499,
+    priceAnnual: annualFromMonthly(499),
+    label: "MCAT CARS",
+  },
+  "med-mmi": {
+    priceMonthly: 549,
+    priceAnnual: annualFromMonthly(549),
+    label: "Medical School MMI",
+  },
+  dat: { priceMonthly: 399, priceAnnual: annualFromMonthly(399), label: "DAT" },
+  oat: { priceMonthly: 399, priceAnnual: annualFromMonthly(399), label: "OAT" },
+  pcat: { priceMonthly: 349, priceAnnual: annualFromMonthly(349), label: "PCAT" },
+  "usmle-step1": {
+    priceMonthly: 799,
+    priceAnnual: annualFromMonthly(799),
+    label: "USMLE Step 1",
+  },
+  "usmle-step2-ck": {
+    priceMonthly: 799,
+    priceAnnual: annualFromMonthly(799),
+    label: "USMLE Step 2 CK",
+  },
+  "usmle-step3": {
+    priceMonthly: 649,
+    priceAnnual: annualFromMonthly(649),
+    label: "USMLE Step 3",
+  },
+  "comlex-level1": {
+    priceMonthly: 699,
+    priceAnnual: annualFromMonthly(699),
+    label: "COMLEX Level 1",
+  },
+  "comlex-level2": {
+    priceMonthly: 699,
+    priceAnnual: annualFromMonthly(699),
+    label: "COMLEX Level 2",
+  },
+  pance: { priceMonthly: 549, priceAnnual: annualFromMonthly(549), label: "PANCE" },
+  naplex: { priceMonthly: 549, priceAnnual: annualFromMonthly(549), label: "NAPLEX" },
+  inbde: { priceMonthly: 449, priceAnnual: annualFromMonthly(449), label: "INBDE" },
+  "nclex-rn": {
+    priceMonthly: 379,
+    priceAnnual: annualFromMonthly(379),
+    label: "NCLEX-RN",
+  },
+  "nclex-pn": {
+    priceMonthly: 299,
+    priceAnnual: annualFromMonthly(299),
+    label: "NCLEX-PN",
+  },
+  "ati-teas": {
+    priceMonthly: 279,
+    priceAnnual: annualFromMonthly(279),
+    label: "ATI TEAS",
+  },
+  "hesi-a2": {
+    priceMonthly: 279,
+    priceAnnual: annualFromMonthly(279),
+    label: "HESI A2",
+  },
+  "sat-math": {
+    priceMonthly: 279,
+    priceAnnual: annualFromMonthly(279),
+    label: "SAT Math",
+  },
+  "sat-reading": {
+    priceMonthly: 279,
+    priceAnnual: annualFromMonthly(279),
+    label: "SAT Reading",
+  },
+  "act-math": {
+    priceMonthly: 249,
+    priceAnnual: annualFromMonthly(249),
+    label: "ACT Math",
+  },
+  "act-english": {
+    priceMonthly: 249,
+    priceAnnual: annualFromMonthly(249),
+    label: "ACT English",
+  },
+  "act-science": {
+    priceMonthly: 249,
+    priceAnnual: annualFromMonthly(249),
+    label: "ACT Science",
+  },
+  "cfa-level1": {
+    priceMonthly: 449,
+    priceAnnual: annualFromMonthly(449),
+    label: "CFA Level I",
+  },
+  "cpa-far": {
+    priceMonthly: 449,
+    priceAnnual: annualFromMonthly(449),
+    label: "CPA FAR",
+  },
+  "bar-exam-mbe": {
+    priceMonthly: 599,
+    priceAnnual: annualFromMonthly(599),
+    label: "Bar Exam MBE",
+  },
 };
 
 export const PREMIUM_TRACK_LIST = Object.entries(PREMIUM_TRACK_PRICES).map(
   ([id, p]) => ({ id, ...p })
 );
 
+const PREMIUM_TRACK_ALIASES: Record<string, string> = {
+  "pro-usmle-step1": "usmle-step1",
+};
+
 export function isPremiumTrack(trackId: string): boolean {
-  return trackId in PREMIUM_TRACK_PRICES;
+  const id = PREMIUM_TRACK_ALIASES[trackId] ?? trackId;
+  return id in PREMIUM_TRACK_PRICES;
 }
 
 export function trackPrice(
   trackId: string,
   interval: BillingInterval
-): number | null {
-  const id =
-    trackId === "pro-usmle-step1" ? "usmle-step1" : trackId;
-  const p = PREMIUM_TRACK_PRICES[id];
-  if (!p) return null;
+): number {
+  const id = PREMIUM_TRACK_ALIASES[trackId] ?? trackId;
+  const p =
+    PREMIUM_TRACK_PRICES[id] ??
+    PEAK_STANDARD_TRACK;
   return interval === "monthly" ? p.priceMonthly : p.priceAnnual;
 }
 
-/** Membership + premium track (or standard track fallback). */
+/** Membership + any track (peak standard or exam override). */
 export function totalWithTrack(
   trackId: string,
   interval: BillingInterval
 ): number {
-  const premium = trackPrice(trackId, interval);
-  const track =
-    premium ??
-    priceForInterval(PRICING.track.priceMonthly, PRICING.track.priceAnnual, interval);
   return (
     priceForInterval(
       PRICING.membership.priceMonthly,
       PRICING.membership.priceAnnual,
       interval
-    ) + track
+    ) + trackPrice(trackId, interval)
   );
 }
 
@@ -148,10 +263,10 @@ export const PRICING = {
   },
   membership: {
     name: "Platform membership",
-    priceMonthly: 79,
-    priceAnnual: 790,
+    priceMonthly: 99,
+    priceAnnual: annualFromMonthly(99),
     features: [
-      "Required seat for any paid curriculum",
+      "Required seat for any paid curriculum or track",
       "Cloud sync across devices",
       "Unlimited AI sessions on unlocked tracks",
       "Study Notebook — upload notes, Q&A, quiz me",
@@ -160,29 +275,29 @@ export const PRICING = {
   },
   track: {
     name: "Single course",
-    priceMonthly: 79,
-    priceAnnual: 790,
+    priceMonthly: PEAK_STANDARD_TRACK.priceMonthly,
+    priceAnnual: PEAK_STANDARD_TRACK.priceAnnual,
     features: [
       "One full study track end-to-end",
-      "Ideal when you only need one exam or semester",
+      "Peak library content + AI tutor on that track",
       "Upgrade to a library or bundle anytime",
     ],
   },
   bundle: {
     name: "All-in-one",
-    priceMonthly: 549,
-    priceAnnual: 5490,
+    priceMonthly: 1499,
+    priceAnnual: annualFromMonthly(1499),
     features: [
       "Membership + every curriculum library",
-      "All current & future tracks in catalog",
+      "All 400+ current & future tracks in catalog",
       "Best value vs buying libraries separately",
       "Priority new-course access at launch",
     ],
   },
   pro: {
     name: "sch00l Pro",
-    priceMonthly: 549,
-    priceAnnual: 5490,
+    priceMonthly: 1499,
+    priceAnnual: annualFromMonthly(1499),
     features: [
       "Membership + all curriculum libraries",
       "Unlimited AI tutor sessions",
@@ -192,13 +307,13 @@ export const PRICING = {
   },
   humanTutor: {
     name: "Human tutor",
-    studentRatePerHour: 115,
-    rateFrom: 85,
-    rateTo: 225,
+    studentRatePerHour: 145,
+    rateFrom: 95,
+    rateTo: 275,
     platformFeePerHour: 0,
     tutorPayoutPerHour: 0,
     features: [
-      "Market rates — typically $85–$225/hr by subject",
+      "Market rates — typically $95–$275/hr by subject",
       "You pick budget tier; tutors bid in range",
       "AI session summary included — no repeating yourself",
       "Pay only after you approve a match",
@@ -206,7 +321,7 @@ export const PRICING = {
   },
   school: {
     name: "School / classroom",
-    pricePerStudentMonth: 29,
+    pricePerStudentMonth: 59,
     minimumSeats: 10,
     features: [
       "Class-wide learning lift dashboard",
@@ -218,8 +333,8 @@ export const PRICING = {
   family: {
     name: "Family plan",
     seats: 4,
-    priceMonthly: 199,
-    priceAnnual: 1990,
+    priceMonthly: 449,
+    priceAnnual: annualFromMonthly(449),
     features: [
       "Up to 4 student seats on one membership",
       "Shared billing — curricula purchased per seat or bundle",

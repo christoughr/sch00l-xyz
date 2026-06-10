@@ -181,22 +181,16 @@ export default function PricingPage() {
         </p>
         <h1 className="text-3xl font-bold text-white sm:text-4xl">Pricing</h1>
         <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-          Full course libraries, AI tutor, prep quizzes, and Study Notebook —
-          priced to convert, not to scare off at checkout.
+          Premium libraries, AI tutor, and full exam prep — priced for outcomes
+          that pay for themselves (law, medicine, grad school, AP, and more).
         </p>
         <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 max-w-xl mx-auto text-sm text-zinc-400">
-          <strong className="text-zinc-200">Example:</strong> College Calc I only
-          = {formatUsd(membership.priceMonthly)} membership +{" "}
-          {formatUsd(CURRICULUM_PRICES.college.priceMonthly)} College library ={" "}
+          <strong className="text-zinc-200">Example:</strong> LSAT only ={" "}
+          {formatUsd(membership.priceMonthly)} membership +{" "}
+          {formatUsd(PREMIUM_TRACK_LIST.find((t) => t.id === "lsat")?.priceMonthly ?? 499)}{" "}
+          LSAT track ={" "}
           <strong className="text-white">
-            {formatUsd(
-              totalWithMembership(
-                CURRICULUM_PRICES.college.priceMonthly,
-                CURRICULUM_PRICES.college.priceAnnual,
-                "monthly"
-              )
-            )}
-            /mo
+            {formatUsd(totalWithTrack("lsat", "monthly"))}/mo
           </strong>
         </div>
         <div className="mt-6">
@@ -313,12 +307,13 @@ export default function PricingPage() {
       {/* Premium single tracks — high-stakes exams */}
       <section className="mb-12">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500 mb-2">
-          Premium exam tracks
+          Peak exam tracks
         </h2>
         <p className="text-sm text-zinc-400 mb-4 max-w-2xl">
-          Law, medicine, and graduate-school exams — priced for career ROI.
-          Membership ({formatUsd(priceForInterval(membership.priceMonthly, membership.priceAnnual, interval))}
-          {billingPeriodLabel(interval)}) required.
+          High-stakes exams priced for career ROI. Standard tracks from{" "}
+          {formatUsd(track.priceMonthly)}/mo · membership required (
+          {formatUsd(priceForInterval(membership.priceMonthly, membership.priceAnnual, interval))}
+          {billingPeriodLabel(interval)}).
         </p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {PREMIUM_TRACK_LIST.map((t) => (

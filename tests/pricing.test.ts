@@ -4,6 +4,7 @@ import {
   FREE_AI_SESSIONS_PER_DAY,
   PLATFORM_FEE,
   PRICING,
+  CURRICULUM_PRICES,
   SELLABLE_CURRICULA,
   alaCarteTotal,
   annualSavingsPercent,
@@ -46,7 +47,10 @@ describe("pricing consistency", () => {
   it("each curriculum has its own price", () => {
     const prices = SELLABLE_CURRICULA.map((c) => c.priceMonthly);
     assert.ok(new Set(prices).size > 1);
-    assert.ok(PRICING.bundle.priceMonthly >= 500);
+    assert.ok(PRICING.bundle.priceMonthly >= 1000);
+    assert.ok(PRICING.membership.priceMonthly >= 99);
+    assert.ok(PRICING.track.priceMonthly >= 199);
+    assert.ok(CURRICULUM_PRICES.exam_prep.priceMonthly >= 499);
   });
 
   it("tutor platform fee is 45%", () => {
