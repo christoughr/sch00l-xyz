@@ -10,6 +10,7 @@
     "check:env": "node scripts/check-env.mjs",
     "prep:status": "node scripts/prep-status.mjs",
     "prep:watch": "node scripts/prep-watch.mjs --interval 60",
+    "ingest:attached": "node scripts/ingest-attached.mjs",
     "test": "npx --yes tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium",

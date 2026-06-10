@@ -754,7 +754,7 @@ export const GLOBAL_STUDY_TRACKS: GlobalStudyTrack[] = [
     topic: "USMLE Step 1 — pathology and physiology",
     gradeLevel: "USMLE Step 1",
     tutorContext:
-      "USMLE Step 1: systems integration, UWorld-style explanations, and buzzword discipline. Passage-based reasoning first.",
+      "USMLE Step 1: systems integration, vignette-style explanations, and buzzword discipline. Passage-based reasoning first.",
   }),
   PRO({
     id: "pro-bar-exam",

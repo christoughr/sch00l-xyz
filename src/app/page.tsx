@@ -37,7 +37,7 @@ const features = [
   },
   {
     icon: BookOpen,
-    title: "Beyond SparkNotes",
+    title: "Deep study materials",
     body: "Course-linked lessons, prep quizzes, and a Study Notebook — summaries you can actually ask follow-ups about.",
   },
 ];

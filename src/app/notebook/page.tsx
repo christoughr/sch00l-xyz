@@ -54,8 +54,8 @@ export default function NotebookPage() {
         Paste notes. Get summaries, Q&amp;A, and quizzes.
       </h1>
       <p className="mt-3 max-w-2xl text-sm text-zinc-400 leading-relaxed">
-        Like NotebookLM for studying: drop a chapter, lecture notes, or article excerpt.
-        sch00l turns it into study-ready output — then jump into a{" "}
+        Drop a chapter, lecture notes, or article excerpt. sch00l turns it into
+        study-ready output — then jump into a{" "}
         <Link href="/study" className="text-brand-400 underline">
           live tutor session
         </Link>{" "}
@@ -63,7 +63,7 @@ export default function NotebookPage() {
         <Link href="/flashcards" className="text-brand-400 underline">
           flashcards
         </Link>
-        . Better than static SparkNotes — interactive and tied to your progress.
+        . Interactive summaries tied to your progress — not static cliff notes.
       </p>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">

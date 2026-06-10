@@ -179,9 +179,8 @@ export default function PricingPage() {
         </p>
         <h1 className="text-3xl font-bold text-white sm:text-4xl">Pricing</h1>
         <p className="mt-3 text-zinc-400 max-w-2xl mx-auto">
-          Premium vs SparkNotes or Chegg — full course libraries, AI tutor, prep
-          quizzes, and Study Notebook. Priced to convert, not to scare off at
-          checkout.
+          Full course libraries, AI tutor, prep quizzes, and Study Notebook —
+          priced to convert, not to scare off at checkout.
         </p>
         <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 max-w-xl mx-auto text-sm text-zinc-400">
           <strong className="text-zinc-200">Example:</strong> College Calc I only

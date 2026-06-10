@@ -154,16 +154,14 @@ function assignBalancedUnit(
 
 export function shortBookLabel(sourcePdfName: string, title: string): string {
   const s = `${sourcePdfName} ${title}`.toLowerCase();
-  if (s.includes("mobi-princeton") || s.includes("premium prep, 2023"))
-    return "Princeton Review 2023";
-  if (s.includes("princeton") && s.includes("2024")) return "Princeton Review 2024";
-  if (s.includes("princeton") && s.includes("2025")) return "Princeton Review 2025";
-  if (s.includes("princeton")) return "Princeton Review";
-  if (s.includes("kaplan") || s.includes("2026")) return "Kaplan 2026";
-  if (s.includes("2025") && s.includes("wuerth")) return "Barron's 2025";
-  if (s.includes("2024") && s.includes("comprehensive")) return "Barron's 2024";
-  if (s.includes("2022-2023") || s.includes("2022")) return "Barron's 2022–23";
-  if (s.includes("barrons") || s.includes("barron")) return "Barron's AP Bio";
+  if (s.includes("2026")) return "AP Bio study guide (2026)";
+  if (s.includes("2025")) return "AP Bio study guide (2025)";
+  if (s.includes("2024") && s.includes("comprehensive")) return "AP Bio study guide (2024)";
+  if (s.includes("2024")) return "AP Bio study guide (2024)";
+  if (s.includes("2023")) return "AP Bio study guide (2023)";
+  if (s.includes("2022-2023") || s.includes("2022")) return "AP Bio study guide (2022–23)";
+  if (s.includes("premium") || s.includes("barrons") || s.includes("barron"))
+    return "AP Bio study guide";
   return "AP Bio study guide";
 }
 

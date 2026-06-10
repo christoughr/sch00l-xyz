@@ -152,16 +152,15 @@ function assignBalancedUnit(
 
 export function shortBookLabel(sourcePdfName: string, title: string): string {
   const s = `${sourcePdfName} ${title}`.toLowerCase();
-  if (s.includes("5 steps") && s.includes("500")) return "5 Steps: 500 Questions";
-  if (s.includes("5 steps")) return "5 Steps to a 5 · 2023";
-  if (s.includes("princeton") && s.includes("2023")) return "Princeton Review 2023";
-  if (s.includes("princeton")) return "Princeton Review";
-  if (s.includes("2026")) return "Barron's 2026";
-  if (s.includes("2025")) return "Barron's 2025";
-  if (s.includes("2024") && s.includes("comprehensive")) return "Barron's 2024 Comprehensive";
-  if (s.includes("2024")) return "Barron's 2024";
-  if (s.includes("2022-2023") || s.includes("2022")) return "Barron's 2022–23";
-  if (s.includes("barrons") || s.includes("barron")) return "Barron's AP Chem";
+  if (s.includes("5 steps") && s.includes("500")) return "AP Chem practice questions";
+  if (s.includes("5 steps")) return "AP Chem study guide (2023)";
+  if (s.includes("2026")) return "AP Chem study guide (2026)";
+  if (s.includes("2025")) return "AP Chem study guide (2025)";
+  if (s.includes("2024") && s.includes("comprehensive")) return "AP Chem study guide (2024)";
+  if (s.includes("2024")) return "AP Chem study guide (2024)";
+  if (s.includes("2023")) return "AP Chem study guide (2023)";
+  if (s.includes("2022-2023") || s.includes("2022")) return "AP Chem study guide (2022–23)";
+  if (s.includes("barrons") || s.includes("barron")) return "AP Chem study guide";
   return "AP Chem study guide";
 }
 

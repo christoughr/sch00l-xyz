@@ -44,7 +44,32 @@ export async function POST(req: Request) {
   const { createClient } = await import("@/lib/supabase/server");
   const { checkAiSessionAllowed, fetchIsPro } = await import("@/lib/session-quota");
   const supabase = await createClient();
-  if (supabase) {
+  const apiKey = getAiApiKey();
+
+  if (apiKey && !supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
+
+  if (apiKey && supabase) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+    }
+    const isPro = await fetchIsPro(supabase, user.id);
+    const check = await checkAiSessionAllowed(supabase, user.id, isPro);
+    if (!check.allowed) {
+      return NextResponse.json(
+        {
+          error: `Free plan allows ${check.limit} AI session${check.limit === 1 ? "" : "s"} per day. Upgrade to Pro for unlimited.`,
+          used: check.used,
+          limit: check.limit,
+        },
+        { status: 429 }
+      );
+    }
+  } else if (supabase) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -104,7 +129,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No user message" }, { status: 400 });
   }
 
-  const apiKey = getAiApiKey();
   const baseUrl = getAiBaseUrl();
   const model = getAiModel();
 

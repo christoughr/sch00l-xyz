@@ -24,7 +24,7 @@ function stripHtml(html) {
     .trim();
 }
 
-async function previewFile(filePath) {
+export async function previewFile(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   if (ext === ".pdf") {
     try {
@@ -412,6 +412,22 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/\boat\b|optometry admission/i.test(t)) return ["oat"];
   if (/\bpcat\b|pharmacy college admission/i.test(t)) return ["pcat"];
   if (/\blsat\b|law school admission test|kaplan lsat/i.test(t)) return ["lsat"];
+  if (/powerscore.*sentence correction|gmat sentence correction/i.test(t)) return ["gmat"];
+  if (/master ap english language|ap english language.*composition/i.test(t)) return ["ap-lang"];
+  if (/gruber.*psat|complete psat|psat.?nmsqt/i.test(t)) return ["psat"];
+  if (/essential words for the gre|barron.*gre.*vocab|1100 words you need/i.test(t))
+    return ["gre-verbal"];
+  if (/gre cat.*essay|answers to the real essay questions/i.test(t))
+    return ["gre-analytical-writing"];
+  if (/mastering the sat critical reading|501 critical reading|sat critical reading/i.test(t))
+    return ["sat-reading"];
+  if (/gruber.*complete sat|cracking the sat(?! literature)|fiske.*sat|master the sat|getting ready for the sat|barron.*sat 2400|writing workbook for the new sat/i.test(t))
+    return ["sat-math", "sat-reading"];
+  if (/cracking the sat literature|sat literature subject/i.test(t)) return ["sat-reading"];
+  if (/manhattan gre.*reading|manhattan gre.*text completion|manhattan prep gre/i.test(t))
+    return ["gre-verbal"];
+  if (/cracking the gre|gruber.*complete gre|gre-lsat logic/i.test(t) && !/lsat only/i.test(t))
+    return ["gre-quant", "gre-verbal"];
   if (/usmle step 1|first aid.*step 1|pathoma/i.test(t)) return ["usmle-step1"];
   if (/usmle step 2|first aid.*step 2/i.test(t)) return ["usmle-step2-ck"];
   if (/usmle step 3|first aid.*step 3/i.test(t)) return ["usmle-step3"];
@@ -581,6 +597,15 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/ap.?calc|5 steps.*calculus ab|cracking the ap calculus/i.test(t)) return ["ap-calc-ab"];
 
   return [];
+}
+
+/** Content-first routing — preview text weighed more than filename. */
+export async function classifyFromContent(filePath, filenameHint = "") {
+  const preview = await previewFile(filePath);
+  const name = filenameHint || path.basename(filePath);
+  const fromContent = classifyByNameAndText("", preview);
+  if (fromContent.length) return fromContent;
+  return classifyByNameAndText(name, preview);
 }
 
 function suggestRename(filename, preview, tracks) {

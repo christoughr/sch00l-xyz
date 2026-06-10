@@ -470,7 +470,7 @@ export const EXPANDED_STUDY_TRACKS: StudyTrack[] = [
     topic: "Step 2 CK — clinical diagnosis",
     gradeLevel: "Medical school",
     tutorContext:
-      "Step 2 CK: next best step, diagnosis, management. UWorld-style vignette reasoning.",
+      "Step 2 CK: next best step, diagnosis, management. Clinical vignette reasoning.",
   }),
   EXAM({
     id: "usmle-step3",
@@ -480,7 +480,7 @@ export const EXPANDED_STUDY_TRACKS: StudyTrack[] = [
     topic: "Step 3 — patient management",
     gradeLevel: "Residency",
     tutorContext:
-      "Step 3: ambulatory care, CCS cases, biostatistics. First Aid Step 3 patterns.",
+      "Step 3: ambulatory care, CCS cases, biostatistics. High-yield management patterns.",
   }),
   EXAM({
     id: "comlex-level1",
@@ -491,6 +491,66 @@ export const EXPANDED_STUDY_TRACKS: StudyTrack[] = [
     gradeLevel: "Medical school",
     tutorContext:
       "COMLEX L1: basic sciences plus OMM concepts. Systems integration like Step 1.",
+  }),
+  EXAM({
+    id: "comlex-level2",
+    label: "COMLEX Level 2",
+    description: "Clinical knowledge for DO students",
+    subject: "health",
+    topic: "COMLEX L2 — diagnosis and management",
+    gradeLevel: "Medical school",
+    tutorContext:
+      "COMLEX L2: clinical vignettes, OMM integration, next-best-step reasoning. Similar depth to Step 2 CK.",
+  }),
+  EXAM({
+    id: "ati-teas",
+    label: "ATI TEAS",
+    description: "Nursing and allied health admissions",
+    subject: "health",
+    topic: "TEAS — reading, math, science, English",
+    gradeLevel: "TEAS",
+    tutorContext:
+      "TEAS: reading comprehension, math (algebra, ratios), A&P basics, grammar. Timed section pacing and elimination.",
+  }),
+  EXAM({
+    id: "hesi-a2",
+    label: "HESI A2",
+    description: "Health education systems admission",
+    subject: "health",
+    topic: "HESI A2 — nursing program entrance",
+    gradeLevel: "HESI",
+    tutorContext:
+      "HESI A2: anatomy, biology, chemistry, math, reading. Nursing-school admissions focus; prioritize safety and fundamentals.",
+  }),
+  EXAM({
+    id: "pance",
+    label: "PANCE",
+    description: "Physician assistant certification",
+    subject: "health",
+    topic: "PANCE — clinical medicine",
+    gradeLevel: "PA certification",
+    tutorContext:
+      "PANCE: internal medicine, surgery, pediatrics, psych. Systems-based vignettes; know first-line treatment and contraindications.",
+  }),
+  EXAM({
+    id: "naplex",
+    label: "NAPLEX",
+    description: "Pharmacist licensure exam",
+    subject: "health",
+    topic: "NAPLEX — pharmacotherapy",
+    gradeLevel: "Pharmacy licensure",
+    tutorContext:
+      "NAPLEX: drug interactions, dosing, patient counseling, biostatistics. Calculation checks and therapeutic alternatives.",
+  }),
+  EXAM({
+    id: "inbde",
+    label: "INBDE",
+    description: "Integrated dental board exam",
+    subject: "health",
+    topic: "INBDE — dental sciences and clinical",
+    gradeLevel: "Dental licensure",
+    tutorContext:
+      "INBDE: anatomy, pathology, pharmacology, patient management. Case-based questions linking basic science to treatment planning.",
   }),
   EXAM({
     id: "bar-exam-mbe",
