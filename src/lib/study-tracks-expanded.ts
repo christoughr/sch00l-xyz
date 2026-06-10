@@ -1061,4 +1061,96 @@ export const EXPANDED_STUDY_TRACKS: StudyTrack[] = [
     tutorContext:
       "Portuguese: PT-BR vs PT-PT variants, verb tenses, CAPLE/Celpe-Bras awareness.",
   },
+
+  // —— GED & homeschool ——
+  EXAM({
+    id: "ged-math",
+    label: "GED Mathematical Reasoning",
+    description: "Quantitative problem solving",
+    subject: "math",
+    topic: "GED Math — algebra and data",
+    gradeLevel: "GED",
+    tutorContext:
+      "GED Math: number sense, algebra, geometry, data. Calculator allowed section strategies.",
+  }),
+  EXAM({
+    id: "ged-science",
+    label: "GED Science",
+    description: "Life, physical, earth science",
+    subject: "science",
+    topic: "GED Science — reading science passages",
+    gradeLevel: "GED",
+    tutorContext:
+      "GED Science: experimental design, charts, life/physical science in context.",
+  }),
+  EXAM({
+    id: "ged-social-studies",
+    label: "GED Social Studies",
+    description: "Civics, US history, economics, geography",
+    subject: "social_studies",
+    topic: "GED Social Studies — documents and civics",
+    gradeLevel: "GED",
+    tutorContext:
+      "GED SS: primary sources, civics, economics graphs, US history themes.",
+  }),
+  EXAM({
+    id: "ged-rla",
+    label: "GED Reasoning Through Language Arts",
+    description: "Reading, writing, grammar",
+    subject: "english",
+    topic: "GED RLA — essay and reading comp",
+    gradeLevel: "GED",
+    tutorContext:
+      "GED RLA: extended response essay, reading comp, editing passages.",
+  }),
+  K12({
+    id: "homeschool-math",
+    label: "Homeschool Math",
+    description: "K–12 math across Saxon, Singapore, etc.",
+    subject: "math",
+    topic: "Homeschool math — multi-grade progression",
+    gradeLevel: "Homeschool K–12",
+    tutorContext:
+      "Homeschool math: mastery-based pacing, parent-coach friendly explanations, multi-grade placement.",
+  }),
+  K12({
+    id: "homeschool-science",
+    label: "Homeschool Science",
+    description: "Hands-on science K–12",
+    subject: "science",
+    topic: "Homeschool science — experiments and inquiry",
+    gradeLevel: "Homeschool K–12",
+    tutorContext:
+      "Homeschool science: kitchen labs, nature study, NGSS-style inquiry at home.",
+  }),
+  K12({
+    id: "homeschool-ela",
+    label: "Homeschool ELA",
+    description: "Reading, writing, grammar K–12",
+    subject: "english",
+    topic: "Homeschool ELA — reading and writing workshop",
+    gradeLevel: "Homeschool K–12",
+    tutorContext:
+      "Homeschool ELA: phonics through essay writing, book discussions, grammar in context.",
+  }),
+  K12({
+    id: "homeschool-history",
+    label: "Homeschool History & Civics",
+    description: "World and US history at home",
+    subject: "history",
+    topic: "Homeschool history — timelines and primary sources",
+    gradeLevel: "Homeschool K–12",
+    tutorContext:
+      "Homeschool history: living books, timelines, primary sources, civics at home.",
+  }),
+  K12({
+    id: "homeschool-full-curriculum",
+    label: "Homeschool Full Curriculum",
+    description: "All subjects, one integrated path",
+    subject: "other",
+    topic: "Homeschool — full curriculum planning",
+    gradeLevel: "Homeschool K–12",
+    tutorContext:
+      "Full homeschool: scope/sequence across math, science, ELA, history. Unit planning and pacing.",
+  }),
 ];

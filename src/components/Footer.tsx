@@ -21,8 +21,8 @@ export function Footer() {
           <Link href="/progress" className="hover:text-zinc-300">
             Progress
           </Link>
-          <Link href="/notebook" className="hover:text-zinc-300">
-            Notebook
+          <Link href="/classroom" className="hover:text-zinc-300">
+            Classroom
           </Link>
           <Link href="/privacy" className="hover:text-zinc-300">
             Privacy

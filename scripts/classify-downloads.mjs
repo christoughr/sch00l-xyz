@@ -496,6 +496,50 @@ export function classifyByNameAndText(filename, preview = "") {
     return ["k12-elem-science"];
   }
 
+  // —— US high school textbooks (student editions) ——
+  if (/patterns of interaction|world history.*mcdougal|modern world history.*beck|ancient world history.*beck/i.test(t))
+    return ["us-hs-world-history"];
+  if (
+    /prentice hall literature|language and literacy.*grade|american experience.*literature|british tradition|penguin literature library/i.test(
+      t
+    )
+  )
+    return ["us-hs-english"];
+  if (/giancoli.*physics|conceptual physics.*hewitt|physics.*principles with applications/i.test(t))
+    return ["us-hs-physics"];
+  if (/modern chemistry|holt mcdougal modern chemistry|holt chemistry(?!.*queensland)/i.test(t))
+    return ["us-hs-chemistry"];
+  if (/miller.*levine.*biology|prentice hall biology|biology.*miller.*levine/i.test(t))
+    return ["us-hs-biology"];
+  if (/magruder.*american government|magruder's american government/i.test(t))
+    return ["us-hs-civics"];
+  if (/united states history.*pearson|the americans.*danzer|the americans.*history/i.test(t))
+    return ["us-hs-us-history"];
+  if (/big ideas math.*algebra 2|big ideas math algebra 2/i.test(t)) return ["us-hs-algebra-2"];
+  if (/big ideas math.*geometry|bridge to success geometry/i.test(t)) return ["us-hs-geometry"];
+  if (/big ideas math.*algebra 1|big ideas math algebra 1/i.test(t)) return ["us-hs-algebra"];
+
+  // —— Ontario OSSD (Nelson / McGraw) ——
+  if (/nelson mathematics 9|0176059996|mathematics 9.*student/i.test(t)) return ["ca-ossd-math-9"];
+  if (/principles of mathematics 10|0070973329|0070973602/i.test(t)) return ["ca-ossd-math-10"];
+  if (/functions 11|0176332037|0176678203/i.test(t) && !/applications/i.test(t))
+    return ["ca-ossd-functions"];
+  if (/functions.*applications.*11|0176332044|mcf3m/i.test(t)) return ["ca-ossd-functions-apps"];
+  if (/advanced functions 12|0176678326|0176678329|mhf4u/i.test(t))
+    return ["ca-ossd-advanced-functions"];
+  if (/calculus and vectors|0176239824|mcv4u/i.test(t)) return ["ca-ossd-calculus"];
+  if (/data management|0070907584|mdm4u/i.test(t)) return ["ca-ossd-data-mgmt"];
+  if (/science 10.*nelson|0176075019|solaro.*science 9/i.test(t)) return ["ca-ossd-science-10"];
+  if (/nelson biology 11|0176121006|sbi3u/i.test(t)) return ["ca-ossd-biology-11"];
+  if (/nelson biology.*12|0176259877|sbi4u/i.test(t)) return ["ca-ossd-biology"];
+  if (/chem11|nelson chemistry 11|sch3u/i.test(t)) return ["ca-ossd-chemistry-11"];
+  if (/nelson chemistry.*12|0176289709|sch4u/i.test(t)) return ["ca-ossd-chemistry"];
+  if (/nelson physics 11|0176334587|sph3u/i.test(t)) return ["ca-ossd-physics-11"];
+  if (/nelson physics.*12|0176239778|sph4u/i.test(t)) return ["ca-ossd-physics"];
+  if (/geography of canada|cgc1d|canadian geography/i.test(t)) return ["ca-ossd-geography"];
+  if (/counterpoints|creating canada|canadian history since|chc2d|chc2l/i.test(t))
+    return ["ca-ossd-canadian-history"];
+
   if (/ossd|ontario secondary|eng4u|mhf4u|mcv4u|sch4u|sph4u|ontario grade 12/i.test(t))
     return ["international"];
 

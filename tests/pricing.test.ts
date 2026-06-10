@@ -46,7 +46,7 @@ describe("pricing consistency", () => {
   it("each curriculum has its own price", () => {
     const prices = SELLABLE_CURRICULA.map((c) => c.priceMonthly);
     assert.ok(new Set(prices).size > 1);
-    assert.ok(PRICING.bundle.priceMonthly >= 150);
+    assert.ok(PRICING.bundle.priceMonthly >= 400);
   });
 
   it("tutor platform fee is 45%", () => {

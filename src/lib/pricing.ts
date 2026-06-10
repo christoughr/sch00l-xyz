@@ -22,21 +22,21 @@ const CURRICULUM_BLURBS: Record<SellableCurriculumId, string> = {
 };
 
 /**
- * Sweet-spot pricing: premium vs SparkNotes/Chegg, but still believable at checkout.
- * Annual ≈ 10× monthly (~17% savings vs paying monthly).
+ * Premium pricing: reflects full course libraries + AI tutor value.
+ * Still below enterprise sticker shock; annual ≈ 10× monthly (~17% off vs monthly×12).
  */
 export const CURRICULUM_PRICES: Record<
   SellableCurriculumId,
   { priceMonthly: number; priceAnnual: number }
 > = {
-  ap: { priceMonthly: 59, priceAnnual: 590 },
-  sat_act: { priceMonthly: 55, priceAnnual: 550 },
-  exam_prep: { priceMonthly: 69, priceAnnual: 690 },
-  college: { priceMonthly: 59, priceAnnual: 590 },
-  k12: { priceMonthly: 49, priceAnnual: 490 },
-  languages: { priceMonthly: 45, priceAnnual: 450 },
-  international: { priceMonthly: 55, priceAnnual: 550 },
-  professional: { priceMonthly: 59, priceAnnual: 590 },
+  ap: { priceMonthly: 119, priceAnnual: 1190 },
+  sat_act: { priceMonthly: 109, priceAnnual: 1090 },
+  exam_prep: { priceMonthly: 139, priceAnnual: 1390 },
+  college: { priceMonthly: 119, priceAnnual: 1190 },
+  k12: { priceMonthly: 99, priceAnnual: 990 },
+  languages: { priceMonthly: 89, priceAnnual: 890 },
+  international: { priceMonthly: 109, priceAnnual: 1090 },
+  professional: { priceMonthly: 119, priceAnnual: 1190 },
 };
 
 export const SELLABLE_CURRICULA: {
@@ -67,17 +67,16 @@ export const PRICING = {
     price: 0,
     aiSessionsPerDay: FREE_AI_SESSIONS_PER_DAY,
     features: [
-      `${FREE_AI_SESSIONS_PER_DAY} AI study session per day`,
-      "Pre/post quizzes & learning lift",
-      "Flashcards (SM-2 spaced repetition)",
-      "Study Notebook (paste notes, get summaries)",
-      "Browser-only progress",
+      `${FREE_AI_SESSIONS_PER_DAY} AI study session per day (tutor only)`,
+      "Browse track catalog — lessons require subscription",
+      "Study Notebook preview",
+      "No course lesson access without paid plan",
     ],
   },
   membership: {
     name: "Platform membership",
-    priceMonthly: 39,
-    priceAnnual: 390,
+    priceMonthly: 79,
+    priceAnnual: 790,
     features: [
       "Required seat for any paid curriculum",
       "Cloud sync across devices",
@@ -88,8 +87,8 @@ export const PRICING = {
   },
   track: {
     name: "Single course",
-    priceMonthly: 35,
-    priceAnnual: 350,
+    priceMonthly: 79,
+    priceAnnual: 790,
     features: [
       "One full study track end-to-end",
       "Ideal when you only need one exam or semester",
@@ -98,8 +97,8 @@ export const PRICING = {
   },
   bundle: {
     name: "All-in-one",
-    priceMonthly: 199,
-    priceAnnual: 1990,
+    priceMonthly: 449,
+    priceAnnual: 4490,
     features: [
       "Membership + every curriculum library",
       "All current & future tracks in catalog",
@@ -109,8 +108,8 @@ export const PRICING = {
   },
   pro: {
     name: "sch00l Pro",
-    priceMonthly: 199,
-    priceAnnual: 1990,
+    priceMonthly: 449,
+    priceAnnual: 4490,
     features: [
       "Membership + all curriculum libraries",
       "Unlimited AI tutor sessions",
@@ -120,13 +119,13 @@ export const PRICING = {
   },
   humanTutor: {
     name: "Human tutor",
-    studentRatePerHour: 95,
-    rateFrom: 65,
-    rateTo: 185,
+    studentRatePerHour: 115,
+    rateFrom: 85,
+    rateTo: 225,
     platformFeePerHour: 0,
     tutorPayoutPerHour: 0,
     features: [
-      "Market rates — typically $65–$185/hr by subject",
+      "Market rates — typically $85–$225/hr by subject",
       "You pick budget tier; tutors bid in range",
       "AI session summary included — no repeating yourself",
       "Pay only after you approve a match",
@@ -134,7 +133,7 @@ export const PRICING = {
   },
   school: {
     name: "School / classroom",
-    pricePerStudentMonth: 19,
+    pricePerStudentMonth: 29,
     minimumSeats: 10,
     features: [
       "Class-wide learning lift dashboard",
@@ -146,8 +145,8 @@ export const PRICING = {
   family: {
     name: "Family plan",
     seats: 4,
-    priceMonthly: 99,
-    priceAnnual: 990,
+    priceMonthly: 199,
+    priceAnnual: 1990,
     features: [
       "Up to 4 student seats on one membership",
       "Shared billing — curricula purchased per seat or bundle",

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site";
+import { ContentShield } from "@/components/ContentShield";
 
 export const metadata: Metadata = {
   title: "Study session — sch00l.ai",
   description:
-    "Free AI study tutor: pre-quiz, Socratic chat, post-quiz, and flashcards. No account required.",
+    "AI study tutor with course-linked lessons. Subscription required for full lesson access.",
   openGraph: {
     title: "Study with sch00l.ai",
     description: "AI that helps you actually study — not cheat.",
@@ -17,5 +18,5 @@ export default function StudyLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <ContentShield>{children}</ContentShield>;
 }

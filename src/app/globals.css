@@ -30,6 +30,22 @@ body {
   text-size-adjust: 100%;
 }
 
+/* Paid lesson content protection (best-effort; not HDCP) */
+.content-shield,
+.content-shield .lesson-body,
+.content-shield [data-protected-content] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+@media print {
+  .content-shield,
+  .content-shield * {
+    display: none !important;
+  }
+}
+
 html {
   overflow-x: clip;
 }

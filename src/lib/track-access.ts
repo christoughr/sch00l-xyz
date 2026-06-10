@@ -1,14 +1,12 @@
 import { loadEntitlements, canAccessTrack, type EntitlementSnapshot } from "./entitlements";
-import { paymentConfig } from "./payments";
 import type { StudyTrackId } from "./study-tracks";
 
-/** Free lessons visible per track when content gating is on. */
-export const FREE_PREVIEW_LESSONS = 3;
+/** Paid content only — no free lesson previews when gating is on. */
+export const FREE_PREVIEW_LESSONS = 0;
 
 export function isContentGatingActive(): boolean {
-  if (process.env.CONTENT_GATING === "true") return true;
   if (process.env.CONTENT_GATING === "false") return false;
-  return paymentConfig().proReady;
+  return true;
 }
 
 export async function getTrackAccess(
@@ -60,7 +58,7 @@ export function applyLessonLocks(
     ...l,
     locked: i >= previewLimit,
     body_markdown: i >= previewLimit
-      ? "_Unlock this lesson with a membership + curriculum subscription._"
+      ? "_This lesson requires an active membership plus the matching curriculum subscription. [View pricing](/pricing)_"
       : l.body_markdown,
   }));
 }
