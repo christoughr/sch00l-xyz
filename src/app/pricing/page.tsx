@@ -7,6 +7,7 @@ import {
   PRICING,
   SELLABLE_CURRICULA,
   CURRICULUM_PRICES,
+  PREMIUM_TRACK_LIST,
   type BillingInterval,
   alaCarteTotal,
   annualSavingsPercent,
@@ -18,6 +19,7 @@ import {
   monthlyEquivalent,
   priceForInterval,
   totalWithMembership,
+  totalWithTrack,
 } from "@/lib/pricing";
 import { trackEvent } from "@/lib/analytics";
 import { useEffect, useState } from "react";
@@ -300,6 +302,47 @@ export default function PricingPage() {
               <Link
                 href="/#waitlist"
                 className="mt-3 block text-center rounded-lg border border-white/15 py-2 text-xs text-zinc-300 hover:bg-white/5"
+              >
+                Join waitlist
+              </Link>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Premium single tracks — high-stakes exams */}
+      <section className="mb-12">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500 mb-2">
+          Premium exam tracks
+        </h2>
+        <p className="text-sm text-zinc-400 mb-4 max-w-2xl">
+          Law, medicine, and graduate-school exams — priced for career ROI.
+          Membership ({formatUsd(priceForInterval(membership.priceMonthly, membership.priceAnnual, interval))}
+          {billingPeriodLabel(interval)}) required.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {PREMIUM_TRACK_LIST.map((t) => (
+            <article
+              key={t.id}
+              className="rounded-xl border border-brand-500/20 bg-brand-500/5 p-4"
+            >
+              <h3 className="font-medium text-white">{t.label}</h3>
+              <p className="mt-2 text-lg font-semibold text-white">
+                {formatUsd(
+                  priceForInterval(t.priceMonthly, t.priceAnnual, interval)
+                )}
+                <span className="text-xs font-normal text-zinc-400">
+                  {billingPeriodLabel(interval)} track
+                </span>
+              </p>
+              <p className="mt-1 text-xs text-zinc-500">
+                Total with membership:{" "}
+                {formatUsd(totalWithTrack(t.id, interval))}
+                {billingPeriodLabel(interval)}
+              </p>
+              <Link
+                href="/#waitlist"
+                className="mt-3 block text-center rounded-lg border border-brand-400/30 py-2 text-xs text-brand-300 hover:bg-brand-500/10"
               >
                 Join waitlist
               </Link>

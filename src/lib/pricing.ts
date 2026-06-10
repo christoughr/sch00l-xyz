@@ -31,13 +31,86 @@ export const CURRICULUM_PRICES: Record<
 > = {
   ap: { priceMonthly: 119, priceAnnual: 1190 },
   sat_act: { priceMonthly: 109, priceAnnual: 1090 },
-  exam_prep: { priceMonthly: 139, priceAnnual: 1390 },
+  exam_prep: { priceMonthly: 199, priceAnnual: 1990 },
   college: { priceMonthly: 119, priceAnnual: 1190 },
   k12: { priceMonthly: 99, priceAnnual: 990 },
   languages: { priceMonthly: 89, priceAnnual: 890 },
   international: { priceMonthly: 109, priceAnnual: 1090 },
-  professional: { priceMonthly: 119, priceAnnual: 1190 },
+  professional: { priceMonthly: 149, priceAnnual: 1490 },
 };
+
+/** High-ROI exams — priced for career upside (law, medicine, grad school). */
+export const PREMIUM_TRACK_PRICES: Record<
+  string,
+  { priceMonthly: number; priceAnnual: number; label: string }
+> = {
+  lsat: { priceMonthly: 349, priceAnnual: 3490, label: "LSAT" },
+  gmat: { priceMonthly: 329, priceAnnual: 3290, label: "GMAT" },
+  "gre-quant": { priceMonthly: 279, priceAnnual: 2790, label: "GRE Quantitative" },
+  "gre-verbal": { priceMonthly: 279, priceAnnual: 2790, label: "GRE Verbal" },
+  "gre-analytical-writing": {
+    priceMonthly: 199,
+    priceAnnual: 1990,
+    label: "GRE Analytical Writing",
+  },
+  "mcat-bb": { priceMonthly: 349, priceAnnual: 3490, label: "MCAT Bio/Biochem" },
+  "mcat-cp": { priceMonthly: 349, priceAnnual: 3490, label: "MCAT Chem/Phys" },
+  "mcat-ps": { priceMonthly: 349, priceAnnual: 3490, label: "MCAT Psych/Soc" },
+  "mcat-cars": { priceMonthly: 349, priceAnnual: 3490, label: "MCAT CARS" },
+  "med-mmi": { priceMonthly: 399, priceAnnual: 3990, label: "Medical School MMI" },
+  dat: { priceMonthly: 299, priceAnnual: 2990, label: "DAT" },
+  oat: { priceMonthly: 299, priceAnnual: 2990, label: "OAT" },
+  pcat: { priceMonthly: 279, priceAnnual: 2790, label: "PCAT" },
+  "usmle-step1": { priceMonthly: 499, priceAnnual: 4990, label: "USMLE Step 1" },
+  "usmle-step2-ck": { priceMonthly: 499, priceAnnual: 4990, label: "USMLE Step 2 CK" },
+  "usmle-step3": { priceMonthly: 449, priceAnnual: 4490, label: "USMLE Step 3" },
+  "comlex-level1": { priceMonthly: 449, priceAnnual: 4490, label: "COMLEX Level 1" },
+  "comlex-level2": { priceMonthly: 449, priceAnnual: 4490, label: "COMLEX Level 2" },
+  pance: { priceMonthly: 399, priceAnnual: 3990, label: "PANCE" },
+  naplex: { priceMonthly: 399, priceAnnual: 3990, label: "NAPLEX" },
+  inbde: { priceMonthly: 349, priceAnnual: 3490, label: "INBDE" },
+  "nclex-rn": { priceMonthly: 299, priceAnnual: 2990, label: "NCLEX-RN" },
+  "nclex-pn": { priceMonthly: 249, priceAnnual: 2490, label: "NCLEX-PN" },
+  "ati-teas": { priceMonthly: 219, priceAnnual: 2190, label: "ATI TEAS" },
+  "hesi-a2": { priceMonthly: 219, priceAnnual: 2190, label: "HESI A2" },
+};
+
+export const PREMIUM_TRACK_LIST = Object.entries(PREMIUM_TRACK_PRICES).map(
+  ([id, p]) => ({ id, ...p })
+);
+
+export function isPremiumTrack(trackId: string): boolean {
+  return trackId in PREMIUM_TRACK_PRICES;
+}
+
+export function trackPrice(
+  trackId: string,
+  interval: BillingInterval
+): number | null {
+  const id =
+    trackId === "pro-usmle-step1" ? "usmle-step1" : trackId;
+  const p = PREMIUM_TRACK_PRICES[id];
+  if (!p) return null;
+  return interval === "monthly" ? p.priceMonthly : p.priceAnnual;
+}
+
+/** Membership + premium track (or standard track fallback). */
+export function totalWithTrack(
+  trackId: string,
+  interval: BillingInterval
+): number {
+  const premium = trackPrice(trackId, interval);
+  const track =
+    premium ??
+    priceForInterval(PRICING.track.priceMonthly, PRICING.track.priceAnnual, interval);
+  return (
+    priceForInterval(
+      PRICING.membership.priceMonthly,
+      PRICING.membership.priceAnnual,
+      interval
+    ) + track
+  );
+}
 
 export const SELLABLE_CURRICULA: {
   id: SellableCurriculumId;
@@ -97,8 +170,8 @@ export const PRICING = {
   },
   bundle: {
     name: "All-in-one",
-    priceMonthly: 449,
-    priceAnnual: 4490,
+    priceMonthly: 549,
+    priceAnnual: 5490,
     features: [
       "Membership + every curriculum library",
       "All current & future tracks in catalog",
@@ -108,8 +181,8 @@ export const PRICING = {
   },
   pro: {
     name: "sch00l Pro",
-    priceMonthly: 449,
-    priceAnnual: 4490,
+    priceMonthly: 549,
+    priceAnnual: 5490,
     features: [
       "Membership + all curriculum libraries",
       "Unlimited AI tutor sessions",
