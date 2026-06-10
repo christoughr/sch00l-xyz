@@ -4,7 +4,7 @@ import { STUDY_TRACKS, tracksInCategory } from "../src/lib/study-tracks";
 
 describe("global study tracks", () => {
   it("has 280+ tracks including international", () => {
-    assert.ok(STUDY_TRACKS.length >= 315);
+    assert.ok(STUDY_TRACKS.length >= 400);
     const intl = tracksInCategory("international");
     assert.ok(intl.length >= 45);
   });

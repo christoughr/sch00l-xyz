@@ -1,6 +1,7 @@
 import type { SubjectId } from "./subject-ids";
 import { COLLEGE_STUDY_TRACKS } from "./study-tracks-college";
 import { EXPANDED_STUDY_TRACKS } from "./study-tracks-expanded";
+import { WORLDWIDE_STUDY_TRACKS } from "./study-tracks-worldwide";
 import { GLOBAL_STUDY_TRACKS } from "./study-tracks-global";
 import {
   EXAM_PREP_EXTRA_TRACKS,
@@ -635,6 +636,7 @@ export const STUDY_TRACKS: StudyTrack[] = [
   },
   ...GLOBAL_STUDY_TRACKS.filter((t) => t.id !== "ssat-middle" && t.id !== "ssat-upper"),
   ...EXPANDED_STUDY_TRACKS,
+  ...WORLDWIDE_STUDY_TRACKS,
   {
     id: "custom",
     category: "custom",
