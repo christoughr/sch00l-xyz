@@ -76,14 +76,20 @@ export async function GET(
     },
     units: units.map((u) => ({
       ...u,
-      lessons: (byUnit.get(u.id) ?? []).map((l) => ({
-        id: l.id,
-        ord: l.ord,
-        title: l.title,
-        objectives: l.objectives,
-        body_markdown: lockedById.get(l.id)?.body_markdown ?? l.body_markdown,
-        locked: lockedById.get(l.id)?.locked ?? false,
-      })),
+      lessons: (byUnit.get(u.id) ?? []).map((l) => {
+        const locked = lockedById.get(l.id)?.locked ?? false;
+        return {
+          id: l.id,
+          ord: l.ord,
+          title: l.title,
+          objectives: l.objectives,
+          locked,
+          contentProtected: !locked && access.full,
+          body_markdown: locked
+            ? (lockedById.get(l.id)?.body_markdown ?? l.body_markdown)
+            : "",
+        };
+      }),
     })),
   });
 }

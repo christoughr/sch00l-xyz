@@ -15,6 +15,7 @@ import { StudyFeatureStrip } from "@/components/StudyFeatureStrip";
 import { StudyUnitPicker } from "@/components/StudyUnitPicker";
 import { StudyCourseOutline } from "@/components/StudyCourseOutline";
 import { LessonPrepQuiz } from "@/components/LessonPrepQuiz";
+import { WatermarkedLessonView } from "@/components/WatermarkedLessonView";
 import { getCourseTrackHint } from "@/lib/course-tracks";
 import { useAuth } from "@/components/AuthProvider";
 import { onSessionComplete } from "@/lib/session-complete";
@@ -66,6 +67,8 @@ export default function StudyPage() {
   const [trackHint, setTrackHint] = useState<string | null>(null);
   const [lessonPreview, setLessonPreview] = useState<string | null>(null);
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
+  const [selectedLessonTitle, setSelectedLessonTitle] = useState<string | null>(null);
+  const [lessonContentProtected, setLessonContentProtected] = useState(false);
   const [sectionId, setSectionId] = useState<string | null>(null);
   const [assignmentId, setAssignmentId] = useState<string | null>(null);
   const [assignmentTitle, setAssignmentTitle] = useState<string | null>(null);
@@ -376,22 +379,41 @@ export default function StudyPage() {
             <StudyCourseOutline
               trackId={trackId}
               sectionId={sectionId}
-              onPickLesson={(title, body) => {
+              onPickLesson={({ lessonId, title, body, contentProtected }) => {
+                setSelectedLessonId(lessonId);
+                setSelectedLessonTitle(title);
+                setLessonContentProtected(contentProtected);
                 setTopic(title);
-                setTrackContext(body.slice(0, 500));
-                setLessonPreview(body);
+                if (contentProtected) {
+                  setLessonPreview("");
+                  setTrackContext(title);
+                } else {
+                  setTrackContext(body.slice(0, 500));
+                  setLessonPreview(body);
+                }
               }}
             />
           )}
-          {lessonPreview && (
+          {(lessonPreview || (lessonContentProtected && selectedLessonId)) && (
             <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
               <p className="text-xs font-medium text-brand-300">
                 Course reading — use with the AI tutor below
               </p>
-              <div className="max-h-56 overflow-y-auto text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">
-                {lessonPreview.slice(0, 6000)}
-                {lessonPreview.length > 6000 ? "\n\n…" : ""}
-              </div>
+              {lessonContentProtected && selectedLessonId && selectedLessonTitle ? (
+                <WatermarkedLessonView
+                  lessonId={selectedLessonId}
+                  title={selectedLessonTitle}
+                  onBodyLoaded={(body) => {
+                    setLessonPreview(body);
+                    setTrackContext(body.slice(0, 500));
+                  }}
+                />
+              ) : (
+                <div className="max-h-56 overflow-y-auto text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed select-none">
+                  {lessonPreview?.slice(0, 6000)}
+                  {(lessonPreview?.length ?? 0) > 6000 ? "\n\n…" : ""}
+                </div>
+              )}
               <LessonPrepQuiz lessonId={selectedLessonId} />
             </div>
           )}

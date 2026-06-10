@@ -8,6 +8,7 @@ import {
   K12_EARLY_STUDY_TRACKS,
   US_HS_DIPLOMA_TRACKS,
 } from "./study-tracks-k12-exams";
+import { STATE_ASSESSMENT_TRACKS } from "./study-tracks-state";
 
 export type StudyTrackCategory =
   | "ap"
@@ -636,6 +637,7 @@ export const STUDY_TRACKS: StudyTrack[] = [
   },
   ...GLOBAL_STUDY_TRACKS.filter((t) => t.id !== "ssat-middle" && t.id !== "ssat-upper"),
   ...EXPANDED_STUDY_TRACKS,
+  ...STATE_ASSESSMENT_TRACKS,
   ...WORLDWIDE_STUDY_TRACKS,
   {
     id: "custom",

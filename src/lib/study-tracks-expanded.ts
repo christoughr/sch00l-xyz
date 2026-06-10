@@ -473,6 +473,16 @@ export const EXPANDED_STUDY_TRACKS: StudyTrack[] = [
       "Step 2 CK: next best step, diagnosis, management. UWorld-style vignette reasoning.",
   }),
   EXAM({
+    id: "usmle-step3",
+    label: "USMLE Step 3",
+    description: "Clinical management, CCS cases",
+    subject: "health",
+    topic: "Step 3 — patient management",
+    gradeLevel: "Residency",
+    tutorContext:
+      "Step 3: ambulatory care, CCS cases, biostatistics. First Aid Step 3 patterns.",
+  }),
+  EXAM({
     id: "comlex-level1",
     label: "COMLEX Level 1",
     description: "Osteopathic medical sciences",

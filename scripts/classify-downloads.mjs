@@ -109,6 +109,14 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/정부24|사업자등록|business registration|문서출력/i.test(n)) return [];
   if (/^\bssat\b/i.test(t)) return [];
 
+  // Skip Chinese / Spanish localized editions (user provides English only)
+  if (
+    /\(chinese\)|chinese version|chinese ed|xin dong fang|新东方|official guide.*chinese|verbal revised chinese|quantitative review chinese|español|spanish edition|\bspanish\b.*gmat|\bspanish\b.*gre/i.test(
+      t
+    )
+  )
+    return [];
+
   if (/gazabarron|barron.*ap complete.*collection/i.test(t))
     return ["ap-bio", "ap-chem", "ap-stats", "ap-physics-1", "ap-physics-2", "sat-math", "sat-reading"];
 
@@ -313,7 +321,33 @@ export function classifyByNameAndText(filename, preview = "") {
     return ["sat-math", "sat-reading"];
   }
 
-  if (/biology|ap.?bio/i.test(t)) return ["ap-bio"];
+  // US high school textbooks — before generic biology → ap-bio
+  if (/patterns of interaction|world history.*mcdougal|modern world history.*beck|ancient world history.*beck/i.test(t))
+    return ["us-hs-world-history"];
+  if (
+    /prentice hall literature|language and literacy.*grade|american experience.*literature|british tradition|penguin literature library/i.test(
+      t
+    )
+  )
+    return ["us-hs-english"];
+  if (/giancoli.*physics|conceptual physics.*hewitt|physics.*principles with applications/i.test(t))
+    return ["us-hs-physics"];
+  if (
+    /pearson chemistry|prentice hall chemistry|wilbraham.*chemistry|florida prentice hall chemistry/i.test(t) &&
+    !/queensland|addison-wesley chemistry.*1987/i.test(t)
+  )
+    return ["us-hs-chemistry"];
+  if (
+    /miller.*levine.*biology|prentice hall biology|biology.*miller.*levine|ken miller.*joe levine|isbn.*9780133669510|isbn.*9780131259461.*biology/i.test(t)
+  )
+    return ["us-hs-biology"];
+  if (/magruder.*american government|magruder's american government/i.test(t))
+    return ["us-hs-civics"];
+  if (/united states history.*pearson|the americans.*danzer|the americans.*history/i.test(t))
+    return ["us-hs-us-history"];
+
+  if (/biology|ap.?bio/i.test(t) && !/prentice hall biology|miller.*levine|high school biology/i.test(t))
+    return ["ap-bio"];
 
   if (/mcat.*general chemistry|berkeley review.*general chemistry/i.test(t)) {
     if (/part\s*2|volume\s*2|\bii\b/i.test(t))
@@ -377,7 +411,10 @@ export function classifyByNameAndText(filename, preview = "") {
   if (/\bdat\b|dental admission test/i.test(t)) return ["dat"];
   if (/\boat\b|optometry admission/i.test(t)) return ["oat"];
   if (/\bpcat\b|pharmacy college admission/i.test(t)) return ["pcat"];
+  if (/\blsat\b|law school admission test|kaplan lsat/i.test(t)) return ["lsat"];
   if (/usmle step 1|first aid.*step 1|pathoma/i.test(t)) return ["usmle-step1"];
+  if (/usmle step 2|first aid.*step 2/i.test(t)) return ["usmle-step2-ck"];
+  if (/usmle step 3|first aid.*step 3/i.test(t)) return ["usmle-step3"];
   if (/\bcpa\b.*far|financial accounting.*cpa/i.test(t)) return ["cpa-far"];
   if (/\bcfa\b.*level\s*i|cfa level 1/i.test(t)) return ["cfa-level1"];
   if (/\bpmp\b|project management professional/i.test(t)) return ["pmp"];
@@ -496,32 +533,21 @@ export function classifyByNameAndText(filename, preview = "") {
     return ["k12-elem-science"];
   }
 
-  // —— US high school textbooks (student editions) ——
-  if (/patterns of interaction|world history.*mcdougal|modern world history.*beck|ancient world history.*beck/i.test(t))
-    return ["us-hs-world-history"];
-  if (
-    /prentice hall literature|language and literacy.*grade|american experience.*literature|british tradition|penguin literature library/i.test(
-      t
-    )
-  )
-    return ["us-hs-english"];
-  if (/giancoli.*physics|conceptual physics.*hewitt|physics.*principles with applications/i.test(t))
-    return ["us-hs-physics"];
   if (/modern chemistry|holt mcdougal modern chemistry|holt chemistry(?!.*queensland)/i.test(t))
     return ["us-hs-chemistry"];
-  if (/miller.*levine.*biology|prentice hall biology|biology.*miller.*levine/i.test(t))
-    return ["us-hs-biology"];
-  if (/magruder.*american government|magruder's american government/i.test(t))
-    return ["us-hs-civics"];
-  if (/united states history.*pearson|the americans.*danzer|the americans.*history/i.test(t))
-    return ["us-hs-us-history"];
   if (/big ideas math.*algebra 2|big ideas math algebra 2/i.test(t)) return ["us-hs-algebra-2"];
   if (/big ideas math.*geometry|bridge to success geometry/i.test(t)) return ["us-hs-geometry"];
   if (/big ideas math.*algebra 1|big ideas math algebra 1/i.test(t)) return ["us-hs-algebra"];
 
   // —— Ontario OSSD (Nelson / McGraw) ——
+  if (/crossroads|nelson crossroads/i.test(t)) return ["ca-ossd-english-9"];
+  if (/solaro.*english 9|eng1d|english 9 academic ontario/i.test(t))
+    return ["ca-ossd-english-9"];
+  if (/nelson science.*technology.*perspectives.*[78]\b|nelson science & technology [78]/i.test(t))
+    return ["ca-ossd-science-9"];
   if (/nelson mathematics 9|0176059996|mathematics 9.*student/i.test(t)) return ["ca-ossd-math-9"];
-  if (/principles of mathematics 10|0070973329|0070973602/i.test(t)) return ["ca-ossd-math-10"];
+  if (/principles of mathematics 10|principles of math 10|0070973329|0070973602/i.test(t))
+    return ["ca-ossd-math-10"];
   if (/functions 11|0176332037|0176678203/i.test(t) && !/applications/i.test(t))
     return ["ca-ossd-functions"];
   if (/functions.*applications.*11|0176332044|mcf3m/i.test(t)) return ["ca-ossd-functions-apps"];

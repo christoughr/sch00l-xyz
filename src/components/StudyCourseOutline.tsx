@@ -11,6 +11,7 @@ type Lesson = {
   title: string;
   body_markdown: string;
   locked?: boolean;
+  contentProtected?: boolean;
 };
 
 type Unit = {
@@ -34,7 +35,13 @@ export function StudyCourseOutline({
 }: {
   trackId: string;
   sectionId: string | null;
-  onPickLesson: (lessonId: string, title: string, body: string) => void;
+  onPickLesson: (pick: {
+    lessonId: string;
+    title: string;
+    body: string;
+    locked: boolean;
+    contentProtected: boolean;
+  }) => void;
 }) {
   const [units, setUnits] = useState<Unit[]>([]);
   const [access, setAccess] = useState<CourseAccess | null>(null);
@@ -126,11 +133,13 @@ export function StudyCourseOutline({
                       <button
                         type="button"
                         onClick={() =>
-                          onPickLesson(
-                            lesson.id,
-                            `${unit.title}: ${lesson.title}`,
-                            lesson.body_markdown
-                          )
+                          onPickLesson({
+                            lessonId: lesson.id,
+                            title: `${unit.title}: ${lesson.title}`,
+                            body: lesson.body_markdown,
+                            locked: false,
+                            contentProtected: lesson.contentProtected ?? false,
+                          })
                         }
                         className="w-full px-4 py-2 text-left text-xs text-zinc-400 hover:text-brand-300 hover:bg-white/5"
                       >
