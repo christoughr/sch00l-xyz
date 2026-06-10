@@ -28,25 +28,25 @@ const CURRICULUM_BLURBS: Record<SellableCurriculumId, string> = {
   professional: "Certifications, bootcamps, and career upskilling paths",
 };
 
-/** Peak library pricing — every category priced as a premium product. */
+/** Peak library pricing — maximum tier across every category. */
 export const CURRICULUM_PRICES: Record<
   SellableCurriculumId,
   { priceMonthly: number; priceAnnual: number }
 > = {
-  k12: { priceMonthly: 149, priceAnnual: annualFromMonthly(149) },
-  languages: { priceMonthly: 129, priceAnnual: annualFromMonthly(129) },
-  international: { priceMonthly: 199, priceAnnual: annualFromMonthly(199) },
-  sat_act: { priceMonthly: 249, priceAnnual: annualFromMonthly(249) },
-  ap: { priceMonthly: 279, priceAnnual: annualFromMonthly(279) },
-  college: { priceMonthly: 279, priceAnnual: annualFromMonthly(279) },
-  professional: { priceMonthly: 299, priceAnnual: annualFromMonthly(299) },
-  exam_prep: { priceMonthly: 499, priceAnnual: annualFromMonthly(499) },
+  k12: { priceMonthly: 199, priceAnnual: annualFromMonthly(199) },
+  languages: { priceMonthly: 179, priceAnnual: annualFromMonthly(179) },
+  international: { priceMonthly: 279, priceAnnual: annualFromMonthly(279) },
+  sat_act: { priceMonthly: 349, priceAnnual: annualFromMonthly(349) },
+  ap: { priceMonthly: 399, priceAnnual: annualFromMonthly(399) },
+  college: { priceMonthly: 399, priceAnnual: annualFromMonthly(399) },
+  professional: { priceMonthly: 449, priceAnnual: annualFromMonthly(449) },
+  exam_prep: { priceMonthly: 799, priceAnnual: annualFromMonthly(799) },
 };
 
 /** Default single-track price when no exam-specific override exists. */
 export const PEAK_STANDARD_TRACK = {
-  priceMonthly: 199,
-  priceAnnual: annualFromMonthly(199),
+  priceMonthly: 299,
+  priceAnnual: annualFromMonthly(299),
 } as const;
 
 /** High-ROI exams — top of the peak tier (law, medicine, grad school). */
@@ -54,137 +54,137 @@ export const PREMIUM_TRACK_PRICES: Record<
   string,
   { priceMonthly: number; priceAnnual: number; label: string }
 > = {
-  lsat: { priceMonthly: 499, priceAnnual: annualFromMonthly(499), label: "LSAT" },
-  gmat: { priceMonthly: 479, priceAnnual: annualFromMonthly(479), label: "GMAT" },
+  lsat: { priceMonthly: 699, priceAnnual: annualFromMonthly(699), label: "LSAT" },
+  gmat: { priceMonthly: 649, priceAnnual: annualFromMonthly(649), label: "GMAT" },
   "gre-quant": {
-    priceMonthly: 379,
-    priceAnnual: annualFromMonthly(379),
+    priceMonthly: 499,
+    priceAnnual: annualFromMonthly(499),
     label: "GRE Quantitative",
   },
   "gre-verbal": {
-    priceMonthly: 379,
-    priceAnnual: annualFromMonthly(379),
+    priceMonthly: 499,
+    priceAnnual: annualFromMonthly(499),
     label: "GRE Verbal",
   },
   "gre-analytical-writing": {
-    priceMonthly: 299,
-    priceAnnual: annualFromMonthly(299),
+    priceMonthly: 399,
+    priceAnnual: annualFromMonthly(399),
     label: "GRE Analytical Writing",
   },
   "mcat-bb": {
-    priceMonthly: 499,
-    priceAnnual: annualFromMonthly(499),
+    priceMonthly: 699,
+    priceAnnual: annualFromMonthly(699),
     label: "MCAT Bio/Biochem",
   },
   "mcat-cp": {
-    priceMonthly: 499,
-    priceAnnual: annualFromMonthly(499),
+    priceMonthly: 699,
+    priceAnnual: annualFromMonthly(699),
     label: "MCAT Chem/Phys",
   },
   "mcat-ps": {
-    priceMonthly: 499,
-    priceAnnual: annualFromMonthly(499),
+    priceMonthly: 699,
+    priceAnnual: annualFromMonthly(699),
     label: "MCAT Psych/Soc",
   },
   "mcat-cars": {
-    priceMonthly: 499,
-    priceAnnual: annualFromMonthly(499),
+    priceMonthly: 699,
+    priceAnnual: annualFromMonthly(699),
     label: "MCAT CARS",
   },
   "med-mmi": {
-    priceMonthly: 549,
-    priceAnnual: annualFromMonthly(549),
-    label: "Medical School MMI",
-  },
-  dat: { priceMonthly: 399, priceAnnual: annualFromMonthly(399), label: "DAT" },
-  oat: { priceMonthly: 399, priceAnnual: annualFromMonthly(399), label: "OAT" },
-  pcat: { priceMonthly: 349, priceAnnual: annualFromMonthly(349), label: "PCAT" },
-  "usmle-step1": {
     priceMonthly: 799,
     priceAnnual: annualFromMonthly(799),
+    label: "Medical School MMI",
+  },
+  dat: { priceMonthly: 549, priceAnnual: annualFromMonthly(549), label: "DAT" },
+  oat: { priceMonthly: 549, priceAnnual: annualFromMonthly(549), label: "OAT" },
+  pcat: { priceMonthly: 499, priceAnnual: annualFromMonthly(499), label: "PCAT" },
+  "usmle-step1": {
+    priceMonthly: 1199,
+    priceAnnual: annualFromMonthly(1199),
     label: "USMLE Step 1",
   },
   "usmle-step2-ck": {
-    priceMonthly: 799,
-    priceAnnual: annualFromMonthly(799),
+    priceMonthly: 1199,
+    priceAnnual: annualFromMonthly(1199),
     label: "USMLE Step 2 CK",
   },
   "usmle-step3": {
-    priceMonthly: 649,
-    priceAnnual: annualFromMonthly(649),
+    priceMonthly: 999,
+    priceAnnual: annualFromMonthly(999),
     label: "USMLE Step 3",
   },
   "comlex-level1": {
-    priceMonthly: 699,
-    priceAnnual: annualFromMonthly(699),
+    priceMonthly: 999,
+    priceAnnual: annualFromMonthly(999),
     label: "COMLEX Level 1",
   },
   "comlex-level2": {
-    priceMonthly: 699,
-    priceAnnual: annualFromMonthly(699),
+    priceMonthly: 999,
+    priceAnnual: annualFromMonthly(999),
     label: "COMLEX Level 2",
   },
-  pance: { priceMonthly: 549, priceAnnual: annualFromMonthly(549), label: "PANCE" },
-  naplex: { priceMonthly: 549, priceAnnual: annualFromMonthly(549), label: "NAPLEX" },
-  inbde: { priceMonthly: 449, priceAnnual: annualFromMonthly(449), label: "INBDE" },
+  pance: { priceMonthly: 699, priceAnnual: annualFromMonthly(699), label: "PANCE" },
+  naplex: { priceMonthly: 699, priceAnnual: annualFromMonthly(699), label: "NAPLEX" },
+  inbde: { priceMonthly: 599, priceAnnual: annualFromMonthly(599), label: "INBDE" },
   "nclex-rn": {
-    priceMonthly: 379,
-    priceAnnual: annualFromMonthly(379),
+    priceMonthly: 499,
+    priceAnnual: annualFromMonthly(499),
     label: "NCLEX-RN",
   },
   "nclex-pn": {
-    priceMonthly: 299,
-    priceAnnual: annualFromMonthly(299),
+    priceMonthly: 399,
+    priceAnnual: annualFromMonthly(399),
     label: "NCLEX-PN",
   },
   "ati-teas": {
-    priceMonthly: 279,
-    priceAnnual: annualFromMonthly(279),
+    priceMonthly: 349,
+    priceAnnual: annualFromMonthly(349),
     label: "ATI TEAS",
   },
   "hesi-a2": {
-    priceMonthly: 279,
-    priceAnnual: annualFromMonthly(279),
+    priceMonthly: 349,
+    priceAnnual: annualFromMonthly(349),
     label: "HESI A2",
   },
   "sat-math": {
-    priceMonthly: 279,
-    priceAnnual: annualFromMonthly(279),
+    priceMonthly: 399,
+    priceAnnual: annualFromMonthly(399),
     label: "SAT Math",
   },
   "sat-reading": {
-    priceMonthly: 279,
-    priceAnnual: annualFromMonthly(279),
+    priceMonthly: 399,
+    priceAnnual: annualFromMonthly(399),
     label: "SAT Reading",
   },
   "act-math": {
-    priceMonthly: 249,
-    priceAnnual: annualFromMonthly(249),
+    priceMonthly: 349,
+    priceAnnual: annualFromMonthly(349),
     label: "ACT Math",
   },
   "act-english": {
-    priceMonthly: 249,
-    priceAnnual: annualFromMonthly(249),
+    priceMonthly: 349,
+    priceAnnual: annualFromMonthly(349),
     label: "ACT English",
   },
   "act-science": {
-    priceMonthly: 249,
-    priceAnnual: annualFromMonthly(249),
+    priceMonthly: 349,
+    priceAnnual: annualFromMonthly(349),
     label: "ACT Science",
   },
   "cfa-level1": {
-    priceMonthly: 449,
-    priceAnnual: annualFromMonthly(449),
+    priceMonthly: 599,
+    priceAnnual: annualFromMonthly(599),
     label: "CFA Level I",
   },
   "cpa-far": {
-    priceMonthly: 449,
-    priceAnnual: annualFromMonthly(449),
+    priceMonthly: 599,
+    priceAnnual: annualFromMonthly(599),
     label: "CPA FAR",
   },
   "bar-exam-mbe": {
-    priceMonthly: 599,
-    priceAnnual: annualFromMonthly(599),
+    priceMonthly: 899,
+    priceAnnual: annualFromMonthly(899),
     label: "Bar Exam MBE",
   },
 };
@@ -263,8 +263,8 @@ export const PRICING = {
   },
   membership: {
     name: "Platform membership",
-    priceMonthly: 99,
-    priceAnnual: annualFromMonthly(99),
+    priceMonthly: 129,
+    priceAnnual: annualFromMonthly(129),
     features: [
       "Required seat for any paid curriculum or track",
       "Cloud sync across devices",
@@ -285,8 +285,8 @@ export const PRICING = {
   },
   bundle: {
     name: "All-in-one",
-    priceMonthly: 1499,
-    priceAnnual: annualFromMonthly(1499),
+    priceMonthly: 2499,
+    priceAnnual: annualFromMonthly(2499),
     features: [
       "Membership + every curriculum library",
       "All 400+ current & future tracks in catalog",
@@ -296,8 +296,8 @@ export const PRICING = {
   },
   pro: {
     name: "sch00l Pro",
-    priceMonthly: 1499,
-    priceAnnual: annualFromMonthly(1499),
+    priceMonthly: 2499,
+    priceAnnual: annualFromMonthly(2499),
     features: [
       "Membership + all curriculum libraries",
       "Unlimited AI tutor sessions",
@@ -307,13 +307,13 @@ export const PRICING = {
   },
   humanTutor: {
     name: "Human tutor",
-    studentRatePerHour: 145,
-    rateFrom: 95,
-    rateTo: 275,
+    studentRatePerHour: 175,
+    rateFrom: 125,
+    rateTo: 325,
     platformFeePerHour: 0,
     tutorPayoutPerHour: 0,
     features: [
-      "Market rates — typically $95–$275/hr by subject",
+      "Market rates — typically $125–$325/hr by subject",
       "You pick budget tier; tutors bid in range",
       "AI session summary included — no repeating yourself",
       "Pay only after you approve a match",
@@ -321,7 +321,7 @@ export const PRICING = {
   },
   school: {
     name: "School / classroom",
-    pricePerStudentMonth: 59,
+    pricePerStudentMonth: 79,
     minimumSeats: 10,
     features: [
       "Class-wide learning lift dashboard",
@@ -333,8 +333,8 @@ export const PRICING = {
   family: {
     name: "Family plan",
     seats: 4,
-    priceMonthly: 449,
-    priceAnnual: annualFromMonthly(449),
+    priceMonthly: 599,
+    priceAnnual: annualFromMonthly(599),
     features: [
       "Up to 4 student seats on one membership",
       "Shared billing — curricula purchased per seat or bundle",

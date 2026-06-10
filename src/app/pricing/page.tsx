@@ -187,7 +187,7 @@ export default function PricingPage() {
         <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 max-w-xl mx-auto text-sm text-zinc-400">
           <strong className="text-zinc-200">Example:</strong> LSAT only ={" "}
           {formatUsd(membership.priceMonthly)} membership +{" "}
-          {formatUsd(PREMIUM_TRACK_LIST.find((t) => t.id === "lsat")?.priceMonthly ?? 499)}{" "}
+          {formatUsd(PREMIUM_TRACK_LIST.find((t) => t.id === "lsat")?.priceMonthly ?? 699)}{" "}
           LSAT track ={" "}
           <strong className="text-white">
             {formatUsd(totalWithTrack("lsat", "monthly"))}/mo
